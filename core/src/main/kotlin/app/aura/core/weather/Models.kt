@@ -42,6 +42,10 @@ data class CurrentConditions(
     val cloudCoverPercent: Int? = null,
     /** Probabilidad de lluvia de la hora en curso (la completa WeatherInsights.reconciled). */
     val precipitationProbability: Int? = null,
+    /** Estación que observó estos datos (si vienen de una observación real y no del modelo). */
+    val observedBy: String? = null,
+    /** Momento de esa observación, segundos Unix. */
+    val observedAt: Long? = null,
 )
 
 @Serializable
@@ -93,6 +97,8 @@ data class WeatherSnapshot(
     val providerId: String,
     /** Momento de la descarga, milisegundos Unix. */
     val fetchedAtMillis: Long,
+    /** Observación real de la estación más cercana (METAR), si hay una a menos de 30 km. */
+    val observation: app.aura.core.observation.Observation? = null,
 ) {
     val today: DailyPoint? get() = data.daily.firstOrNull()
 }

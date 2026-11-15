@@ -193,6 +193,15 @@ internal fun WeatherDetail(snap: WeatherSnapshot, settings: AppSettings, refresh
                     modifier = Modifier.testTag("weather_temp"),
                 )
                 Text(WeatherText.now(context, current), color = Color.White, style = MaterialTheme.typography.headlineSmall)
+                // Dato observado de verdad: de qué estación y hace cuánto.
+                current.observedBy?.let { station ->
+                    val mins = ((nowSec - (current.observedAt ?: nowSec)) / 60).coerceAtLeast(0)
+                    Text(
+                        "Observado en $station · hace ${if (mins < 60) "$mins min" else "${mins / 60} h"}",
+                        color = Soft, style = MaterialTheme.typography.bodyMedium, maxLines = 1,
+                        modifier = Modifier.testTag("observed_by"),
+                    )
+                }
                 // Probabilidad de lluvia de esta hora (cuando es relevante): deja claro que es un pronóstico.
                 current.precipitationProbability?.takeIf { it >= WeatherInsights.RAIN_THRESHOLD || current.condition in WET_CONDITIONS }?.let { pop ->
                     Text("$pop % de probabilidad de lluvia en esta hora", color = Soft, style = MaterialTheme.typography.bodyMedium)
@@ -236,7 +245,8 @@ internal fun WeatherDetail(snap: WeatherSnapshot, settings: AppSettings, refresh
 
             val age = System.currentTimeMillis() - snap.fetchedAtMillis
             Text(
-                "Actualizado hace ${WeatherText.age(context, age)} · Fuente: Open-Meteo.com (CC BY 4.0)",
+                "Actualizado hace ${WeatherText.age(context, age)} · Pronóstico: Open-Meteo.com (CC BY 4.0)" +
+                    if (current.observedBy != null) " · Observación: aviationweather.gov (NOAA)" else "",
                 color = Soft, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp),
             )

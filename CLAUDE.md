@@ -46,6 +46,9 @@ Pantalla Clima (pestaña «Clima», la abre el toque en cualquier widget): `ui/s
 con cielo animado `ui/components/WeatherSky.kt` (clima × amanecer/día/atardecer/noche, 30 fps máx.),
 48 h con curva y lluvia %, aviso de lluvia (`core/weather/WeatherInsights`), 14 días, UV, sol.
 Icono animado del widget: ProgressBar + AnimatedVectorDrawable (`tools/aura_anim.py` → `anim_wx_*`).
+«Ahora» con observación real: METAR del aeropuerto más cercano (≤30 km, ≤2 h) de aviationweather.gov
+(NOAA, gratis, sin clave) en `core/observation/Metar.kt`; manda sobre el modelo en `WeatherInsights.reconciled`.
+El SMN no sirve: el servicio público da 503 y el nuevo exige clave (probado 15/11/2026).
 
 ## Pendiente / conocido
 - Confirmar en un S24+ real la sincronización del fondo animado y que no haya parpadeo negro.

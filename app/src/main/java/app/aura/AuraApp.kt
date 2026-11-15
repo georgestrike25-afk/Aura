@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import app.aura.core.net.UrlConnectionHttpClient
 import app.aura.core.openmeteo.OpenMeteoGeocoder
+import app.aura.core.observation.MetarClient
 import app.aura.core.openmeteo.OpenMeteoWeatherProvider
 import app.aura.data.LocationRepository
 import app.aura.data.SettingsRepository
@@ -37,7 +38,7 @@ class AppContainer(context: Context) {
     val weatherProvider = OpenMeteoWeatherProvider(http)
     val placeSearch = OpenMeteoGeocoder(http)
     val settings = SettingsRepository(context)
-    val weather = WeatherRepository(context, weatherProvider, settings)
+    val weather = WeatherRepository(context, weatherProvider, settings, MetarClient(http))
     val location = LocationRepository(context)
     val widgets = WidgetUpdater(context, settings, weather)
     val studio = ProjectRepository(context)

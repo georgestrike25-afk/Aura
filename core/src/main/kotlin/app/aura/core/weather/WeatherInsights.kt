@@ -64,7 +64,7 @@ object WeatherInsights {
      * (código, mm y nubosidad). Sirve para datos guardados por versiones anteriores y para cuando el
      * proveedor no informa la precipitación actual: se usa la de la hora en curso.
      */
-    fun reconciled(data: WeatherData, nowSec: Long): WeatherData {
+    fun reconciled(data: WeatherData, nowSec: Long, observation: app.aura.core.observation.Observation? = null): WeatherData {
         val hourly = data.hourly.map { h ->
             h.copy(condition = WmoCodes.toCondition(h.weatherCode, h.isDay, null, h.precipitationMm, h.cloudCoverPercent, h.precipitationProbability))
         }
@@ -76,10 +76,21 @@ object WeatherInsights {
         // El valor «actual» del modelo puede decir «nublado» mientras la hora en curso pronostica lluvia
         // con probabilidad alta: entonces se toma la de la hora (se mostrará como «posible»).
         val fromHour = hour?.condition?.takeIf { it in WET && own !in WET && (pop ?: 0) >= WmoCodes.LIKELY_PERCENT }
-        val current = c.copy(
+        val forecast = c.copy(
             precipitationMm = mm,
             precipitationProbability = pop,
             condition = fromHour ?: own,
+        )
+        // Si hay una observación real reciente, manda sobre el modelo para el «ahora».
+        val obs = observation?.takeIf { nowSec - it.time <= app.aura.core.observation.Metar.MAX_AGE_SECONDS }
+        val current = if (obs == null) forecast else forecast.copy(
+            temperatureC = obs.temperatureC ?: forecast.temperatureC,
+            humidityPercent = obs.humidityPercent ?: forecast.humidityPercent,
+            windSpeedKmh = obs.windKmh ?: forecast.windSpeedKmh,
+            condition = obs.condition(c.isDay),
+            precipitationMm = if (obs.isWet) maxOf(mm ?: 0.0, WmoCodes.WET_MM) else 0.0,
+            observedBy = obs.stationName,
+            observedAt = obs.time,
         )
         return data.copy(current = current, hourly = hourly)
     }
@@ -87,5 +98,5 @@ object WeatherInsights {
     private val WET = setOf(WeatherCondition.DRIZZLE, WeatherCondition.RAIN, WeatherCondition.THUNDERSTORM, WeatherCondition.SNOW)
 
     /** Lluvia, nieve o tormenta probable pero sin milímetros previstos ahora: se dice «posible». */
-    fun isPossible(c: CurrentConditions): Boolean = c.condition in WET && (c.precipitationMm ?: 0.0) < WmoCodes.WET_MM
+    fun isPossible(c: CurrentConditions): Boolean = c.observedBy == null && c.condition in WET && (c.precipitationMm ?: 0.0) < WmoCodes.WET_MM
 }

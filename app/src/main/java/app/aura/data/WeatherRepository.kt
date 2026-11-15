@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import app.aura.core.observation.MetarClient
 import app.aura.core.weather.RefreshPolicy
 import app.aura.core.weather.WeatherProvider
 import app.aura.core.weather.WeatherProviderException
@@ -44,6 +45,7 @@ class WeatherRepository(
     context: Context,
     private val provider: WeatherProvider,
     private val settings: SettingsRepository,
+    private val observations: MetarClient? = null,
     private val clock: () -> Long = System::currentTimeMillis,
 ) {
     private val store = context.applicationContext.weatherCache
@@ -59,7 +61,7 @@ class WeatherRepository(
         .catch { e -> if (e is IOException) emit(emptyPreferences()) else throw e }
         .map { prefs -> prefs[KEY]?.let { runCatching { json.decodeFromString<WeatherSnapshot>(it) }.getOrNull() } }
         // Siempre con la regla actual de condiciones (también para datos guardados por versiones anteriores).
-        .map { snap -> snap?.copy(data = WeatherInsights.reconciled(snap.data, System.currentTimeMillis() / 1000)) }
+        .map { snap -> snap?.copy(data = WeatherInsights.reconciled(snap.data, System.currentTimeMillis() / 1000, snap.observation)) }
         .distinctUntilChanged()
 
     suspend fun cached(): WeatherSnapshot? = snapshot.first()
@@ -74,7 +76,9 @@ class WeatherRepository(
         _refreshing.value = true
         try {
             val data = provider.fetch(place.coordinates)
-            val snap = WeatherSnapshot(place, data, provider.info.id, fetchedAtMillis = clock())
+            // Observación real del aeropuerto más cercano (si falla, sigue solo con el pronóstico).
+            val observation = observations?.nearest(place.coordinates, clock() / 1000)
+            val snap = WeatherSnapshot(place, data, provider.info.id, fetchedAtMillis = clock(), observation = observation)
             store.edit { it[KEY] = json.encodeToString(snap) }
             _lastError.value = null
             RefreshResult.Updated
