@@ -32,7 +32,7 @@ python3 tools/aura_widgets.py
 ## APK sin compilar nada
 
 Enlace fijo, siempre con la última compilación:
-**https://github.com/georgestrike25-afk/App-pc-finazas/releases/download/aura-latest/Aura.apk**
+**https://github.com/georgestrike25-afk/Aura/releases/download/aura-latest/Aura.apk**
 (versión «Aura (última versión)» del repositorio; también queda en `dist/Aura.apk`).
 
 Cada push ejecuta `.github/workflows/android.yml`. En la pestaña **Actions** del repositorio, abrí la última ejecución de «Android» y descargá el artefacto **aura-apk** (`app-debug.apk` y `app-release.apk`). El artefacto **widget-screenshots** tiene las capturas del emulador.
@@ -53,7 +53,5 @@ One UI puede restringir apps en segundo plano. Para que el clima se actualice co
 
 Android solo instala una actualización si está firmada con la **misma clave** que la versión instalada. Por eso el release se firma siempre con la misma clave de Aura, que **no está en el repositorio**:
 
-- **Automática (en uso):** la primera compilación genera la clave y la guarda en la caché de GitHub Actions (`aura-signing-v1`); las siguientes la reutilizan.
-- **Caché siempre viva:** GitHub borra una caché tras 7 días sin uso. Para evitarlo, el workflow `mantener-firma.yml` de la rama principal lanza cada 3 días `firma.yml` en la rama de desarrollo, que lee la clave. Si ese workflow falla, la clave se perdió y habrá que desinstalar Aura una vez.
-- **Opcional:** si se cargan los secretos `AURA_KEYSTORE_BASE64` (keystore PKCS12 en base64, alias `aura`) y `AURA_KEYSTORE_PASSWORD`, tienen prioridad.
+- **CI:** la clave está en los secretos del repositorio `AURA_KEYSTORE_BASE64` (keystore PKCS12 en base64, alias `aura`) y `AURA_KEYSTORE_PASSWORD`. Si faltan, la compilación falla a propósito para no generar una clave distinta.
 - **Localmente:** `./gradlew assembleRelease -Paura.storeFile=/ruta/clave.p12 -Paura.storePassword=…`, o las variables `AURA_STORE_FILE` y `AURA_STORE_PASSWORD`. Sin clave, se firma con la de depuración.
