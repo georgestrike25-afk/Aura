@@ -4,6 +4,8 @@
 
 Aplicación Android de clima, hora y widgets minimalistas con **transparencia real**: se colocan directamente sobre el fondo de pantalla y solo se ven los números, textos e iconos. Optimizada para el Samsung Galaxy S24+ (One UI), compatible con Android 8.0+.
 
+**Descargar el APK (última versión):** https://github.com/georgestrike25-afk/Aura/releases/download/aura-latest/Aura.apk
+
 <p align="center"><img src="docs/assets/brand/aura_icon.svg" width="128" alt="Icono de Aura"></p>
 
 ## Qué incluye
