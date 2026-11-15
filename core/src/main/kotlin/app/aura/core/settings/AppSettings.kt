@@ -23,6 +23,8 @@ data class AppSettings(
     val devicePlace: Place? = null,
     val savedPlaces: List<Place> = emptyList(),
     val wifiOnly: Boolean = false,
+    /** Usar la observación real del aeropuerto más cercano (METAR) para el estado de «ahora». */
+    val useObservations: Boolean = true,
     val providerId: String = "open-meteo",
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val onboardingDone: Boolean = false,

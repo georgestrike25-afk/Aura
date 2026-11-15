@@ -160,7 +160,8 @@ fun HomeScreen(
         }
         Spacer(Modifier.height(24.dp))
         Text(
-            "Datos meteorológicos: Open-Meteo.com (CC BY 4.0)",
+            "Pronóstico: Open-Meteo.com (CC BY 4.0)" +
+                if (snapshot?.data?.current?.observedBy != null) " · Observación actual: aviationweather.gov (NOAA)" else "",
             style = MaterialTheme.typography.bodySmall,
             color = Aura.tokens.mutedText,
         )

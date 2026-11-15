@@ -104,12 +104,28 @@ fun SettingsScreen(viewModel: AuraViewModel, onOpenLocation: () -> Unit) {
                 runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(provider.attributionUrl)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
             }) { Text("open-meteo.com") }
         }
+        Spacer(Modifier.height(10.dp))
+        AuraCard(padding = 16) {
+            LabeledRow("Observaciones de aeropuertos", supporting = "Lo que se observa ahora en el aeropuerto más cercano (METAR)") {
+                Switch(settings.useObservations, { v -> viewModel.updateSettings { it.copy(useObservations = v) } })
+            }
+            Text(
+                "Temperatura, viento y si llueve o hay tormenta, informados cada hora por la estación del aeropuerto " +
+                    "(por ejemplo Córdoba Taravella). Se usa si está a menos de 30 km y el dato tiene menos de 2 horas; " +
+                    "el pronóstico sigue siendo de Open-Meteo. Servicio público y gratuito de NOAA, sin clave.",
+                style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText,
+            )
+            TextButton(onClick = {
+                runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://aviationweather.gov")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
+            }) { Text("aviationweather.gov") }
+        }
 
         SectionTitle("Privacidad")
         AuraCard(padding = 16) {
             Text(
                 "Aura no tiene cuentas, anuncios ni analítica. Guarda tus ajustes y la última respuesta meteorológica solo en este teléfono. " +
-                    "Para consultar el tiempo envía a Open-Meteo las coordenadas del lugar (redondeadas a ~1 km si usás tu ubicación). " +
+                    "Para consultar el tiempo envía a Open-Meteo las coordenadas del lugar (redondeadas a ~1 km si usás tu ubicación) " +
+                    "y, si las observaciones de aeropuertos están activadas, a aviationweather.gov una zona de unos 35 km alrededor. " +
                     "La ubicación se lee con permiso aproximado y únicamente con la app abierta.",
                 style = MaterialTheme.typography.bodySmall,
             )

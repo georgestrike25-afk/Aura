@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -60,8 +61,11 @@ class WeatherRepository(
     val snapshot: Flow<WeatherSnapshot?> = store.data
         .catch { e -> if (e is IOException) emit(emptyPreferences()) else throw e }
         .map { prefs -> prefs[KEY]?.let { runCatching { json.decodeFromString<WeatherSnapshot>(it) }.getOrNull() } }
-        // Siempre con la regla actual de condiciones (también para datos guardados por versiones anteriores).
-        .map { snap -> snap?.copy(data = WeatherInsights.reconciled(snap.data, System.currentTimeMillis() / 1000, snap.observation)) }
+        // Siempre con la regla actual de condiciones (también para datos guardados por versiones anteriores),
+        // y con la observación del aeropuerto solo si está activada en Ajustes.
+        .combine(settings.settings.map { it.useObservations }.distinctUntilChanged()) { snap, useObs ->
+            snap?.copy(data = WeatherInsights.reconciled(snap.data, System.currentTimeMillis() / 1000, snap.observation?.takeIf { useObs }))
+        }
         .distinctUntilChanged()
 
     suspend fun cached(): WeatherSnapshot? = snapshot.first()
@@ -77,7 +81,7 @@ class WeatherRepository(
         try {
             val data = provider.fetch(place.coordinates)
             // Observación real del aeropuerto más cercano (si falla, sigue solo con el pronóstico).
-            val observation = observations?.nearest(place.coordinates, clock() / 1000)
+            val observation = if (appSettings.useObservations) observations?.nearest(place.coordinates, clock() / 1000) else null
             val snap = WeatherSnapshot(place, data, provider.info.id, fetchedAtMillis = clock(), observation = observation)
             store.edit { it[KEY] = json.encodeToString(snap) }
             _lastError.value = null

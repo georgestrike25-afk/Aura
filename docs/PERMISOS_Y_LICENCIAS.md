@@ -18,13 +18,15 @@ No se piden ubicación precisa, ubicación en segundo plano, almacenamiento, not
 ## Datos
 
 - Todo se guarda en el teléfono (DataStore). No hay cuentas, analítica ni anuncios.
-- Se envían a Open-Meteo solo las coordenadas del lugar consultado (4 decimales para ciudades elegidas, 2 para la ubicación del dispositivo) y, al buscar, el texto de búsqueda.
+- Se envían a Open-Meteo solo las coordenadas del lugar consultado (4 decimales para ciudades elegidas, 2 para la ubicación del dispositivo) y, al buscar, el texto de búsqueda. Con las observaciones de aeropuertos activadas (Ajustes), se pide a aviationweather.gov un recuadro de ~35 km alrededor del lugar.
 - La copia de seguridad de Android incluye ajustes y perfiles, no la caché meteorológica.
 - Ajustes › Privacidad › «Borrar todos los datos de Aura».
 
 ## Fuente meteorológica
 
 **Open-Meteo** (`api.open-meteo.com`, `geocoding-api.open-meteo.com`): sin clave API, gratuito para uso no comercial (≈10 000 llamadas/día), datos bajo **CC BY 4.0**: la atribución se muestra en Inicio, Pronóstico y Ajustes. La búsqueda usa datos de GeoNames (CC BY 4.0). Para uso comercial Open-Meteo exige un plan de pago: la capa de datos (`WeatherProvider`/`PlaceSearchProvider` en `:core`) permite sustituirlo, por ejemplo por MET Norway.
+
+**Observaciones METAR** (`aviationweather.gov`, NOAA / Aviation Weather Center de EE. UU.): servicio público, gratuito y sin clave. Aura usa el reporte del aeropuerto más cercano (≤30 km, ≤2 h) para el estado de «ahora»; se puede desactivar en Ajustes. La atribución se muestra en Clima, Inicio y Ajustes.
 
 ## Dependencias (todas Apache 2.0)
 
