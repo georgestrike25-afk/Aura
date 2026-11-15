@@ -120,22 +120,30 @@ class WeatherScreenTest {
         shot("weather_storm")
     }
 
-    @Test
-    fun skyForEveryConditionAndTimeOfDay() = show({
+    /** Muestrario de cielos en tres partes: muchos a la vez llegan a tumbar el emulador. */
+    private fun skies(conditions: List<WeatherCondition>, name: String) = show({
         Column(Modifier.fillMaxSize()) {
-            WeatherCondition.entries.forEach { c ->
+            conditions.forEach { c ->
                 Row(Modifier.weight(1f).fillMaxWidth()) {
                     DayPhase.entries.forEach { p ->
                         Box(Modifier.weight(1f).fillMaxSize().padding(1.dp)) {
-                            // Quietos: 44 cielos animados a la vez saturan el emulador.
                             WeatherSky(c, p, sunProgress = if (p == DayPhase.DAY) 0.4f else null, horizon = 0.8f, animate = false, modifier = Modifier.fillMaxSize())
-                            Text("${c.name.lowercase()} ${p.name.lowercase()}", color = Color.White, fontSize = 8.sp, modifier = Modifier.padding(2.dp))
+                            Text("${c.name.lowercase()} ${p.name.lowercase()}", color = Color.White, fontSize = 9.sp, modifier = Modifier.padding(2.dp))
                         }
                     }
                 }
             }
         }
     }) {
-        shot("weather_skies")
+        shot(name)
     }
+
+    @Test
+    fun skiesClearAndPartlyCloudy() = skies(WeatherCondition.entries.take(4), "weather_skies_1")
+
+    @Test
+    fun skiesCloudsAndRain() = skies(WeatherCondition.entries.drop(4).take(4), "weather_skies_2")
+
+    @Test
+    fun skiesSnowFogWind() = skies(WeatherCondition.entries.drop(8), "weather_skies_3")
 }
