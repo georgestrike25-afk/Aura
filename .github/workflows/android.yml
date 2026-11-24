@@ -34,7 +34,9 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Pruebas unitarias
-        run: ./gradlew --stacktrace :core:test :app:testDebugUnitTest
+        run: |
+          set -o pipefail
+          ./gradlew :core:test :app:testDebugUnitTest 2>&1 | tee build.log || { echo "== Errores =="; grep -E "^e: |FAILED|AssertionError" build.log | head -60; exit 1; }
 
       # Firma: la clave vive en los secretos AURA_KEYSTORE_BASE64 / AURA_KEYSTORE_PASSWORD.
       # Si faltan, el build falla a propósito: crear una clave nueva rompería las actualizaciones
@@ -55,7 +57,9 @@ jobs:
           echo "signed=true" >> "$GITHUB_OUTPUT"
 
       - name: APK debug y release
-        run: ./gradlew --stacktrace :app:assembleDebug :app:assembleRelease
+        run: |
+          set -o pipefail
+          ./gradlew :app:assembleDebug :app:assembleRelease 2>&1 | tee build.log || { echo "== Errores de compilación =="; grep -E "^e: |error:|FAILED" build.log | head -60; exit 1; }
 
       - name: Lint
         run: ./gradlew :app:lintDebug
@@ -132,7 +136,9 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Compilar APK de prueba
-        run: ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest
+        run: |
+          set -o pipefail
+          ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest 2>&1 | tee build.log || { echo "== Errores de compilación =="; grep -E "^e: |error:|FAILED" build.log | head -60; exit 1; }
 
       - name: Pruebas instrumentadas y capturas
         uses: reactivecircus/android-emulator-runner@v2
