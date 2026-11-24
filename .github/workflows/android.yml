@@ -187,4 +187,9 @@ jobs:
           path: app/build/reports/androidTests/
 
       - name: Resultado
-        run: test ! -f /tmp/aura_failed
+        run: |
+          if [ -f /tmp/aura_failed ]; then
+            echo "== Pruebas que fallaron =="
+            find app/build/outputs/androidTest-results -name "*.xml" -exec grep -h -B1 -A4 "<failure" {} + | head -80 || true
+            exit 1
+          fi
