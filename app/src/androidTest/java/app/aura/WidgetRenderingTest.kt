@@ -309,7 +309,7 @@ class WidgetRenderingTest {
     @Test
     fun providersAreRegistered() {
         val providers = AppWidgetManager.getInstance(context).installedProviders.filter { it.provider.packageName == context.packageName }
-        assertEquals(5, providers.size)
+        assertEquals(WidgetType.entries.size, providers.size)
         assertTrue(providers.all { it.configure != null })
     }
 
