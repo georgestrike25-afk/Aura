@@ -258,6 +258,60 @@ class StudioFlowTest {
         listOf(with, without).forEach { it.recycle() }
     }
 
+    @Test
+    fun artisticDigitsElementsAtmosphereAndDepth() = runBlocking {
+        val repo = context.aura.studio
+        val created = repo.create(syntheticPhoto(), "Artístico")
+        val photo = repo.photo(created.id)!!
+        val compositor = StudioCompositor(app.aura.studio.render.ClockPainter(app.aura.studio.render.StudioFonts.resolver(context)))
+        val w = screen.width / 2
+        val h = screen.height / 2
+        fun render(p: StudioProject, mask: Bitmap? = null): Bitmap =
+            Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).also { compositor.render(it, photo, mask, p, extras.copy(subtitle = null)) }
+        fun diff(a: Bitmap, b: Bitmap): Int {
+            var n = 0
+            for (y in 0 until a.height step 4) for (x in 0 until a.width step 4) if (a.getPixel(x, y) != b.getPixel(x, y)) n++
+            return n
+        }
+        val base = created.copy(design = created.design.copy(centerY = 0.3f, size = 0.3f))
+
+        // Dígitos independientes: mover y girar solo un dígito cambia la imagen y conserva el resto.
+        val art = app.aura.core.studio.ArtisticClock(enabled = true)
+        val plain = render(base.copy(design = base.design.copy(artistic = art)))
+        val moved = render(base.copy(design = base.design.copy(artistic = art.edit(app.aura.core.studio.DigitSlot.MINUTE_UNITS) {
+            it.copy(offsetY = 0.15f, rotation = 25f, scaleX = 1.4f, color = 0xFFD8BA8B.toInt(), fontId = "clock_italiana")
+        })))
+        save("studio_digit_moved", moved)
+        assertTrue("el dígito movido debe cambiar la imagen", diff(plain, moved) > 50)
+
+        // Aura Elements: cada material se ve distinto del metal.
+        val metal = render(base.copy(design = base.design.withMaterial(ClockMaterial.METAL)))
+        ClockMaterial.entries.filter { it.isElement }.forEach { m ->
+            val r = render(base.copy(design = base.design.withMaterial(m)))
+            save("studio_element_${m.name.lowercase()}", r)
+            assertTrue("$m igual al metal", diff(metal, r) > 50)
+            r.recycle()
+        }
+
+        // Atmosphere: la lluvia y la luz de la noche quedan en la exportación.
+        val rain = render(base.copy(atmosphere = app.aura.core.studio.Atmosphere(app.aura.core.studio.AtmosphereEffect.RAIN, 90)))
+        save("studio_atmosphere_rain", rain)
+        assertTrue("la lluvia debe verse", diff(metal, rain) > 50)
+
+        // Profundidad por dígito: con máscara, un dígito adelante y el resto detrás del sujeto.
+        val strokes = listOf(MaskStroke(listOf(0.5f, 0.2f, 0.5f, 0.6f), 0.12f, erase = false))
+        val (mw, mh) = MaskRenderer.workingSize(photo.width, photo.height)
+        val mask = MaskRenderer.render(null, strokes, mw, mh)
+        val masked = base.copy(strokes = strokes, hasMask = true, design = base.design.copy(behindSubject = true, artistic = art))
+        val allBehind = render(masked, mask)
+        val oneFront = render(masked.copy(design = masked.design.copy(artistic = art.edit(app.aura.core.studio.DigitSlot.HOUR_UNITS) {
+            it.copy(depth = app.aura.core.studio.DigitDepth.IN_FRONT_OF_SUBJECT)
+        })), mask)
+        save("studio_depth_one_front", oneFront)
+        assertTrue("un dígito adelante debe verse distinto", diff(allBehind, oneFront) > 10)
+        listOf(plain, moved, metal, rain, allBehind, oneFront, mask, photo).forEach { it.recycle() }
+    }
+
     /** Columnas con tinta (alfa visible) entre las filas indicadas. */
     private fun inkColumns(b: Bitmap, top: Int, bottom: Int): List<Boolean> = List(b.width) { x ->
         (top until bottom step 3).any { y -> Color.alpha(b.getPixel(x, y)) > 128 }
