@@ -67,6 +67,7 @@ fun HomeScreen(
     onCustomize: () -> Unit,
     onOpenForecast: () -> Unit,
     onOpenStudio: () -> Unit = {},
+    onOpenSettings: () -> Unit = {},
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val snapshot by viewModel.snapshot.collectAsStateWithLifecycle()
@@ -93,6 +94,9 @@ fun HomeScreen(
                 leadingIcon = { Icon(painterResource(R.drawable.ic_ui_location), null, Modifier.size(18.dp)) },
                 colors = AssistChipDefaults.assistChipColors(labelColor = MaterialTheme.colorScheme.onSurface),
             )
+            IconButton(onClick = onOpenSettings) {
+                Icon(painterResource(R.drawable.ic_ui_settings), contentDescription = "Ajustes", tint = MaterialTheme.colorScheme.onSurface)
+            }
         }
 
         // Hora y fecha: protagonistas.

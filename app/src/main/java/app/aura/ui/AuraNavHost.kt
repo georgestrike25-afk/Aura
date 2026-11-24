@@ -64,7 +64,6 @@ private val tabs = listOf(
     Tab(Routes.FORECAST, "Clima", R.drawable.ic_ui_forecast),
     Tab(Routes.STUDIO, "Studio", R.drawable.ic_ui_studio),
     Tab(Routes.WIDGETS, "Widgets", R.drawable.ic_ui_widgets),
-    Tab(Routes.SETTINGS, "Ajustes", R.drawable.ic_ui_settings),
 )
 
 @Composable
@@ -114,13 +113,14 @@ fun AuraNavHost(viewModel: AuraViewModel, destination: String?, onDestinationCon
                     onCustomize = { nav.navigate(Routes.customize(WidgetType.DUO)) },
                     onOpenForecast = { nav.switchTab(Routes.FORECAST) },
                     onOpenStudio = { nav.switchTab(Routes.STUDIO) },
+                    onOpenSettings = { nav.navigate(Routes.SETTINGS) },
                 )
             }
             composable(Routes.FORECAST) { ForecastScreen(viewModel, onOpenLocation = { nav.navigate(Routes.LOCATION) }) }
             composable(Routes.WIDGETS) {
                 WidgetsScreen(viewModel, onCustomize = { type, id -> nav.navigate(Routes.customize(type, id)) })
             }
-            composable(Routes.SETTINGS) { SettingsScreen(viewModel, onOpenLocation = { nav.navigate(Routes.LOCATION) }) }
+            composable(Routes.SETTINGS) { SettingsScreen(viewModel, onOpenLocation = { nav.navigate(Routes.LOCATION) }, onBack = { nav.popBackStack() }) }
             composable(Routes.STUDIO) { StudioHomeScreen(studio, onOpen = { id -> nav.navigate(Routes.studioEditor(id)) }) }
             composable(Routes.STUDIO_EDITOR, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
                 val id = entry.arguments?.getString("id").orEmpty()

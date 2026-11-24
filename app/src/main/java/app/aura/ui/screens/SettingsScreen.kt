@@ -42,7 +42,7 @@ import app.aura.ui.components.Segmented
 import app.aura.ui.theme.Aura
 
 @Composable
-fun SettingsScreen(viewModel: AuraViewModel, onOpenLocation: () -> Unit) {
+fun SettingsScreen(viewModel: AuraViewModel, onOpenLocation: () -> Unit, onBack: (() -> Unit)? = null) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var confirmClear by remember { mutableStateOf(false) }
@@ -55,7 +55,7 @@ fun SettingsScreen(viewModel: AuraViewModel, onOpenLocation: () -> Unit) {
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp),
     ) {
-        ScreenHeader("Ajustes")
+        ScreenHeader("Ajustes", onBack = onBack)
 
         SectionTitle("Unidades y hora")
         Segmented(listOf(TemperatureUnit.CELSIUS to "°C", TemperatureUnit.FAHRENHEIT to "°F"), settings.temperatureUnit, { u ->
