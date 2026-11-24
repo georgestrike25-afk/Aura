@@ -20,7 +20,7 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
 | 1 | Identidad visual (paleta obsidiana/grafito/champán/marfil/jade, navegación con Signature) | hecho (pestaña Signature se agrega en etapa 8) |
 | 2 | Studio: cuatro dígitos independientes (mover, escalar, rotar, deformar, color, fuente, opacidad), grupos, guías magnéticas, bloqueo | hecho (validar en CI) |
 | 3 | Aura Elements: 8 materiales paramétricos + controles | hecho (validar en CI) |
-| 4 | Aura Fusion: análisis de la imagen y «Armonizar» | pendiente |
+| 4 | Aura Fusion: análisis de la imagen y «Armonizar» | hecho (validar en CI) |
 | 5 | Aura Layers: capas, dígitos delante/detrás del sujeto, orden/ocultar/bloquear, máscara | pendiente |
 | 6 | Aura Fonts: familias, nuevas fuentes libres, importar TTF/OTF | pendiente |
 | 7 | Atmosphere y Living: partículas, luz según la hora, desactivable | pendiente |
@@ -54,3 +54,7 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   sin costuras generadas en core (`ElementTexture`, probado) y cacheadas (`ElementTextures`); intensidad,
   escala de textura, transparencia; detalles por elemento (refracción, musgo, núcleo de luz); en el fondo
   animado la textura avanza una vez por minuto (`phase`), sin redibujar entre minutos.
+- Etapa 4: `core/studio/Fusion.kt` (probado): colores dominantes (k-medias determinista), brillo, contraste,
+  saturación, calidez, brillo en la zona del reloj y dirección de la luz; `harmonize` propone material,
+  color legible (contraste ≥ 3), acento, tipografía y ángulo de luz con motivos. UI: sección «Aura Fusion»
+  en Efectos (paleta tocable + «Aplicar», un paso de deshacer). El camaleón sigue igual y combinable.

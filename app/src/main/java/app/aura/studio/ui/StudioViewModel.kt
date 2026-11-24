@@ -16,6 +16,9 @@ import androidx.lifecycle.viewModelScope
 import app.aura.aura
 import app.aura.core.studio.ArtisticClock
 import app.aura.core.studio.ClockDesign
+import app.aura.core.studio.Fusion
+import app.aura.core.studio.Harmony
+import app.aura.core.studio.ImageTraits
 import app.aura.core.studio.DigitSlot
 import app.aura.core.studio.MagneticGuides
 import app.aura.core.studio.History
@@ -342,6 +345,44 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
         dragRaw = null
         _guides.value = emptyList()
         commit()
+    }
+
+    // ---------------------------------------------------------------- Aura Fusion
+
+    private val _harmony = MutableStateFlow<Pair<ImageTraits, Harmony>?>(null)
+    /** Análisis de la foto y propuesta de «Armonizar» (no se aplica sola). */
+    val harmony: StateFlow<Pair<ImageTraits, Harmony>?> = _harmony.asStateFlow()
+
+    /** Analiza la foto tal como está encuadrada y la zona donde está el reloj. */
+    fun analyzePhoto() {
+        val p = current ?: return
+        val src = previewPhoto ?: return
+        viewModelScope.launch(Dispatchers.Default) {
+            val (pw, ph) = previewSize
+            val w = 72
+            val h = (w * ph / pw.toFloat()).roundToInt().coerceAtLeast(1)
+            val small = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+            compositor.drawPhoto(android.graphics.Canvas(small), w, h, src, p)
+            val px = IntArray(w * h).also { small.getPixels(it, 0, w, 0, 0, w, h) }
+            small.recycle()
+            val quad = clockQuad()
+            val region = if (quad == null) floatArrayOf(0.2f, 0.2f, 0.8f, 0.4f) else {
+                val xs = listOf(quad[0], quad[2], quad[4], quad[6])
+                val ys = listOf(quad[1], quad[3], quad[5], quad[7])
+                floatArrayOf((xs.min() / pw).coerceIn(0f, 1f), (ys.min() / ph).coerceIn(0f, 1f), (xs.max() / pw).coerceIn(0f, 1f), (ys.max() / ph).coerceIn(0f, 1f))
+            }
+            val traits = Fusion.analyze(px, w, h, region)
+            _harmony.value = traits to Fusion.harmonize(traits)
+        }
+    }
+
+    /** Aplica la propuesta en un solo paso (se puede deshacer y seguir editando a mano). */
+    fun applyHarmony() {
+        val hm = _harmony.value?.second ?: return
+        design {
+            it.withMaterial(hm.material).copy(color = hm.color, accentColor = hm.accentColor, customFont = hm.fontId, lightAngle = hm.lightAngle)
+        }
+        _message.value = "Armonizado: ${hm.material.label}. Podés deshacerlo o seguir ajustando."
     }
 
     fun undo() { gestureBase = null; _history.value = _history.value?.undo() }

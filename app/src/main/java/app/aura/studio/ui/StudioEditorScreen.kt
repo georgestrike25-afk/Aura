@@ -386,6 +386,7 @@ private fun ColumnScope.WarpPanel(vm: StudioViewModel, p: StudioProject) {
 @Composable
 private fun ColumnScope.EffectsPanel(vm: StudioViewModel, p: StudioProject) {
     val d = p.design
+    FusionSection(vm)
     Text("Materiales", style = MaterialTheme.typography.bodyMedium)
     Chips(ClockMaterial.entries.filterNot { it.isElement }.map { it to it.label }, d.material) { m -> vm.design { it.withMaterial(m) } }
     Text("Aura Elements", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 4.dp))

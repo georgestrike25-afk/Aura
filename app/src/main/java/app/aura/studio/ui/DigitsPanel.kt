@@ -192,3 +192,37 @@ private fun SelectChip(label: String, selected: Boolean, onClick: () -> Unit) {
         Text(label, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp))
     }
 }
+
+/**
+ * Aura Fusion: colores dominantes de la foto (tocar uno lo usa para los números) y «Armonizar», que
+ * propone material, color, tipografía y luz. Se aplica solo al tocar «Aplicar» y se puede deshacer.
+ */
+@Composable
+internal fun ColumnScope.FusionSection(vm: StudioViewModel) {
+    val harmony by vm.harmony.collectAsStateWithLifecycle()
+    androidx.compose.runtime.LaunchedEffect(Unit) { if (harmony == null) vm.analyzePhoto() }
+    Text("Aura Fusion", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 4.dp))
+    val h = harmony
+    if (h == null) {
+        Text("Analizando la foto…", style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
+        return
+    }
+    val (traits, proposal) = h
+    Text("Colores de la foto (tocá uno para los números)", style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
+    ColorSwatches(traits.palette.map { Color(it) }, Color.Transparent, { c -> vm.design { it.copy(color = c.toArgb()) } }, Modifier.padding(vertical = 6.dp))
+    Text(
+        "Brillo ${(traits.brightness * 100).roundToInt()} % · contraste ${(traits.contrast * 200).roundToInt().coerceAtMost(100)} % · " +
+            "saturación ${(traits.saturation * 100).roundToInt()} % · ${if (traits.warmth > 0.03f) "cálida" else if (traits.warmth < -0.03f) "fría" else "neutra"}",
+        style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText,
+    )
+    Surface(shape = RoundedCornerShape(14.dp), color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), modifier = Modifier.padding(vertical = 6.dp)) {
+        Column(Modifier.padding(12.dp)) {
+            Text("Armonizar: ${proposal.material.label} · ${StudioFonts.all.firstOrNull { it.id == proposal.fontId }?.label ?: proposal.fontId}", style = MaterialTheme.typography.titleSmall)
+            proposal.reasons.forEach { Text("• $it", style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText) }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 6.dp)) {
+                OutlinedButton(onClick = vm::applyHarmony) { Text("Aplicar") }
+                TextButton(onClick = vm::analyzePhoto) { Text("Volver a analizar") }
+            }
+        }
+    }
+}
