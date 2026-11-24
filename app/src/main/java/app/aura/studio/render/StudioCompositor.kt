@@ -65,23 +65,31 @@ class StudioCompositor(private val painter: ClockPainter) {
         project: StudioProject,
         extras: ClockExtras,
         subject: Bitmap? = subjectLayer(out.width, out.height, photo, mask, project),
+        /** Tinte de luz según la hora (ARGB, 0 = ninguno). */
+        tint: Int = 0,
+        /** Instante (s) de las partículas de Atmosphere; null = no dibujarlas (la vista previa las anima aparte). */
+        particlesAt: Float? = 0f,
     ) {
         val c = Canvas(out)
         drawPhoto(c, out.width, out.height, photo, project)
-        drawClock(c, out.width, out.height, project.design, extras, Backdrop(photo, photoMatrix(out.width, out.height, photo, project)), subject)
+        drawClock(c, out.width, out.height, project.design, extras, Backdrop(photo, photoMatrix(out.width, out.height, photo, project)), subject, tint = tint)
+        particlesAt?.let { AtmospherePainter.drawEffect(c, out.width, out.height, project.atmosphere, it) }
     }
 
     /**
      * Reloj y sujeto en el orden correcto: lo que va detrás del sujeto, el sujeto y lo que va delante.
      * Cada dígito independiente puede ir delante o detrás por su cuenta.
      */
-    fun drawClock(c: Canvas, w: Int, h: Int, design: app.aura.core.studio.ClockDesign, extras: ClockExtras, backdrop: Backdrop?, subject: Bitmap?, phase: Float = 0f) {
+    fun drawClock(c: Canvas, w: Int, h: Int, design: app.aura.core.studio.ClockDesign, extras: ClockExtras, backdrop: Backdrop?, subject: Bitmap?, phase: Float = 0f, tint: Int = 0) {
         if (subject == null) {
+            AtmospherePainter.drawTint(c, tint)
             painter.draw(c, w, h, design, extras, backdrop, phase = phase)
             return
         }
         painter.draw(c, w, h, design, extras, backdrop, ClockPainter.Pass.BEHIND, phase)
         c.drawBitmap(subject, 0f, 0f, null)
+        // La luz de la hora tiñe la escena (foto, sujeto y números de atrás), no los números de adelante.
+        AtmospherePainter.drawTint(c, tint)
         painter.draw(c, w, h, design, extras, backdrop, ClockPainter.Pass.FRONT, phase)
     }
 

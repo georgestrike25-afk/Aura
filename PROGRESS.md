@@ -23,7 +23,7 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
 | 4 | Aura Fusion: análisis de la imagen y «Armonizar» | hecho (validar en CI) |
 | 5 | Aura Layers: capas, dígitos delante/detrás del sujeto, orden/ocultar/bloquear, máscara | hecho (validar en CI) |
 | 6 | Aura Fonts: familias, nuevas fuentes libres, importar TTF/OTF | hecho (validar en CI) |
-| 7 | Atmosphere y Living: partículas, luz según la hora, desactivable | pendiente |
+| 7 | Atmosphere y Living: partículas, luz según la hora, desactivable | hecho (validar en CI) |
 | 8 | Aura Signature: galería con catálogo remoto y obras originales | pendiente |
 | 9 | Widgets meteorológicos nuevos + migración | pendiente |
 | 10 | QA final: pruebas, lint, APK firmado, enlace | pendiente |
@@ -67,3 +67,9 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   Retro y «Mis fuentes»; importar TTF/OTF con el selector del sistema (se copia a filesDir/fonts, se valida
   con `Typeface.createFromFile`, máx. 8 MB, id `user:…`). Selector `FontPicker` con vista previa real.
 - CI: el registro ahora muestra al final solo los errores de compilación (antes los tapaba la traza).
+- Etapa 7: `core/studio/Atmosphere.kt` (probado): efectos lluvia, nieve, viento, polvo luminoso, niebla y
+  cenizas como partículas sin estado (función del tiempo) + `TimeLight` (tinte por amanecer, hora dorada,
+  atardecer y noche, con salida/puesta del sol del clima). `AtmospherePainter` dibuja; el compositor tiñe la
+  escena (foto, sujeto y números de atrás) y no los números de adelante. Editor: pestaña «Ambiente» con
+  partículas animadas sobre la vista previa (30 fps máx.). Fondo animado: ~24 fps solo visible, sin ahorro de
+  batería y con «Animado» encendido (lienzo por GPU); si no, las partículas quedan quietas en el fotograma.

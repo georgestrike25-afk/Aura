@@ -81,7 +81,7 @@ import app.aura.ui.theme.Aura
 import kotlin.math.roundToInt
 
 private enum class EditorTab(val label: String) {
-    FRAME("Encuadre"), CLOCK("Reloj"), DIGITS("Dígitos"), ADJUST("Ajuste"), WARP("Deformar"), EFFECTS("Efectos"), DEPTH("Capas"), EXPORT("Exportar")
+    FRAME("Encuadre"), CLOCK("Reloj"), DIGITS("Dígitos"), ADJUST("Ajuste"), WARP("Deformar"), EFFECTS("Efectos"), ATMOSPHERE("Ambiente"), DEPTH("Capas"), EXPORT("Exportar")
 }
 
 @Composable
@@ -158,6 +158,7 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, onBack: ()
                     preview?.let { Image(it, contentDescription = "Vista previa del fondo", modifier = Modifier.fillMaxSize()) }
                     if (tab == EditorTab.WARP && preview != null) WarpHandles(viewModel, area)
                     if (tab == EditorTab.DIGITS && preview != null && project?.design?.artistic?.enabled == true) DigitOverlay(viewModel, area)
+                    if (preview != null && project != null && project.atmosphere.active) AtmosphereOverlay(project.atmosphere, area)
                     if (preview == null || busy != null) {
                         Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
                             CircularProgressIndicator(color = Aura.tokens.accent)
@@ -207,6 +208,7 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, onBack: ()
                         EditorTab.ADJUST -> AdjustPanel(viewModel, project)
                         EditorTab.WARP -> WarpPanel(viewModel, project)
                         EditorTab.EFFECTS -> EffectsPanel(viewModel, project)
+                        EditorTab.ATMOSPHERE -> AtmospherePanel(viewModel, project)
                         EditorTab.DEPTH -> DepthPanel(viewModel, project, onEditMask)
                         EditorTab.EXPORT -> ExportPanel(viewModel, onLive = { intent ->
                             try {

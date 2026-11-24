@@ -210,6 +210,8 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
     fun design(transform: (ClockDesign) -> ClockDesign) = edit { it.copy(design = transform(it.design).normalized()) }
     fun designLive(transform: (ClockDesign) -> ClockDesign) = live { it.copy(design = transform(it.design).normalized()) }
     fun frameLive(transform: (PhotoFrame) -> PhotoFrame) = live { it.copy(frame = transform(it.frame).normalized()) }
+    fun atmosphere(transform: (app.aura.core.studio.Atmosphere) -> app.aura.core.studio.Atmosphere) = edit { it.copy(atmosphere = transform(it.atmosphere).normalized()) }
+    fun atmosphereLive(transform: (app.aura.core.studio.Atmosphere) -> app.aura.core.studio.Atmosphere) = live { it.copy(atmosphere = transform(it.atmosphere).normalized()) }
 
     /** Tamaño de la vista previa (px), para convertir gestos en coordenadas del lienzo. */
     val previewSize: Pair<Int, Int> get() = PREVIEW_WIDTH to (PREVIEW_WIDTH * screen.height / screen.width.toFloat()).roundToInt()
@@ -489,7 +491,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
             val src = (if (preview) previewPhoto else photo) ?: photo ?: error("Sin foto")
             val out = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
             val m = currentMask(p)
-            val key = listOf(w, h, preview, p.frame, p.mask, p.design.behindSubject, p.hasMask, p.strokes, baseMask)
+            val key = listOf(w, h, preview, p.frame, p.mask, p.design.anyBehindSubject(), p.hasMask, p.strokes, baseMask)
             val subject = if (preview && key == subjectKey && subjectCache != null) {
                 subjectCache
             } else {
@@ -501,9 +503,12 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
                     }
                 }
             }
-            val extras = ClockExtrasBuilder.build(getApplication(), p.design, app.settings.current(), app.weather.cached(), _now.value)
+            val snapshot = app.weather.cached()
+            val extras = ClockExtrasBuilder.build(getApplication(), p.design, app.settings.current(), snapshot, _now.value)
             lastExtras = extras
-            compositor.render(out, src, m, p, extras, subject)
+            val tint = app.aura.studio.render.AtmospherePainter.tintFor(p.atmosphere, _now.value, snapshot)
+            // En la vista previa las partículas las anima el editor por encima; al exportar quedan quietas.
+            compositor.render(out, src, m, p, extras, subject, tint = tint, particlesAt = if (preview) null else 0f)
             if (!preview) subject?.recycle()
             out
         }

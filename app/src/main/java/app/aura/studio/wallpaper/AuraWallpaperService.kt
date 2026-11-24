@@ -19,6 +19,7 @@ import app.aura.AppContainer
 import app.aura.aura
 import app.aura.core.studio.StudioProject
 import app.aura.studio.mask.MaskRenderer
+import app.aura.studio.render.AtmospherePainter
 import app.aura.studio.render.Backdrop
 import app.aura.studio.render.ClockExtrasBuilder
 import app.aura.studio.render.ClockPainter
@@ -117,11 +118,33 @@ class AuraWallpaperService : WallpaperService() {
                     if (loadLayers()) { frameMinute = -1; pendingMinute = -1 }
                     showCurrent()
                     scheduleNext()
+                    handler.removeCallbacks(animate)
+                    if (animating()) handler.post(animate)
                 }
             } else {
                 handler.removeCallbacks(tick)
                 handler.removeCallbacks(prepare)
+                handler.removeCallbacks(animate)
                 unregister()
+            }
+        }
+
+        /**
+         * Aura Living: con un efecto animado, se redibuja a ~24 cuadros por segundo solo mientras el fondo
+         * está visible. Nunca con el ahorro de batería activado ni si el efecto está en «quieto».
+         */
+        private fun animating(): Boolean {
+            val a = project?.atmosphere ?: return false
+            if (!visible || !a.active || !a.animate) return false
+            val pm = getSystemService(android.content.Context.POWER_SERVICE) as android.os.PowerManager
+            return !pm.isPowerSaveMode
+        }
+
+        private val animate = object : Runnable {
+            override fun run() {
+                if (!animating()) return
+                post(frame)
+                handler.postDelayed(this, 42)
             }
         }
 
@@ -180,11 +203,15 @@ class AuraWallpaperService : WallpaperService() {
             } else {
                 c.drawBitmap(bg, 0f, 0f, null)
                 val time = LocalDateTime.ofInstant(Instant.ofEpochMilli(minute * MINUTE), ZoneId.systemDefault())
+                val snapshot = runBlocking { app.weather.cached() }
                 val extras = runBlocking {
-                    ClockExtrasBuilder.build(applicationContext, p.design, app.settings.current(), app.weather.cached(), time)
+                    ClockExtrasBuilder.build(applicationContext, p.design, app.settings.current(), snapshot, time)
                 }
+                val tint = AtmospherePainter.tintFor(p.atmosphere, time, snapshot)
                 // Las texturas Elements avanzan un poco cada minuto (sin dibujar entre minutos).
-                compositor.drawClock(c, width, height, p.design, extras, Backdrop(bg, Matrix()), subject, phase = (minute % 60) / 60f)
+                compositor.drawClock(c, width, height, p.design, extras, Backdrop(bg, Matrix()), subject, phase = (minute % 60) / 60f, tint = tint)
+                // Ambiente quieto: las partículas quedan en el fotograma (cero gasto extra).
+                if (p.atmosphere.active && !animating()) AtmospherePainter.drawEffect(c, width, height, p.atmosphere, (minute % 60) * 1f)
             }
             return out
         }
@@ -193,9 +220,12 @@ class AuraWallpaperService : WallpaperService() {
         private fun post(bmp: Bitmap?): Boolean {
             if (bmp == null || bmp.isRecycled) return false
             val holder = surfaceHolder
-            val canvas = runCatching { holder.lockCanvas() }.getOrNull() ?: return false
+            val moving = animating()
+            // Con partículas en movimiento se dibuja por GPU (lienzo acelerado): copiar el fotograma es barato.
+            val canvas = runCatching { if (moving) holder.lockHardwareCanvas() else holder.lockCanvas() }.getOrNull() ?: return false
             try {
                 canvas.drawBitmap(bmp, 0f, 0f, null)
+                project?.let { p -> if (moving) AtmospherePainter.drawEffect(canvas, width, height, p.atmosphere, SystemClock.uptimeMillis() / 1000f) }
             } finally {
                 runCatching { holder.unlockCanvasAndPost(canvas) }
             }

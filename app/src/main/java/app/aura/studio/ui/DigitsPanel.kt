@@ -29,6 +29,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -355,4 +357,54 @@ private fun FontTile(sample: String, label: String, family: FontFamily?, on: Boo
             Text(label, style = MaterialTheme.typography.labelSmall, color = Aura.tokens.mutedText, maxLines = 1)
         }
     }
+}
+
+/**
+ * Partículas de Atmosphere animadas sobre la vista previa (solo mientras el editor está visible, a
+ * 30 cuadros por segundo como máximo). La vista previa de fondo se renderiza sin partículas.
+ */
+@Composable
+internal fun AtmosphereOverlay(a: app.aura.core.studio.Atmosphere, area: IntSize) {
+    val time = androidx.compose.runtime.remember { androidx.compose.runtime.mutableFloatStateOf(0f) }
+    if (a.animate) {
+        androidx.compose.runtime.LaunchedEffect(a) {
+            var start = -1L
+            var last = 0L
+            while (true) {
+                androidx.compose.runtime.withFrameMillis { ms ->
+                    if (start < 0) start = ms
+                    if (ms - last >= 33) { last = ms; time.floatValue = (ms - start) / 1000f }
+                }
+            }
+        }
+    }
+    Canvas(Modifier.fillMaxSize()) {
+        if (area.width == 0) return@Canvas
+        val t = time.floatValue
+        drawIntoCanvas { c -> app.aura.studio.render.AtmospherePainter.drawEffect(c.nativeCanvas, size.width.toInt(), size.height.toInt(), a, t) }
+    }
+}
+
+/** Aura Atmosphere y Living: efecto ambiental, intensidad, animación y luz según la hora. */
+@Composable
+internal fun ColumnScope.AtmospherePanel(vm: StudioViewModel, p: StudioProject) {
+    val a = p.atmosphere
+    Text("Efecto ambiental", style = MaterialTheme.typography.bodyMedium)
+    Chips(app.aura.core.studio.AtmosphereEffect.entries.map { it to it.label }, a.effect) { e -> vm.atmosphere { it.copy(effect = e) } }
+    if (a.active) {
+        StudioSlider("Intensidad", a.intensity.toFloat(), 0f..100f, "${a.intensity} %", { v -> vm.atmosphereLive { it.copy(intensity = v.roundToInt()) } }, vm::commit)
+        LabeledRow("Animado en el fondo", supporting = "Se mueve solo con la pantalla a la vista; apagado queda quieto y no gasta batería") {
+            Switch(a.animate, { v -> vm.atmosphere { it.copy(animate = v) } })
+        }
+    }
+    LabeledRow("Luz según la hora", supporting = "Amanecer rosado, hora dorada, atardecer violeta y noche azul (usa la salida y puesta del sol del clima)") {
+        Switch(a.timeLight, { v -> vm.atmosphere { it.copy(timeLight = v) } })
+    }
+    if (a.timeLight) {
+        StudioSlider("Fuerza de la luz", a.timeLightStrength.toFloat(), 0f..100f, "${a.timeLightStrength} %", { v -> vm.atmosphereLive { it.copy(timeLightStrength = v.roundToInt()) } }, vm::commit)
+    }
+    Text(
+        "Con el ahorro de batería del teléfono activado, el fondo animado no mueve las partículas.",
+        style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText, modifier = Modifier.padding(top = 6.dp),
+    )
 }

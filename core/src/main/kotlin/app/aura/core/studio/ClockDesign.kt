@@ -227,6 +227,8 @@ data class StudioProject(
     val autoMask: Boolean = false,
     val strokes: List<MaskStroke> = emptyList(),
     val hasMask: Boolean = false,
+    /** Aura Atmosphere: lluvia, nieve, viento, polvo luminoso, niebla o cenizas, y luz según la hora. */
+    val atmosphere: Atmosphere = Atmosphere(),
 )
 
 object ClockText {
