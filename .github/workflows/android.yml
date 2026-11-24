@@ -72,18 +72,26 @@ jobs:
           git commit -m "APK de Aura (${GITHUB_SHA::7}) [skip ci]" || exit 0
           for i in 1 2 3; do git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && break; sleep 5; done
 
-      - name: Publicar APK en la versión «aura-latest»
+      # Publicación: la versión estable «aura-latest» solo sale de main; cualquier otra rama publica en
+      # su propia versión de prueba («<rama>-test»), así una rama experimental nunca pisa la estable.
+      - name: Publicar APK (estable desde main, de prueba desde otras ramas)
         if: github.event_name == 'push' && steps.signing.outputs.signed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          notes="APK release firmado de Aura. Rama ${GITHUB_REF_NAME}, commit ${GITHUB_SHA::7}, $(date -u '+%Y-%m-%d %H:%M UTC')."
-          if ! gh release view aura-latest > /dev/null 2>&1; then
-            gh release create aura-latest --title "Aura (última versión)" --notes "$notes" --prerelease --target "$GITHUB_SHA"
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            tag=aura-latest; title="Aura (última versión)"
           else
-            gh release edit aura-latest --notes "$notes"
+            tag="$(echo "${GITHUB_REF_NAME}" | tr -c 'A-Za-z0-9._-' '-' | sed 's/-*$//')-test"; title="Aura de prueba (${GITHUB_REF_NAME})"
           fi
-          gh release upload aura-latest dist/Aura.apk --clobber
+          notes="APK release firmado de Aura. Rama ${GITHUB_REF_NAME}, commit ${GITHUB_SHA::7}, $(date -u '+%Y-%m-%d %H:%M UTC')."
+          if ! gh release view "$tag" > /dev/null 2>&1; then
+            gh release create "$tag" --title "$title" --notes "$notes" --prerelease --target "$GITHUB_SHA"
+          else
+            gh release edit "$tag" --notes "$notes"
+          fi
+          gh release upload "$tag" dist/Aura.apk --clobber
+          echo "Descarga: https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/Aura.apk" >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v4
         with:
