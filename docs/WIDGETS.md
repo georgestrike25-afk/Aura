@@ -60,3 +60,20 @@ Perfiles: Aura Minimal, Glass, Dark, Light, Custom y Sky (editables y restableci
 - Cambios de zona horaria/hora/idioma: `SystemChangeReceiver` re-renderiza las etiquetas de horas y días.
 - `updatePeriodMillis=0`: no hay sondeo de Android.
 - Sin conexión: se muestran los últimos datos válidos; a partir de 2× el intervalo (mín. 90 min) aparece «Actualizado hace X»; a partir de 12 h la temperatura se atenúa y se indica «Sin actualizar».
+
+## Widgets meteorológicos (Artistic Evolution)
+
+El reloj vive en el fondo creado con Aura Studio; estos widgets muestran solo el clima. Se agregaron al final
+de `WidgetType` (no cambian los índices de los anteriores): los widgets ya colocados siguen funcionando y los
+clásicos con reloj (Clock, Duo, Forecast, Night) quedan en una sección propia del catálogo.
+
+| Widget | Pequeño | Mediano | Grande |
+|---|---|---|---|
+| Weather (Minimal) | Icono + temperatura | + ubicación, máx./mín., fecha | + condición, mañana |
+| Atmosphere | Icono + temperatura | + condición y lugar (perfil «Aura Sky»: escena del cielo) | + máx./mín., fecha, mañana |
+| Detail | Temperatura + sensación | + sensación, humedad, viento, lluvia | + UV |
+| Hourly | 3 horas con lluvia % | 5 horas | 6 horas |
+| Weekly | 3 días | 5 días con lluvia % | 7 días |
+| Sol (astronómico) | Amanecer y atardecer | + recorrido del sol y horas de luz | + UV y amanecer de mañana |
+
+Cada indicador se muestra solo si el proveedor lo informó. Vista previa en la app: renderizador real (RemoteViews).

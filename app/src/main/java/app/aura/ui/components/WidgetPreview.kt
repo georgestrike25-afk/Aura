@@ -1,5 +1,7 @@
 package app.aura.ui.components
 
+import app.aura.aura
+
 import android.content.Context
 import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -157,6 +160,35 @@ fun previewSize(type: WidgetType, size: SizeClass): Pair<Dp, Dp> = when (type) {
     WidgetType.DUO -> when (size) { SizeClass.SMALL -> 170.dp to 100.dp; SizeClass.MEDIUM -> 320.dp to 100.dp; SizeClass.LARGE -> 320.dp to 190.dp }
     WidgetType.FORECAST -> when (size) { SizeClass.SMALL -> 320.dp to 96.dp; SizeClass.MEDIUM -> 320.dp to 190.dp; SizeClass.LARGE -> 320.dp to 340.dp }
     WidgetType.NIGHT -> when (size) { SizeClass.SMALL -> 170.dp to 96.dp; SizeClass.MEDIUM -> 320.dp to 96.dp; SizeClass.LARGE -> 320.dp to 190.dp }
+    WidgetType.ATMOSPHERE -> when (size) { SizeClass.SMALL -> 96.dp to 110.dp; SizeClass.MEDIUM -> 200.dp to 160.dp; SizeClass.LARGE -> 320.dp to 210.dp }
+    WidgetType.DETAIL -> when (size) { SizeClass.SMALL -> 200.dp to 96.dp; SizeClass.MEDIUM -> 320.dp to 150.dp; SizeClass.LARGE -> 320.dp to 210.dp }
+    WidgetType.HOURLY -> when (size) { SizeClass.SMALL -> 240.dp to 100.dp; SizeClass.MEDIUM -> 320.dp to 160.dp; SizeClass.LARGE -> 340.dp to 190.dp }
+    WidgetType.WEEKLY -> when (size) { SizeClass.SMALL -> 240.dp to 120.dp; SizeClass.MEDIUM -> 300.dp to 230.dp; SizeClass.LARGE -> 300.dp to 330.dp }
+    WidgetType.ASTRO -> when (size) { SizeClass.SMALL -> 150.dp to 100.dp; SizeClass.MEDIUM -> 300.dp to 130.dp; SizeClass.LARGE -> 320.dp to 180.dp }
+}
+
+/**
+ * Vista previa de los widgets meteorológicos nuevos: usa el renderizador real (los mismos RemoteViews
+ * que verá el launcher), así no hay una réplica que pueda desincronizarse.
+ */
+@Composable
+private fun RealWidgetPreview(type: WidgetType, size: SizeClass, style: WidgetStyle, settings: AppSettings, modifier: Modifier) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val (w, h) = previewSize(type, size)
+    val snapshot by androidx.compose.runtime.produceState<app.aura.core.weather.WeatherSnapshot?>(null) {
+        value = context.aura.weather.cached()
+    }
+    androidx.compose.ui.viewinterop.AndroidView(
+        factory = { ctx -> android.widget.FrameLayout(ctx) },
+        update = { frame ->
+            val views = WidgetRenderer(context).renderSize(
+                WidgetRenderer.Request(type, style, snapshot, settings, System.currentTimeMillis(), 0, null), size,
+            )
+            frame.removeAllViews()
+            frame.addView(views.apply(context, frame))
+        },
+        modifier = modifier.size(w, h),
+    )
 }
 
 private fun fontFamily(choice: FontChoice): FontFamily = FontFamily(Typeface.create(choice.androidFamily, Typeface.NORMAL))
@@ -176,6 +208,10 @@ fun WidgetPreview(
     settings: AppSettings,
     modifier: Modifier = Modifier,
 ) {
+    if (!type.classic && type != WidgetType.WEATHER) {
+        RealWidgetPreview(type, size, style.normalized(), settings, modifier)
+        return
+    }
     val s = style.normalized()
     val (w, h) = previewSize(type, size)
     val hero = WidgetSizing.heroSizes(type, size)
@@ -419,6 +455,8 @@ fun WidgetPreview(
                     }
                 }
             }
+            // Los widgets meteorológicos nuevos usan la vista previa real (RealWidgetPreview).
+            else -> Unit
         }
     }
 }

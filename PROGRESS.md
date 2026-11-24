@@ -25,7 +25,7 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
 | 6 | Aura Fonts: familias, nuevas fuentes libres, importar TTF/OTF | hecho (validar en CI) |
 | 7 | Atmosphere y Living: partículas, luz según la hora, desactivable | hecho (validar en CI) |
 | 8 | Aura Signature: galería con catálogo remoto y obras originales | hecho (validar en CI) |
-| 9 | Widgets meteorológicos nuevos + migración | pendiente |
+| 9 | Widgets meteorológicos nuevos + migración | hecho (validar en CI) |
 | 10 | QA final: pruebas, lint, APK firmado, enlace | pendiente |
 
 ## Auditoría inicial (etapa 0)
@@ -79,3 +79,8 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   (`Signature.BASE_URLS`), guarda todo en caché y valida ids/rutas. Pestaña «Signature» (Inicio, Clima,
   Studio, Signature, Widgets); tocar una obra la descarga y crea un proyecto de Studio. Para sumar una
   colección: agregar imágenes y entradas en `signature/catalog.json` (sin actualizar el APK).
+- Etapa 9: 5 tipos nuevos al final de `WidgetType` (ATMOSPHERE, DETAIL, HOURLY, WEEKLY, ASTRO) con
+  composiciones por tamaño en `tools/aura_widgets.py` (480 diseños), receptores, `widget_*_info.xml`,
+  indicadores (sensación, humedad, viento, lluvia, UV; ocultos si no hay dato), horas/días con lluvia %,
+  hasta 7 días, sol con barra de recorrido. Minimal = Aura Weather. Migración: índices intactos, los
+  clásicos siguen y van en «Clásicos con reloj». Vista previa de los nuevos con el renderizador real.

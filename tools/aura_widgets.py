@@ -14,7 +14,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LAYOUT = os.path.join(ROOT, "app", "src", "main", "res", "layout")
 KT = os.path.join(ROOT, "app", "src", "main", "java", "app", "aura", "widget", "WidgetLayouts.kt")
 
-TYPES = ["clock", "weather", "duo", "forecast", "night"]
+TYPES = ["clock", "weather", "duo", "forecast", "night", "atmosphere", "detail", "hourly", "weekly", "astro"]
 SIZES = ["small", "medium", "large"]
 FONTS = [("light", "sans-serif-light"), ("regular", "sans-serif"), ("medium", "sans-serif-medium"),
          ("condensed", "sans-serif-condensed"), ("thin", "sans-serif-thin"), ("black", "sans-serif-black"),
@@ -165,7 +165,7 @@ def tomorrow_inline(c, margin=""):
             + '</LinearLayout></LinearLayout>')
 
 
-def hours(c, n, time_sp=12, icon_dp=24, temp_sp=13, margin_top=10, with_tomorrow=False):
+def hours(c, n, time_sp=12, icon_dp=24, temp_sp=13, margin_top=10, with_tomorrow=False, with_pop=False):
     cells = []
     for i in range(n):
         cells.append(
@@ -174,6 +174,7 @@ def hours(c, n, time_sp=12, icon_dp=24, temp_sp=13, margin_top=10, with_tomorrow
             + text(c, f"w_h{i}_time", time_sp, default=c.sample(f"{14 + i} h", ""))
             + icon(f"w_h{i}_icon", icon_dp, ' android:layout_marginTop="4dp" android:layout_marginBottom="4dp"')
             + text(c, f"w_h{i}_temp", temp_sp, default=c.sample(f"{21 - i}°", ""))
+            + (text(c, f"w_h{i}_pop", max(10, time_sp - 1), default=c.sample(f"{10 * i} %", ""), extra=MT.format(2)) if with_pop else "")
             + '</LinearLayout>')
     if with_tomorrow:
         cells.append(tomorrow_cell(c, time_sp, icon_dp, max(11, temp_sp - 1)))
@@ -182,19 +183,56 @@ def hours(c, n, time_sp=12, icon_dp=24, temp_sp=13, margin_top=10, with_tomorrow
             + "".join(cells) + '</LinearLayout>')
 
 
-def days(c, n):
+def days(c, n, with_pop=False, name_sp=14, gap=6):
+    names = ["Hoy", "jue", "vie", "sáb", "dom", "lun", "mar"]
     rows = []
     for i in range(n):
         rows.append(
             f'<LinearLayout android:id="@+id/w_d{i}" android:layout_width="match_parent" android:layout_height="wrap_content"'
-            f' android:layout_marginTop="6dp" android:orientation="horizontal" android:gravity="center_vertical">'
-            + text(c, f"w_d{i}_name", 14, default=c.sample(["Hoy", "jue", "vie", "sáb", "dom"][i], ""),
+            f' android:layout_marginTop="{gap}dp" android:orientation="horizontal" android:gravity="center_vertical">'
+            + text(c, f"w_d{i}_name", name_sp, default=c.sample(names[i], ""),
                    width="0dp", extra=' android:layout_weight="1"')
+            + (text(c, f"w_d{i}_pop", name_sp - 2, default=c.sample(f"{15 * i} %", ""), extra=' android:minWidth="40dp" android:gravity="end"') if with_pop else "")
             + icon(f"w_d{i}_icon", 22, ' android:layout_marginStart="8dp" android:layout_marginEnd="12dp"')
-            + text(c, f"w_d{i}_range", 14, default=c.sample(f"{24 - i}° / {14 - i}°", ""), extra=' android:minWidth="72dp" android:gravity="end"')
+            + text(c, f"w_d{i}_range", name_sp, default=c.sample(f"{24 - i}° / {14 - i}°", ""), extra=' android:minWidth="72dp" android:gravity="end"')
             + '</LinearLayout>')
     return (f'<LinearLayout android:id="@+id/w_days" android:layout_width="match_parent" android:layout_height="wrap_content"'
             f' android:orientation="vertical">' + "".join(rows) + '</LinearLayout>')
+
+
+# Indicadores (Aura Detail): etiqueta fija + valor que completa el renderizador.
+INDICATORS = {
+    "feels": "Sensación", "humidity": "Humedad", "wind": "Viento", "rain": "Lluvia", "uv": "UV",
+}
+
+
+def indicator(c, key, value_sp=16, weighted=True):
+    width = 'android:layout_width="0dp" android:layout_weight="1"' if weighted else 'android:layout_width="wrap_content"'
+    samples = {"feels": "22°", "humidity": "54 %", "wind": "12 km/h", "rain": "20 %", "uv": "7"}
+    return (f'<LinearLayout android:id="@+id/w_ind_{key}" {width} android:layout_height="wrap_content"'
+            f' android:orientation="vertical" android:paddingTop="4dp" android:paddingBottom="4dp">'
+            + text(c, f"w_ind_{key}_label", 11, default=INDICATORS[key])
+            + text(c, f"w_ind_{key}_value", value_sp, default=c.sample(samples[key], "—"), bold=True)
+            + '</LinearLayout>')
+
+
+def indicator_grid(c, rows_of_keys, value_sp=16, margin_top=10):
+    rows = []
+    for i, keys in enumerate(rows_of_keys):
+        rows.append(row(f"w_ind_row{i}", [indicator(c, k, value_sp) for k in keys], width="match_parent"))
+    return col("w_indicators", rows, extra=MT.format(margin_top), width="match_parent")
+
+
+def sun_block(c, big=False):
+    """Amanecer y atardecer con barra del recorrido del sol y duración del día."""
+    sp = 22 if big else 18
+    bar = ('<ProgressBar android:id="@+id/w_sunbar" style="@android:style/Widget.Material.ProgressBar.Horizontal"'
+           ' android:layout_width="match_parent" android:layout_height="6dp" android:layout_marginTop="8dp"'
+           ' android:max="100" android:progress="45" android:progressTint="#FFD8BA8B" android:progressBackgroundTint="#66EDE9E1" />')
+    left = col("w_sun_left", [text(c, "w_sunrise_label", 11, default="Amanecer"), text(c, "w_sunrise", sp, default=c.sample("06:12", "—"), bold=True)])
+    right = col("w_sun_right", [text(c, "w_sunset_label", 11, default="Atardecer"), text(c, "w_sunset", sp, default=c.sample("19:48", "—"), bold=True)], gravity="end")
+    return col("w_sun", [row("w_sun_row", [left, flex(), right], width="match_parent"), bar,
+                         text(c, "w_daylight", 12, default=c.sample("13 h 36 min de luz", ""), extra=MT.format(6))], width="match_parent")
 
 
 def spacer_w(dp):
@@ -269,6 +307,51 @@ def composition(t, s, c):
         return "vertical", [clock_row(c, 80), date(c, 15, 4),
                             row("w_wx_row", [icon("w_icon", 22), spacer_w(8), temp(c, 22), condition(c, 13, ML.format(10))],
                                 extra=MT.format(12))]
+    if t == "atmosphere":
+        # Pensado para el fondo «escena» con iconos 3D: temperatura grande y condición.
+        if s == "small":
+            return "vertical", [icon("w_icon", 34), temp(c, 26).replace('/>', ' android:layout_marginTop="2dp" />', 1)]
+        if s == "medium":
+            return "vertical", [row("w_wx_row", [icon("w_icon", 44), spacer_w(10), temp(c, 44)]),
+                                condition(c, 14, MT.format(6)), place(c, 12, MT.format(2)), status(c)]
+        return "vertical", [row("w_wx_row", [icon("w_icon", 60), spacer_w(14), temp(c, 60), flex(),
+                                             tomorrow_cell(c, 11, 26, 12, weighted=False)], width="match_parent"),
+                            condition(c, 16, MT.format(8)), text(c, "w_meta", 13, default=c.sample("Madrid · 24° / 14°", ""), extra=MT.format(2)),
+                            date(c, 12, 4), status(c)]
+    if t == "detail":
+        head = row("w_wx_row", [icon("w_icon", 30 if s != "large" else 36), spacer_w(8), temp(c, 34 if s != "large" else 40),
+                                col("w_col", [condition(c, 13), text(c, "w_meta", 12, default=c.sample("Madrid · 24° / 14°", ""), extra=MT.format(2))],
+                                    extra=ML.format(10), width="0dp", weight="1")], width="match_parent")
+        if s == "small":
+            return "horizontal", [temp(c, 28), col("w_col", [condition(c, 12), indicator(c, "feels", 13, weighted=False)], extra=ML.format(10))]
+        if s == "medium":
+            return "vertical", [head, indicator_grid(c, [["feels", "humidity", "wind", "rain"]], 15, 8)]
+        return "vertical", [head, indicator_grid(c, [["feels", "humidity", "wind"], ["rain", "uv"]], 17, 12), status(c)]
+    if t == "hourly":
+        if s == "small":
+            return "vertical", [hours(c, 3, 11, 20, 12, 0, with_pop=True)]
+        if s == "medium":
+            return "vertical", [row("w_wx_row", [icon("w_icon", 22), spacer_w(6), temp(c, 26), place(c, 12, ML.format(10))]),
+                                hours(c, 5, with_pop=True, margin_top=8)]
+        return "vertical", [row("w_wx_row", [icon("w_icon", 26), spacer_w(8), temp(c, 28), condition(c, 13, ML.format(10))]),
+                            hours(c, 6, 13, 28, 15, 12, with_pop=True), status(c)]
+    if t == "weekly":
+        if s == "small":
+            return "vertical", [days(c, 3, with_pop=False, name_sp=13, gap=2)]
+        if s == "medium":
+            return "vertical", [row("w_wx_row", [icon("w_icon", 22), spacer_w(6), temp(c, 26), place(c, 12, ML.format(10))]),
+                                days(c, 5, with_pop=True, name_sp=13, gap=4)]
+        return "vertical", [row("w_wx_row", [icon("w_icon", 26), spacer_w(8), temp(c, 28), place(c, 13, ML.format(10))]),
+                            days(c, 7, with_pop=True, name_sp=14, gap=6), status(c)]
+    if t == "astro":
+        if s == "small":
+            return "vertical", [text(c, "w_sunrise_label", 11, default="Amanecer"), text(c, "w_sunrise", 20, default=c.sample("06:12", "—"), bold=True),
+                                text(c, "w_sunset", 13, default=c.sample("↓ 19:48", ""), extra=MT.format(2))]
+        if s == "medium":
+            return "vertical", [sun_block(c)]
+        return "vertical", [sun_block(c, big=True),
+                            row("w_astro_more", [indicator(c, "uv", 16), text(c, "w_sunrise_next", 12, default=c.sample("Mañana amanece 06:11", ""), width="0dp", extra=' android:layout_weight="1" android:gravity="end"')],
+                                extra=MT.format(10), width="match_parent")]
     raise ValueError(t)
 
 

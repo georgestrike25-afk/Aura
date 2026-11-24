@@ -65,6 +65,26 @@
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_forecast_info" />
         </receiver>
+        <receiver android:name=".widget.AtmosphereWidgetReceiver" android:exported="true" android:label="@string/widget_atmosphere_name">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_atmosphere_info" />
+        </receiver>
+        <receiver android:name=".widget.DetailWidgetReceiver" android:exported="true" android:label="@string/widget_detail_name">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_detail_info" />
+        </receiver>
+        <receiver android:name=".widget.HourlyWidgetReceiver" android:exported="true" android:label="@string/widget_hourly_name">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_hourly_info" />
+        </receiver>
+        <receiver android:name=".widget.WeeklyWidgetReceiver" android:exported="true" android:label="@string/widget_weekly_name">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_weekly_info" />
+        </receiver>
+        <receiver android:name=".widget.AstroWidgetReceiver" android:exported="true" android:label="@string/widget_astro_name">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_astro_info" />
+        </receiver>
         <receiver android:name=".widget.NightWidgetReceiver" android:exported="true" android:label="@string/widget_night_name">
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_night_info" />

@@ -8,6 +8,18 @@ enum class WidgetType(val displayName: String, val defaultProfile: ProfileId, va
     DUO("Aura Duo", ProfileId.MINIMAL, showsClock = true, showsWeather = true),
     FORECAST("Aura Forecast", ProfileId.GLASS, showsClock = true, showsWeather = true),
     NIGHT("Aura Night", ProfileId.MINIMAL, showsClock = true, showsWeather = true),
+
+    // Widgets meteorológicos (el reloj vive en el fondo de Aura Studio). Se agregan al final para no
+    // cambiar la posición de los anteriores: los widgets ya colocados siguen funcionando igual.
+    ATMOSPHERE("Aura Atmosphere", ProfileId.SKY, showsClock = false, showsWeather = true),
+    DETAIL("Aura Detail", ProfileId.GLASS, showsClock = false, showsWeather = true),
+    HOURLY("Aura Hourly", ProfileId.MINIMAL, showsClock = false, showsWeather = true),
+    WEEKLY("Aura Weekly", ProfileId.GLASS, showsClock = false, showsWeather = true),
+    ASTRO("Aura Sol", ProfileId.MINIMAL, showsClock = false, showsWeather = true),
+    ;
+
+    /** Widgets con reloj de la primera versión: se mantienen para quienes ya los usan. */
+    val classic: Boolean get() = showsClock
 }
 
 enum class SizeClass { SMALL, MEDIUM, LARGE }
@@ -26,6 +38,11 @@ object WidgetSizing {
         WidgetType.DUO -> listOf(bp(SizeClass.SMALL, 100, 40), bp(SizeClass.MEDIUM, 220, 40), bp(SizeClass.LARGE, 220, 140))
         WidgetType.FORECAST -> listOf(bp(SizeClass.SMALL, 160, 40), bp(SizeClass.MEDIUM, 200, 120), bp(SizeClass.LARGE, 200, 230))
         WidgetType.NIGHT -> listOf(bp(SizeClass.SMALL, 100, 40), bp(SizeClass.MEDIUM, 200, 40), bp(SizeClass.LARGE, 200, 140))
+        WidgetType.ATMOSPHERE -> listOf(bp(SizeClass.SMALL, 40, 40), bp(SizeClass.MEDIUM, 140, 90), bp(SizeClass.LARGE, 220, 150))
+        WidgetType.DETAIL -> listOf(bp(SizeClass.SMALL, 100, 40), bp(SizeClass.MEDIUM, 220, 90), bp(SizeClass.LARGE, 220, 170))
+        WidgetType.HOURLY -> listOf(bp(SizeClass.SMALL, 140, 40), bp(SizeClass.MEDIUM, 220, 90), bp(SizeClass.LARGE, 300, 120))
+        WidgetType.WEEKLY -> listOf(bp(SizeClass.SMALL, 140, 90), bp(SizeClass.MEDIUM, 200, 170), bp(SizeClass.LARGE, 200, 260))
+        WidgetType.ASTRO -> listOf(bp(SizeClass.SMALL, 100, 40), bp(SizeClass.MEDIUM, 200, 90), bp(SizeClass.LARGE, 220, 150))
     }
 
     /** La composición más grande cuyo mínimo cabe en el tamaño dado; si ninguna cabe, la menor. */
@@ -63,16 +80,48 @@ object WidgetSizing {
             SizeClass.MEDIUM -> Hero(time = 56, temperature = 20)
             SizeClass.LARGE -> Hero(time = 80, temperature = 22)
         }
+        WidgetType.ATMOSPHERE -> when (size) {
+            SizeClass.SMALL -> Hero(time = 0, temperature = 26)
+            SizeClass.MEDIUM -> Hero(time = 0, temperature = 44)
+            SizeClass.LARGE -> Hero(time = 0, temperature = 60)
+        }
+        WidgetType.DETAIL -> when (size) {
+            SizeClass.SMALL -> Hero(time = 0, temperature = 28)
+            SizeClass.MEDIUM -> Hero(time = 0, temperature = 34)
+            SizeClass.LARGE -> Hero(time = 0, temperature = 40)
+        }
+        WidgetType.HOURLY, WidgetType.WEEKLY -> when (size) {
+            SizeClass.SMALL -> Hero(time = 0, temperature = 22)
+            SizeClass.MEDIUM -> Hero(time = 0, temperature = 26)
+            SizeClass.LARGE -> Hero(time = 0, temperature = 28)
+        }
+        WidgetType.ASTRO -> Hero(time = 0, temperature = 0)
     }
 
     fun scaled(baseSp: Int, scalePercent: Int): Float = baseSp * scalePercent / 100f
 
-    /** Número de columnas horarias y filas diarias que muestra Aura Forecast. */
-    fun forecastSlots(size: SizeClass): Pair<Int, Int> = when (size) {
-        SizeClass.SMALL -> 3 to 0
-        SizeClass.MEDIUM -> 5 to 0
-        SizeClass.LARGE -> 6 to 5
+    /** Número de columnas horarias y filas diarias de cada widget con pronóstico (0 = no tiene). */
+    fun forecastSlots(type: WidgetType, size: SizeClass): Pair<Int, Int> = when (type) {
+        WidgetType.FORECAST -> when (size) {
+            SizeClass.SMALL -> 3 to 0
+            SizeClass.MEDIUM -> 5 to 0
+            SizeClass.LARGE -> 6 to 5
+        }
+        WidgetType.HOURLY -> when (size) {
+            SizeClass.SMALL -> 3 to 0
+            SizeClass.MEDIUM -> 5 to 0
+            SizeClass.LARGE -> 6 to 0
+        }
+        WidgetType.WEEKLY -> when (size) {
+            SizeClass.SMALL -> 0 to 3
+            SizeClass.MEDIUM -> 0 to 5
+            SizeClass.LARGE -> 0 to 7
+        }
+        else -> 0 to 0
     }
+
+    /** Compatibilidad: Aura Forecast. */
+    fun forecastSlots(size: SizeClass): Pair<Int, Int> = forecastSlots(WidgetType.FORECAST, size)
 
     data class Hero(val time: Int, val temperature: Int)
 }

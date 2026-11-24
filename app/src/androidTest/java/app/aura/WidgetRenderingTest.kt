@@ -171,6 +171,27 @@ class WidgetRenderingTest {
     }
 
     @Test
+    fun newWeatherWidgetsRenderInEverySize() {
+        val sizes = mapOf(SizeClass.SMALL to (200 to 110), SizeClass.MEDIUM to (320 to 170), SizeClass.LARGE to (340 to 340))
+        listOf(WidgetType.ATMOSPHERE, WidgetType.DETAIL, WidgetType.HOURLY, WidgetType.WEEKLY, WidgetType.ASTRO).forEach { type ->
+            sizes.forEach { (size, d) ->
+                val (view, bmp) = inflate(type, size, app.aura.core.style.Profiles.MINIMAL, d.first, d.second)
+                save("new_${type.name.lowercase()}_${size.name.lowercase()}", bmp)
+                assertTrue("$type $size vacío", view.width > 0)
+            }
+        }
+        // Datos reales donde la composición los muestra.
+        val (hourly, _) = inflate(WidgetType.HOURLY, SizeClass.MEDIUM, Profiles.MINIMAL, 320, 170)
+        assertTrue(hourly.findViewById<TextView>(R.id.w_h1_temp).text.toString().endsWith("°"))
+        val (weekly, _) = inflate(WidgetType.WEEKLY, SizeClass.LARGE, Profiles.MINIMAL, 340, 340)
+        assertEquals(View.VISIBLE, weekly.findViewById<View>(R.id.w_d6).visibility)
+        val (astro, _) = inflate(WidgetType.ASTRO, SizeClass.MEDIUM, Profiles.MINIMAL, 320, 170)
+        assertTrue(astro.findViewById<TextView>(R.id.w_sunrise).text.matches(Regex(".*\\d{1,2}:\\d{2}.*")))
+        val (detail, _) = inflate(WidgetType.DETAIL, SizeClass.LARGE, Profiles.MINIMAL, 340, 340)
+        assertTrue(detail.findViewById<TextView>(R.id.w_ind_humidity_value).text.toString().endsWith("%"))
+    }
+
+    @Test
     fun weatherIconIsAnimatedUnlessTurnedOff() {
         val (view, _) = inflate(WidgetType.WEATHER, SizeClass.MEDIUM, Profiles.MINIMAL, 220, 96)
         val ids = listOf(R.id.w_anim_sparkle, R.id.w_anim_stars, R.id.w_anim_cloud, R.id.w_anim_rain, R.id.w_anim_storm, R.id.w_anim_snow, R.id.w_anim_mist)

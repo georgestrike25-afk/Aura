@@ -53,6 +53,11 @@ class WeatherWidgetReceiver : AuraWidgetProvider(WidgetType.WEATHER)
 class DuoWidgetReceiver : AuraWidgetProvider(WidgetType.DUO)
 class ForecastWidgetReceiver : AuraWidgetProvider(WidgetType.FORECAST)
 class NightWidgetReceiver : AuraWidgetProvider(WidgetType.NIGHT)
+class AtmosphereWidgetReceiver : AuraWidgetProvider(WidgetType.ATMOSPHERE)
+class DetailWidgetReceiver : AuraWidgetProvider(WidgetType.DETAIL)
+class HourlyWidgetReceiver : AuraWidgetProvider(WidgetType.HOURLY)
+class WeeklyWidgetReceiver : AuraWidgetProvider(WidgetType.WEEKLY)
+class AstroWidgetReceiver : AuraWidgetProvider(WidgetType.ASTRO)
 
 /** Re-renderiza los widgets cuando cambian la zona horaria, la hora o el idioma del sistema. */
 class SystemChangeReceiver : BroadcastReceiver() {

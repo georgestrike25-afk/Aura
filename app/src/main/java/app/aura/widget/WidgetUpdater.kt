@@ -66,6 +66,11 @@ class WidgetUpdater(
             WidgetType.DUO -> DuoWidgetReceiver::class.java
             WidgetType.FORECAST -> ForecastWidgetReceiver::class.java
             WidgetType.NIGHT -> NightWidgetReceiver::class.java
+            WidgetType.ATMOSPHERE -> AtmosphereWidgetReceiver::class.java
+            WidgetType.DETAIL -> DetailWidgetReceiver::class.java
+            WidgetType.HOURLY -> HourlyWidgetReceiver::class.java
+            WidgetType.WEEKLY -> WeeklyWidgetReceiver::class.java
+            WidgetType.ASTRO -> AstroWidgetReceiver::class.java
         }
     }
 }

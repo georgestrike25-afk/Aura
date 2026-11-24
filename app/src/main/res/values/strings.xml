@@ -13,6 +13,16 @@
     <string name="widget_forecast_name">Aura Forecast</string>
     <string name="widget_forecast_desc">Hora, clima actual y evolución de las próximas horas y días.</string>
     <string name="widget_night_name">Aura Night</string>
+    <string name="widget_atmosphere_name">Aura Atmosphere</string>
+    <string name="widget_atmosphere_desc">Clima grande con escena del cielo e iconos 3D; transparente o con fondo.</string>
+    <string name="widget_detail_name">Aura Detail</string>
+    <string name="widget_detail_desc">Clima con indicadores: sensación térmica, humedad, viento, lluvia e índice UV.</string>
+    <string name="widget_hourly_name">Aura Hourly</string>
+    <string name="widget_hourly_desc">Próximas horas con temperatura y probabilidad de lluvia.</string>
+    <string name="widget_weekly_name">Aura Weekly</string>
+    <string name="widget_weekly_desc">Pronóstico de la semana con máximas, mínimas y lluvia.</string>
+    <string name="widget_astro_name">Aura Sol</string>
+    <string name="widget_astro_desc">Amanecer, atardecer, duración del día y recorrido del sol.</string>
     <string name="widget_night_desc">Reloj nocturno de baja distracción con condición y temperatura.</string>
 
     <!-- Estados del widget -->

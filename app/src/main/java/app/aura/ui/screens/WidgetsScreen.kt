@@ -54,10 +54,15 @@ import app.aura.ui.theme.Aura
 
 private fun description(type: WidgetType) = when (type) {
     WidgetType.CLOCK -> "Hora grande, fecha opcional. Transparente por defecto."
-    WidgetType.WEATHER -> "Icono y temperatura; ubicación y máx./mín. opcionales."
+    WidgetType.WEATHER -> "Minimal: icono y temperatura; ubicación, máx./mín. y fecha opcionales."
     WidgetType.DUO -> "El principal: hora, temperatura, icono y ubicación."
     WidgetType.FORECAST -> "Clima actual y próximas horas; días en tamaño grande."
     WidgetType.NIGHT -> "Reloj nocturno de baja distracción."
+    WidgetType.ATMOSPHERE -> "Clima grande con escena del cielo e iconos 3D."
+    WidgetType.DETAIL -> "Sensación térmica, humedad, viento, lluvia e índice UV."
+    WidgetType.HOURLY -> "Próximas horas con temperatura y lluvia."
+    WidgetType.WEEKLY -> "La semana: máximas, mínimas y lluvia por día."
+    WidgetType.ASTRO -> "Amanecer, atardecer y recorrido del sol."
 }
 
 @Composable
@@ -94,7 +99,11 @@ fun WidgetsScreen(viewModel: AuraViewModel, onCustomize: (WidgetType, Int?) -> U
             }
             item { SectionTitle("Catálogo") }
         }
-        items(WidgetType.entries.toList(), key = { it.name }) { type ->
+        // Primero los widgets de clima (el reloj vive en el fondo de Studio); después los clásicos con reloj.
+        val ordered = WidgetType.entries.sortedBy { it.classic }
+        val firstClassic = ordered.firstOrNull { it.classic }
+        items(ordered, key = { it.name }) { type ->
+            if (type == firstClassic) SectionTitle("Clásicos con reloj")
             val size = sizes[type] ?: SizeClass.MEDIUM
             val style = SettingsRepository.defaultStyleFor(type, profiles.getValue(type.defaultProfile), customized = false)
             AuraCard(padding = 16) {

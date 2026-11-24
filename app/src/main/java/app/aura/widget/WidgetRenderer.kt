@@ -33,6 +33,7 @@ import app.aura.ui.MainActivity
 import app.aura.ui.WeatherText
 import app.aura.ui.icons.WeatherIcons
 import java.time.Instant
+import kotlin.math.roundToInt
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -147,6 +148,10 @@ class WidgetRenderer(private val context: Context) {
         HOUR_TEMP.forEach { v.setTextColor(it, primary) }
         DAY_NAME.forEach { v.setTextColor(it, secondary) }
         DAY_RANGE.forEach { v.setTextColor(it, primary) }
+        DAY_POP.forEach { v.setTextColor(it, secondary) }
+        HOUR_POP.forEach { v.setTextColor(it, secondary) }
+        INDICATOR_TEXT.forEach { v.setTextColor(it, primary) }
+        INDICATOR_LABEL.forEach { v.setTextColor(it, secondary) }
         v.setInt(R.id.w_divider, "setColorFilter", ColorMath.opaque(style.textColor))
         v.setInt(R.id.w_divider, "setImageAlpha", 70)
     }
@@ -214,7 +219,7 @@ class WidgetRenderer(private val context: Context) {
             v.setTextViewText(R.id.w_temp, "—°")
             v.setViewVisibility(R.id.w_icon, View.GONE)
             setTextOrGone(v, R.id.w_place, context.getString(if (r.settings.activePlace == null) R.string.widget_no_place else R.string.widget_no_data))
-            listOf(R.id.w_hilo, R.id.w_condition, R.id.w_status, R.id.w_meta, R.id.w_hours, R.id.w_days, R.id.w_divider, R.id.w_tomorrow)
+            listOf(R.id.w_hilo, R.id.w_condition, R.id.w_status, R.id.w_meta, R.id.w_hours, R.id.w_days, R.id.w_divider, R.id.w_tomorrow, R.id.w_indicators, R.id.w_sun)
                 .forEach { v.setViewVisibility(it, View.GONE) }
             return
         }
@@ -261,12 +266,14 @@ class WidgetRenderer(private val context: Context) {
         }
         setTextOrGone(v, R.id.w_status, status.takeIf { size != SizeClass.SMALL })
 
-        if (r.type == WidgetType.FORECAST) applyForecast(v, r, style, size, snap, zone)
+        if (WidgetSizing.forecastSlots(r.type, size) != (0 to 0)) applyForecast(v, r, style, size, snap, zone)
         applyTomorrow(v, r, style, snap, zone)
+        if (r.type == WidgetType.DETAIL || r.type == WidgetType.ASTRO) applyIndicators(v, r, snap, zone)
+        if (r.type == WidgetType.ASTRO) applyAstro(v, r, style, size, snap, zone)
     }
 
     private fun applyForecast(v: RemoteViews, r: Request, style: WidgetStyle, size: SizeClass, snap: WeatherSnapshot, zone: ZoneId) {
-        val (hourCount, dayCount) = WidgetSizing.forecastSlots(size)
+        val (hourCount, dayCount) = WidgetSizing.forecastSlots(r.type, size)
         val unit = r.settings.temperatureUnit
         val format = if (style.hourFormat != HourFormat.SYSTEM) style.hourFormat else r.settings.hourFormat
         val is24 = ClockPatterns.is24(format, DateFormat.is24HourFormat(context))
@@ -283,6 +290,7 @@ class WidgetRenderer(private val context: Context) {
             else hourFormatter.format(Instant.ofEpochSecond(point.time).atZone(zone))
             v.setTextViewText(HOUR_TIME[i], label)
             v.setTextViewText(HOUR_TEMP[i], TemperatureFormatter.short(point.temperatureC, unit))
+            v.setTextViewText(HOUR_POP[i], point.precipitationProbability?.let { "$it %" } ?: "")
             setIcon(v, HOUR_ICON[i], HOUR_BASE[i], HOUR_ACCENT[i], HOUR_3D[i], point.condition, style)
             v.setContentDescription(HOUR_ICON[i], WeatherText.condition(context, point.condition))
         }
@@ -302,11 +310,67 @@ class WidgetRenderer(private val context: Context) {
             else dayFormatter.format(date).replaceFirstChar { it.titlecase(Locale.getDefault()) }
             v.setTextViewText(DAY_NAME[i], name)
             v.setTextViewText(DAY_RANGE[i], TemperatureFormatter.range(day.maxC, day.minC, unit))
+            v.setTextViewText(DAY_POP[i], day.precipitationProbabilityMax?.takeIf { it >= 10 }?.let { "$it %" } ?: "")
             setIcon(v, DAY_ICON[i], DAY_BASE[i], DAY_ACCENT[i], DAY_3D[i], day.condition, style)
             v.setContentDescription(DAY_ICON[i], WeatherText.condition(context, day.condition))
         }
         v.setViewVisibility(R.id.w_days, if (days.isEmpty() || dayCount == 0) View.GONE else View.VISIBLE)
         v.setViewVisibility(R.id.w_divider, if (days.isEmpty() || dayCount == 0) View.GONE else View.VISIBLE)
+    }
+
+    /**
+     * Indicadores de Aura Detail (y el UV de Aura Sol). Cada uno se muestra solo si el proveedor lo
+     * informó: nunca se inventa un valor.
+     */
+    private fun applyIndicators(v: RemoteViews, r: Request, snap: WeatherSnapshot, zone: ZoneId) {
+        val c = snap.data.current
+        val today = ForecastSlots.todayRange(snap.data.daily, LocalDate.now(zone))
+        val values = mapOf(
+            R.id.w_ind_feels to (R.id.w_ind_feels_value to c.apparentTemperatureC?.let { TemperatureFormatter.short(it, r.settings.temperatureUnit) }),
+            R.id.w_ind_humidity to (R.id.w_ind_humidity_value to c.humidityPercent?.let { "$it %" }),
+            R.id.w_ind_wind to (R.id.w_ind_wind_value to c.windSpeedKmh?.let { "${it.roundToInt()} km/h" }),
+            R.id.w_ind_rain to (R.id.w_ind_rain_value to c.precipitationProbability?.let { "$it %" }),
+            R.id.w_ind_uv to (R.id.w_ind_uv_value to today?.uvIndexMax?.let { "${it.roundToInt()}" }),
+        )
+        values.forEach { (box, pair) ->
+            val (valueId, text) = pair
+            if (text == null) {
+                v.setViewVisibility(box, View.GONE)
+            } else {
+                v.setViewVisibility(box, View.VISIBLE)
+                v.setTextViewText(valueId, text)
+            }
+        }
+    }
+
+    /** Aura Sol: amanecer, atardecer, recorrido del sol, horas de luz y amanecer de mañana. */
+    private fun applyAstro(v: RemoteViews, r: Request, style: WidgetStyle, size: SizeClass, snap: WeatherSnapshot, zone: ZoneId) {
+        val todayDate = LocalDate.now(zone)
+        val today = ForecastSlots.todayRange(snap.data.daily, todayDate)
+        val tomorrow = ForecastSlots.tomorrow(snap.data.daily, todayDate)
+        val rise = today?.sunrise
+        val set = today?.sunset
+        if (rise == null || set == null) {
+            v.setViewVisibility(R.id.w_sun, View.GONE)
+            setTextOrGone(v, R.id.w_sunrise, context.getString(R.string.widget_no_data))
+            return
+        }
+        val format = if (style.hourFormat != HourFormat.SYSTEM) style.hourFormat else r.settings.hourFormat
+        val is24 = ClockPatterns.is24(format, DateFormat.is24HourFormat(context))
+        val fmt = DateTimeFormatter.ofPattern(if (is24) "HH:mm" else "h:mm a", Locale.getDefault())
+        fun clock(epoch: Long) = fmt.format(Instant.ofEpochSecond(epoch).atZone(zone))
+        v.setTextViewText(R.id.w_sunrise, clock(rise))
+        v.setTextViewText(R.id.w_sunset, if (size == SizeClass.SMALL) "Atardecer ${clock(set)}" else clock(set))
+        val minutes = (set - rise) / 60
+        v.setTextViewText(R.id.w_daylight, "${minutes / 60} h ${minutes % 60} min de luz")
+        val now = r.nowMillis / 1000
+        val progress = when {
+            now <= rise -> 0
+            now >= set -> 100
+            else -> ((now - rise) * 100 / (set - rise)).toInt()
+        }
+        v.setProgressBar(R.id.w_sunbar, 100, progress, false)
+        setTextOrGone(v, R.id.w_sunrise_next, tomorrow?.sunrise?.let { "Mañana amanece ${clock(it)}" })
     }
 
     /** Bloque «Mañana»: condición, máxima y mínima del día siguiente (solo donde la composición lo incluye). */
@@ -437,14 +501,26 @@ class WidgetRenderer(private val context: Context) {
         private val HOUR_3D = intArrayOf(
             R.id.w_h0_icon_3d, R.id.w_h1_icon_3d, R.id.w_h2_icon_3d, R.id.w_h3_icon_3d, R.id.w_h4_icon_3d, R.id.w_h5_icon_3d,
         )
-        private val DAY_3D = intArrayOf(R.id.w_d0_icon_3d, R.id.w_d1_icon_3d, R.id.w_d2_icon_3d, R.id.w_d3_icon_3d, R.id.w_d4_icon_3d)
-        private val DAY_ROW = intArrayOf(R.id.w_d0, R.id.w_d1, R.id.w_d2, R.id.w_d3, R.id.w_d4)
-        private val DAY_NAME = intArrayOf(R.id.w_d0_name, R.id.w_d1_name, R.id.w_d2_name, R.id.w_d3_name, R.id.w_d4_name)
-        private val DAY_RANGE = intArrayOf(R.id.w_d0_range, R.id.w_d1_range, R.id.w_d2_range, R.id.w_d3_range, R.id.w_d4_range)
-        private val DAY_ICON = intArrayOf(R.id.w_d0_icon, R.id.w_d1_icon, R.id.w_d2_icon, R.id.w_d3_icon, R.id.w_d4_icon)
-        private val DAY_BASE = intArrayOf(R.id.w_d0_icon_base, R.id.w_d1_icon_base, R.id.w_d2_icon_base, R.id.w_d3_icon_base, R.id.w_d4_icon_base)
+        private val DAY_3D = intArrayOf(R.id.w_d0_icon_3d, R.id.w_d1_icon_3d, R.id.w_d2_icon_3d, R.id.w_d3_icon_3d, R.id.w_d4_icon_3d, R.id.w_d5_icon_3d, R.id.w_d6_icon_3d)
+        private val DAY_ROW = intArrayOf(R.id.w_d0, R.id.w_d1, R.id.w_d2, R.id.w_d3, R.id.w_d4, R.id.w_d5, R.id.w_d6)
+        private val DAY_NAME = intArrayOf(R.id.w_d0_name, R.id.w_d1_name, R.id.w_d2_name, R.id.w_d3_name, R.id.w_d4_name, R.id.w_d5_name, R.id.w_d6_name)
+        private val DAY_RANGE = intArrayOf(R.id.w_d0_range, R.id.w_d1_range, R.id.w_d2_range, R.id.w_d3_range, R.id.w_d4_range, R.id.w_d5_range, R.id.w_d6_range)
+        private val DAY_POP = intArrayOf(R.id.w_d0_pop, R.id.w_d1_pop, R.id.w_d2_pop, R.id.w_d3_pop, R.id.w_d4_pop, R.id.w_d5_pop, R.id.w_d6_pop)
+        private val DAY_ICON = intArrayOf(R.id.w_d0_icon, R.id.w_d1_icon, R.id.w_d2_icon, R.id.w_d3_icon, R.id.w_d4_icon, R.id.w_d5_icon, R.id.w_d6_icon)
+        private val DAY_BASE = intArrayOf(
+            R.id.w_d0_icon_base, R.id.w_d1_icon_base, R.id.w_d2_icon_base, R.id.w_d3_icon_base, R.id.w_d4_icon_base, R.id.w_d5_icon_base, R.id.w_d6_icon_base,
+        )
         private val DAY_ACCENT = intArrayOf(
-            R.id.w_d0_icon_accent, R.id.w_d1_icon_accent, R.id.w_d2_icon_accent, R.id.w_d3_icon_accent, R.id.w_d4_icon_accent,
+            R.id.w_d0_icon_accent, R.id.w_d1_icon_accent, R.id.w_d2_icon_accent, R.id.w_d3_icon_accent, R.id.w_d4_icon_accent, R.id.w_d5_icon_accent, R.id.w_d6_icon_accent,
+        )
+        private val HOUR_POP = intArrayOf(R.id.w_h0_pop, R.id.w_h1_pop, R.id.w_h2_pop, R.id.w_h3_pop, R.id.w_h4_pop, R.id.w_h5_pop)
+        private val INDICATOR_TEXT = intArrayOf(
+            R.id.w_ind_feels_value, R.id.w_ind_humidity_value, R.id.w_ind_wind_value, R.id.w_ind_rain_value, R.id.w_ind_uv_value,
+            R.id.w_sunrise, R.id.w_sunset,
+        )
+        private val INDICATOR_LABEL = intArrayOf(
+            R.id.w_ind_feels_label, R.id.w_ind_humidity_label, R.id.w_ind_wind_label, R.id.w_ind_rain_label, R.id.w_ind_uv_label,
+            R.id.w_sunrise_label, R.id.w_sunset_label, R.id.w_daylight, R.id.w_sunrise_next,
         )
     }
 }
