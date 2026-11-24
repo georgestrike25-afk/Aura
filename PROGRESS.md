@@ -18,15 +18,15 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
 |---|-------|--------|
 | 0 | Auditoría, PROGRESS.md, canal de publicación de prueba | hecho |
 | 1 | Identidad visual (paleta obsidiana/grafito/champán/marfil/jade, navegación con Signature) | hecho |
-| 2 | Studio: cuatro dígitos independientes (mover, escalar, rotar, deformar, color, fuente, opacidad), grupos, guías magnéticas, bloqueo | hecho (validar en CI) |
-| 3 | Aura Elements: 8 materiales paramétricos + controles | hecho (validar en CI) |
-| 4 | Aura Fusion: análisis de la imagen y «Armonizar» | hecho (validar en CI) |
-| 5 | Aura Layers: capas, dígitos delante/detrás del sujeto, orden/ocultar/bloquear, máscara | hecho (validar en CI) |
-| 6 | Aura Fonts: familias, nuevas fuentes libres, importar TTF/OTF | hecho (validar en CI) |
-| 7 | Atmosphere y Living: partículas, luz según la hora, desactivable | hecho (validar en CI) |
-| 8 | Aura Signature: galería con catálogo remoto y obras originales | hecho (validar en CI) |
-| 9 | Widgets meteorológicos nuevos + migración | hecho (validar en CI) |
-| 10 | QA final: pruebas, lint, APK firmado, enlace | pendiente |
+| 2 | Studio: cuatro dígitos independientes (mover, escalar, rotar, deformar, color, fuente, opacidad), grupos, guías magnéticas, bloqueo | hecho  |
+| 3 | Aura Elements: 8 materiales paramétricos + controles | hecho  |
+| 4 | Aura Fusion: análisis de la imagen y «Armonizar» | hecho  |
+| 5 | Aura Layers: capas, dígitos delante/detrás del sujeto, orden/ocultar/bloquear, máscara | hecho  |
+| 6 | Aura Fonts: familias, nuevas fuentes libres, importar TTF/OTF | hecho  |
+| 7 | Atmosphere y Living: partículas, luz según la hora, desactivable | hecho  |
+| 8 | Aura Signature: galería con catálogo remoto y obras originales | hecho  |
+| 9 | Widgets meteorológicos nuevos + migración | hecho  |
+| 10 | QA final: pruebas, lint, APK firmado, enlace | hecho |
 
 ## Auditoría inicial (etapa 0)
 
@@ -84,3 +84,8 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   indicadores (sensación, humedad, viento, lluvia, UV; ocultos si no hay dato), horas/días con lluvia %,
   hasta 7 días, sol con barra de recorrido. Minimal = Aura Weather. Migración: índices intactos, los
   clásicos siguen y van en «Clásicos con reloj». Vista previa de los nuevos con el renderizador real.
+- Etapa 10 (24/11/2026): CI en verde en ed19b9c — pruebas unitarias (core + app), lint, APK debug y release
+  firmado (huella 1f6f0c68557969d4f) y pruebas instrumentadas en emulador API 34 (todas pasan; capturas en
+  docs/capturas). Corregido en el camino: nombre de paquete tapado por `app`, composable en función local,
+  llave sobrante, prueba que esperaba 5 widgets. Versión de prueba publicada en `aura-artistic-evolution-test`;
+  `aura-latest` (estable) sin tocar. Límites: ver docs/ARTISTIC_EVOLUTION.md.
