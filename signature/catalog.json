@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "license": "CC BY 4.0 — Aura Signature (obras originales generadas por código)",
+  "collections": [
+    {
+      "id": "suenos",
+      "title": "Sueños quietos",
+      "description": "Surrealismo poético: escenas imposibles y serenas.",
+      "items": [
+        {
+          "id": "escalera",
+          "title": "La escalera del alba",
+          "image": "escalera.webp",
+          "thumb": "thumbs/escalera.webp",
+          "width": 1440,
+          "height": 3120,
+          "clockArea": [
+            0.08,
+            0.12,
+            0.92,
+            0.42
+          ]
+        },
+        {
+          "id": "puerta",
+          "title": "Una puerta al mar",
+          "image": "puerta.webp",
+          "thumb": "thumbs/puerta.webp",
+          "width": 1440,
+          "height": 3120,
+          "clockArea": [
+            0.08,
+            0.12,
+            0.92,
+            0.42
+          ]
+        },
+        {
+          "id": "barco",
+          "title": "Bote en la lavanda",
+          "image": "barco.webp",
+          "thumb": "thumbs/barco.webp",
+          "width": 1440,
+          "height": 3120,
+          "clockArea": [
+            0.08,
+            0.12,
+            0.92,
+            0.42
+          ]
+        },
+        {
+          "id": "ballena",
+          "title": "Ballena de niebla",
+          "image": "ballena.webp",
+          "thumb": "thumbs/ballena.webp",
+          "width": 1440,
+          "height": 3120,
+          "clockArea": [
+            0.08,
+            0.12,
+            0.92,
+            0.42
+          ]
+        }
+      ]
+    },
+    {
+      "id": "horizontes",
+      "title": "Horizontes",
+      "description": "Paisajes de luz y distancia, al estilo de la fotografía de larga exposición.",
+      "items": [
+        {
+          "id": "montanas",
+          "title": "Montañas al alba",
+          "image": "montanas.webp",
+          "thumb": "thumbs/montanas.webp",
+          "width": 1440,
+          "height": 3120,
+          "clockArea": [
+            0.08,
+            0.12,
+            0.92,
+            0.42
+          ]
+        },
+        {
+          "id": "mar",
+          "title": "Mar en hora azul",
+          "image": "mar.webp",
+          "thumb": "thumbs/mar.webp",
+          "width": 1440,
+          "height": 3120,
+          "clockArea": [
+            0.08,
+            0.12,
+            0.92,
+            0.42
+          ]
+        },
+        {
+          "id": "bosque",
+          "title": "Bosque de niebla",
+          "image": "bosque.webp",
+          "thumb": "thumbs/bosque.webp",
+          "width": 1440,
+          "height": 3120,
+          "clockArea": [
+            0.08,
+            0.12,
+            0.92,
+            0.42
+          ]
+        },
+        {
+          "id": "salar",
+          "title": "Salar espejo",
+          "image": "salar.webp",
+          "thumb": "thumbs/salar.webp",
+          "width": 1440,
+          "height": 3120,
+          "clockArea": [
+            0.08,
+            0.12,
+            0.92,
+            0.42
+          ]
+        }
+      ]
+    },
+    {
+      "id": "materia",
+      "title": "Materia",
+      "description": "Texturas y luz: papel, cerámica, piedra y tela.",
+      "items": [
+        {
+          "id": "papel",
+          "title": "Papel y luz",
+          "image": "papel.webp",
+          "thumb": "thumbs/papel.webp",
+          "width": 1440,
+          "height": 3120,
+          "clockArea": [
+            0.08,
+            0.12,
+            0.92,
+            0.42
+          ]
+        },
+        {
+          "id": "kintsugi",
+          "title": "Kintsugi nocturno",
+          "image": "kintsugi.webp",
+          "thumb": "thumbs/kintsugi.webp",
+          "width": 1440,
+          "height": 3120,
+          "clockArea": [
+            0.08,
+            0.12,
+            0.92,
+            0.42
+          ]
+        },
+        {
+          "id": "marmol",
+          "title": "Mármol jade",
+          "image": "marmol.webp",
+          "thumb": "thumbs/marmol.webp",
+          "width": 1440,
+          "height": 3120,
+          "clockArea": [
+            0.08,
+            0.12,
+            0.92,
+            0.42
+          ]
+        },
+        {
+          "id": "seda",
+          "title": "Seda",
+          "image": "seda.webp",
+          "thumb": "thumbs/seda.webp",
+          "width": 1440,
+          "height": 3120,
+          "clockArea": [
+            0.08,
+            0.12,
+            0.92,
+            0.42
+          ]
+        }
+      ]
+    }
+  ]
+}

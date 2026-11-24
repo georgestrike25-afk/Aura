@@ -47,6 +47,7 @@ object Routes {
     const val LOCATION = "location"
     const val CUSTOMIZE = "customize/{type}?widgetId={widgetId}"
     const val STUDIO = "studio"
+    const val SIGNATURE = "signature"
     const val STUDIO_EDITOR = "studio/editor/{id}"
     const val STUDIO_MASK = "studio/mask/{id}"
 
@@ -63,6 +64,7 @@ private val tabs = listOf(
     Tab(Routes.HOME, "Inicio", R.drawable.ic_ui_home),
     Tab(Routes.FORECAST, "Clima", R.drawable.ic_ui_forecast),
     Tab(Routes.STUDIO, "Studio", R.drawable.ic_ui_studio),
+    Tab(Routes.SIGNATURE, "Signature", R.drawable.ic_ui_signature),
     Tab(Routes.WIDGETS, "Widgets", R.drawable.ic_ui_widgets),
 )
 
@@ -121,6 +123,11 @@ fun AuraNavHost(viewModel: AuraViewModel, destination: String?, onDestinationCon
                 WidgetsScreen(viewModel, onCustomize = { type, id -> nav.navigate(Routes.customize(type, id)) })
             }
             composable(Routes.SETTINGS) { SettingsScreen(viewModel, onOpenLocation = { nav.navigate(Routes.LOCATION) }, onBack = { nav.popBackStack() }) }
+            composable(Routes.SIGNATURE) {
+                app.aura.signature.SignatureScreen(onUse = { uri, title ->
+                    studio.createFromPhoto(uri, title) { id -> nav.navigate(Routes.studioEditor(id)) }
+                })
+            }
             composable(Routes.STUDIO) { StudioHomeScreen(studio, onOpen = { id -> nav.navigate(Routes.studioEditor(id)) }) }
             composable(Routes.STUDIO_EDITOR, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
                 val id = entry.arguments?.getString("id").orEmpty()

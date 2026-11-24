@@ -116,11 +116,13 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
 
     // ---------------------------------------------------------------- proyectos
 
-    fun createFromPhoto(uri: Uri, onCreated: (String) -> Unit) {
+    fun createFromPhoto(uri: Uri, onCreated: (String) -> Unit) = createFromPhoto(uri, null, onCreated)
+
+    fun createFromPhoto(uri: Uri, title: String?, onCreated: (String) -> Unit) {
         viewModelScope.launch {
             _busy.value = "Importando foto…"
             try {
-                val name = "Diseño " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("d/M HH:mm"))
+                val name = title ?: ("Diseño " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("d/M HH:mm")))
                 val project = repo.create(uri, name)
                 onCreated(project.id)
             } catch (e: Exception) {
