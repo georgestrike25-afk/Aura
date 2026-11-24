@@ -81,7 +81,7 @@ import app.aura.ui.theme.Aura
 import kotlin.math.roundToInt
 
 private enum class EditorTab(val label: String) {
-    FRAME("Encuadre"), CLOCK("Reloj"), ADJUST("Ajuste"), WARP("Deformar"), EFFECTS("Efectos"), DEPTH("Profundidad"), EXPORT("Exportar")
+    FRAME("Encuadre"), CLOCK("Reloj"), DIGITS("Dígitos"), ADJUST("Ajuste"), WARP("Deformar"), EFFECTS("Efectos"), DEPTH("Profundidad"), EXPORT("Exportar")
 }
 
 @Composable
@@ -133,6 +133,9 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, onBack: ()
                             onTransform = { pan, zoom, rotation ->
                                 if (area.width == 0 || tab == EditorTab.WARP) return@transformGesture
                                 when (tab) {
+                                    EditorTab.DIGITS -> if (project?.design?.artistic?.enabled == true) {
+                                        viewModel.moveDigitsLive(pan.x / area.width, pan.y / area.height, zoom, rotation)
+                                    }
                                     EditorTab.FRAME -> viewModel.frameLive {
                                         it.copy(zoom = it.zoom * zoom, offsetX = it.offsetX + pan.x / area.width, offsetY = it.offsetY + pan.y / area.height)
                                     }
@@ -147,12 +150,14 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, onBack: ()
                                     }
                                 }
                             },
-                            onEnd = viewModel::commit,
+                            onEnd = { if (tab == EditorTab.DIGITS) viewModel.endDigitGesture() else viewModel.commit() },
                             enabled = tab != EditorTab.WARP,
+                            onTap = if (tab == EditorTab.DIGITS) { off -> if (area.width > 0) viewModel.selectAt(off.x / area.width, off.y / area.height) } else null,
                         ),
                 ) {
                     preview?.let { Image(it, contentDescription = "Vista previa del fondo", modifier = Modifier.fillMaxSize()) }
                     if (tab == EditorTab.WARP && preview != null) WarpHandles(viewModel, area)
+                    if (tab == EditorTab.DIGITS && preview != null && project?.design?.artistic?.enabled == true) DigitOverlay(viewModel, area)
                     if (preview == null || busy != null) {
                         Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
                             CircularProgressIndicator(color = Aura.tokens.accent)
@@ -165,6 +170,7 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, onBack: ()
                                 EditorTab.FRAME -> "Arrastrá y pellizcá para encuadrar la foto"
                                 EditorTab.ADJUST -> "Dos dedos: mover, escalar y girar el reloj"
                                 EditorTab.WARP -> "Arrastrá las esquinas doradas para deformar los números"
+                                EditorTab.DIGITS -> "Tocá un número para elegirlo; arrastrá, pellizcá o girá con dos dedos"
                                 else -> "Arrastrá y pellizcá para mover y escalar el reloj"
                             },
                             color = Color.White, style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
@@ -197,6 +203,7 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, onBack: ()
                     when (tab) {
                         EditorTab.FRAME -> FramePanel(viewModel, project)
                         EditorTab.CLOCK -> ClockPanel(viewModel, project)
+                        EditorTab.DIGITS -> DigitsPanel(viewModel, project)
                         EditorTab.ADJUST -> AdjustPanel(viewModel, project)
                         EditorTab.WARP -> WarpPanel(viewModel, project)
                         EditorTab.EFFECTS -> EffectsPanel(viewModel, project)
@@ -218,13 +225,13 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, onBack: ()
 }
 
 @Composable
-private fun StudioSlider(label: String, value: Float, range: ClosedFloatingPointRange<Float>, display: String, onChange: (Float) -> Unit, onDone: () -> Unit) {
+internal fun StudioSlider(label: String, value: Float, range: ClosedFloatingPointRange<Float>, display: String, onChange: (Float) -> Unit, onDone: () -> Unit) {
     LabeledRow(label) { Text(display, style = MaterialTheme.typography.titleSmall) }
     Slider(value = value.coerceIn(range.start, range.endInclusive), onValueChange = onChange, valueRange = range, onValueChangeFinished = onDone)
 }
 
 @Composable
-private fun <T> Chips(options: List<Pair<T, String>>, selected: T, onSelect: (T) -> Unit) {
+internal fun <T> Chips(options: List<Pair<T, String>>, selected: T, onSelect: (T) -> Unit) {
     Row(Modifier.horizontalScroll(rememberScrollState()).padding(vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         options.forEach { (v, label) ->
             FilterChip(
@@ -235,7 +242,18 @@ private fun <T> Chips(options: List<Pair<T, String>>, selected: T, onSelect: (T)
     }
 }
 
-private val INKS = listOf(Brand.WHITE, Brand.MIST, Brand.SOLAR, 0xFFFF7A59.toInt(), 0xFF7FD6FF.toInt(), Brand.PETROL, Brand.NIGHT)
+private val ELEMENT_NOTES = mapOf(
+    ClockMaterial.AQUA to "Agua: ondas, cáusticas y refracción.",
+    ClockMaterial.IGNIS to "Fuego: lava, brasas y resplandor.",
+    ClockMaterial.VENTUS to "Aire: humo y niebla translúcidos.",
+    ClockMaterial.LUX to "Luz: núcleo blanco y resplandor cálido.",
+    ClockMaterial.TERRA to "Tierra: veta de madera y musgo al pie.",
+    ClockMaterial.AETHER to "Éter: nebulosa y estrellas.",
+    ClockMaterial.GLACIUS to "Hielo: escarcha y grietas.",
+    ClockMaterial.KINTSUGI to "Kintsugi: cerámica con fracturas doradas.",
+)
+
+internal val INKS = listOf(Brand.WHITE, Brand.MIST, Brand.SOLAR, 0xFFFF7A59.toInt(), 0xFF7FD6FF.toInt(), Brand.PETROL, Brand.NIGHT)
 
 @Composable
 private fun ColumnScope.FramePanel(vm: StudioViewModel, p: StudioProject) {
@@ -368,10 +386,17 @@ private fun ColumnScope.WarpPanel(vm: StudioViewModel, p: StudioProject) {
 @Composable
 private fun ColumnScope.EffectsPanel(vm: StudioViewModel, p: StudioProject) {
     val d = p.design
-    Chips(
-        listOf(ClockMaterial.METAL to "Metal", ClockMaterial.GLASS to "Vidrio", ClockMaterial.NEON to "Neón", ClockMaterial.STONE to "Piedra", ClockMaterial.MINIMAL to "Minimal"),
-        d.material,
-    ) { m -> vm.design { it.withMaterial(m) } }
+    Text("Materiales", style = MaterialTheme.typography.bodyMedium)
+    Chips(ClockMaterial.entries.filterNot { it.isElement }.map { it to it.label }, d.material) { m -> vm.design { it.withMaterial(m) } }
+    Text("Aura Elements", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 4.dp))
+    Chips(ClockMaterial.entries.filter { it.isElement }.map { it to it.label }, d.material) { m -> vm.design { it.withMaterial(m) } }
+    if (d.material.isElement) {
+        Text(ELEMENT_NOTES[d.material].orEmpty(), style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
+        StudioSlider("Intensidad del material", d.elementIntensity.toFloat(), 0f..100f, "${d.elementIntensity} %", { v -> vm.designLive { it.copy(elementIntensity = v.roundToInt()) } }, vm::commit)
+        StudioSlider("Textura", d.textureScale.toFloat(), 0f..100f, if (d.textureScale < 34) "Fina" else if (d.textureScale < 67) "Media" else "Grande", { v -> vm.designLive { it.copy(textureScale = v.roundToInt()) } }, vm::commit)
+        StudioSlider("Transparencia", (100 - d.opacity).toFloat(), 0f..90f, "${100 - d.opacity} %", { v -> vm.designLive { it.copy(opacity = 100 - v.roundToInt()) } }, vm::commit)
+        Text("En el fondo animado la textura se mueve un poco cada minuto (sin gasto extra de batería).", style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
+    }
     LabeledRow("Camaleón", supporting = "Los números toman los colores de la foto que tienen detrás") {
         Switch(d.chameleon > 0, { v -> vm.design { it.copy(chameleon = if (v) 85 else 0) } })
     }

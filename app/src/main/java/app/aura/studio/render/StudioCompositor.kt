@@ -32,7 +32,7 @@ class StudioCompositor(private val painter: ClockPainter) {
      * o null si no corresponde. Se calcula una vez y se reutiliza mientras no cambien foto ni máscara.
      */
     fun subjectLayer(w: Int, h: Int, photo: Bitmap, mask: Bitmap?, project: StudioProject): Bitmap? {
-        if (mask == null || !project.hasMask || !project.design.behindSubject) return null
+        if (mask == null || !project.hasMask || !project.design.anyBehindSubject()) return null
         val out = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         val c = Canvas(out)
         val m = photoMatrix(w, h, photo, project)
@@ -61,8 +61,21 @@ class StudioCompositor(private val painter: ClockPainter) {
     ) {
         val c = Canvas(out)
         drawPhoto(c, out.width, out.height, photo, project)
-        painter.draw(c, out.width, out.height, project.design, extras, Backdrop(photo, photoMatrix(out.width, out.height, photo, project)))
-        subject?.let { c.drawBitmap(it, 0f, 0f, null) }
+        drawClock(c, out.width, out.height, project.design, extras, Backdrop(photo, photoMatrix(out.width, out.height, photo, project)), subject)
+    }
+
+    /**
+     * Reloj y sujeto en el orden correcto: lo que va detrás del sujeto, el sujeto y lo que va delante.
+     * Cada dígito independiente puede ir delante o detrás por su cuenta.
+     */
+    fun drawClock(c: Canvas, w: Int, h: Int, design: app.aura.core.studio.ClockDesign, extras: ClockExtras, backdrop: Backdrop?, subject: Bitmap?, phase: Float = 0f) {
+        if (subject == null) {
+            painter.draw(c, w, h, design, extras, backdrop, phase = phase)
+            return
+        }
+        painter.draw(c, w, h, design, extras, backdrop, ClockPainter.Pass.BEHIND, phase)
+        c.drawBitmap(subject, 0f, 0f, null)
+        painter.draw(c, w, h, design, extras, backdrop, ClockPainter.Pass.FRONT, phase)
     }
 
     fun photoMatrix(w: Int, h: Int, photo: Bitmap, project: StudioProject): Matrix {

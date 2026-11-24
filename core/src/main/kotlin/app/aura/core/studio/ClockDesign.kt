@@ -8,7 +8,13 @@ import kotlinx.serialization.Serializable
 
 /** Acabado del reloj 3D de Aura Studio. */
 @Serializable
-enum class ClockMaterial { MINIMAL, METAL, GLASS, NEON, STONE }
+enum class ClockMaterial(val label: String, val isElement: Boolean = false) {
+    MINIMAL("Mínimo"), METAL("Metal"), GLASS("Vidrio"), NEON("Neón"), STONE("Piedra"),
+
+    // Aura Elements: materiales paramétricos (texturas generadas en el teléfono, sin imágenes).
+    AQUA("Aqua", true), IGNIS("Ignis", true), VENTUS("Ventus", true), LUX("Lux", true),
+    TERRA("Terra", true), AETHER("Aether", true), GLACIUS("Glacius", true), KINTSUGI("Kintsugi", true),
+}
 
 /** Horizontal: «09:50» en una línea. Vertical: las horas arriba y los minutos abajo, sin los dos puntos. */
 @Serializable
@@ -28,6 +34,12 @@ data class ClockDesign(
     val layout: ClockLayout = ClockLayout.HORIZONTAL,
     /** Dos puntos entre horas y minutos (solo en horizontal); false = «09 50». */
     val showColon: Boolean = true,
+    /** Dígitos independientes (Aura Studio artístico). */
+    val artistic: ArtisticClock = ArtisticClock(),
+    /** Intensidad de los materiales Elements (0–100). */
+    val elementIntensity: Int = 70,
+    /** Escala de la textura de los materiales Elements (0 = fina, 100 = grande). */
+    val textureScale: Int = 50,
     val color: Int = Brand.WHITE,
     /** Tinte del metal, brillo del neón y vetas de la piedra. */
     val accentColor: Int = Brand.SOLAR,
@@ -79,7 +91,13 @@ data class ClockDesign(
     /** Con máscara de profundidad: el sujeto de la foto queda delante del reloj. */
     val behindSubject: Boolean = true,
 ) {
+    /** ¿Alguna parte del reloj va detrás del sujeto? (decide si hace falta la capa del sujeto). */
+    fun anyBehindSubject(): Boolean =
+        if (!artistic.enabled) behindSubject else behindSubject || DigitSlot.entries.any { artistic.isBehind(it, behindSubject) }
+
     fun normalized(): ClockDesign = copy(
+        elementIntensity = elementIntensity.coerceIn(0, 100),
+        textureScale = textureScale.coerceIn(0, 100),
         opacity = opacity.coerceIn(0, 100),
         letterSpacing = letterSpacing.coerceIn(MIN_SPACING, MAX_SPACING),
         size = size.coerceIn(MIN_SIZE, MAX_SIZE),
@@ -107,6 +125,14 @@ data class ClockDesign(
         ClockMaterial.GLASS -> copy(material = m, shadow = 35, depth = 10, bevel = 60, reflection = 60, glow = 0)
         ClockMaterial.NEON -> copy(material = m, shadow = 0, depth = 0, bevel = 10, reflection = 0, glow = 70)
         ClockMaterial.STONE -> copy(material = m, shadow = 65, depth = 60, bevel = 35, reflection = 0, glow = 0)
+        ClockMaterial.AQUA -> copy(material = m, shadow = 35, depth = 10, bevel = 40, reflection = 55, glow = 15)
+        ClockMaterial.IGNIS -> copy(material = m, shadow = 20, depth = 20, bevel = 20, reflection = 0, glow = 70)
+        ClockMaterial.VENTUS -> copy(material = m, shadow = 10, depth = 0, bevel = 10, reflection = 10, glow = 30)
+        ClockMaterial.LUX -> copy(material = m, shadow = 0, depth = 0, bevel = 15, reflection = 30, glow = 90)
+        ClockMaterial.TERRA -> copy(material = m, shadow = 60, depth = 55, bevel = 35, reflection = 0, glow = 0)
+        ClockMaterial.AETHER -> copy(material = m, shadow = 20, depth = 10, bevel = 20, reflection = 20, glow = 60)
+        ClockMaterial.GLACIUS -> copy(material = m, shadow = 35, depth = 25, bevel = 55, reflection = 60, glow = 15)
+        ClockMaterial.KINTSUGI -> copy(material = m, shadow = 50, depth = 35, bevel = 40, reflection = 25, glow = 0)
     }
 
     companion object {

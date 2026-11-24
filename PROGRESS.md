@@ -18,8 +18,8 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
 |---|-------|--------|
 | 0 | Auditoría, PROGRESS.md, canal de publicación de prueba | hecho |
 | 1 | Identidad visual (paleta obsidiana/grafito/champán/marfil/jade, navegación con Signature) | hecho (pestaña Signature se agrega en etapa 8) |
-| 2 | Studio: cuatro dígitos independientes (mover, escalar, rotar, deformar, color, fuente, opacidad), grupos, guías magnéticas, bloqueo | pendiente |
-| 3 | Aura Elements: 8 materiales paramétricos + controles | pendiente |
+| 2 | Studio: cuatro dígitos independientes (mover, escalar, rotar, deformar, color, fuente, opacidad), grupos, guías magnéticas, bloqueo | hecho (validar en CI) |
+| 3 | Aura Elements: 8 materiales paramétricos + controles | hecho (validar en CI) |
 | 4 | Aura Fusion: análisis de la imagen y «Armonizar» | pendiente |
 | 5 | Aura Layers: capas, dígitos delante/detrás del sujeto, orden/ocultar/bloquear, máscara | pendiente |
 | 6 | Aura Fonts: familias, nuevas fuentes libres, importar TTF/OTF | pendiente |
@@ -45,3 +45,12 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
 
 - Etapa 0: canal de prueba en el workflow; este archivo.
 - Etapa 1: paleta nueva con alias de los nombres viejos; títulos con serif; Ajustes pasa a un engranaje en Inicio (con volver).
+- Etapa 2: `ArtisticClock` (core) integrado en `ClockDesign.artistic`; `ClockPainter` separa los dígitos
+  (`splitDigits`) y dibuja cada uno con su matriz, fuente, color, opacidad y material; pestaña «Dígitos»
+  (`studio/ui/DigitsPanel.kt`) con selección por toque, grupos, gestos, guías magnéticas (`MagneticGuides`),
+  bloqueo, visibilidad, orden de capas y ajuste fino. Profundidad por dígito: `Pass.BEHIND/FRONT` +
+  `StudioCompositor.drawClock` (usado también por el fondo animado).
+- Etapa 3: `ClockMaterial` suma AQUA, IGNIS, VENTUS, LUX, TERRA, AETHER, GLACIUS, KINTSUGI; texturas
+  sin costuras generadas en core (`ElementTexture`, probado) y cacheadas (`ElementTextures`); intensidad,
+  escala de textura, transparencia; detalles por elemento (refracción, musgo, núcleo de luz); en el fondo
+  animado la textura avanza una vez por minuto (`phase`), sin redibujar entre minutos.

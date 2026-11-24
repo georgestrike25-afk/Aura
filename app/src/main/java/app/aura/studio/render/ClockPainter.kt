@@ -14,6 +14,9 @@ import android.graphics.Typeface
 import app.aura.core.studio.ClockDesign
 import app.aura.core.studio.ClockLayout
 import app.aura.core.studio.ClockMaterial
+import app.aura.core.studio.DigitSlot
+import app.aura.core.studio.DigitStyle
+import app.aura.core.studio.ElementTexture
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -37,130 +40,57 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.SUBPIXEL_TEXT_FLAG)
     private var stoneTexture: Bitmap? = null
 
-    fun draw(canvas: Canvas, width: Int, height: Int, rawDesign: ClockDesign, extras: ClockExtras, backdrop: Backdrop? = null) {
+    /** Qué partes dibujar respecto del sujeto de la foto (para poner dígitos delante o detrás). */
+    enum class Pass { ALL, BEHIND, FRONT }
+
+    /**
+     * Dibuja el reloj. [phase] (0–1) desplaza las texturas Elements: el fondo animado la avanza para
+     * que el agua, el fuego o la nebulosa se muevan.
+     */
+    fun draw(
+        canvas: Canvas,
+        width: Int,
+        height: Int,
+        rawDesign: ClockDesign,
+        extras: ClockExtras,
+        backdrop: Backdrop? = null,
+        pass: Pass = Pass.ALL,
+        phase: Float = 0f,
+    ) {
         val d = rawDesign.normalized()
         val lay = layout(d, extras, width, height)
         val textSize = lay.textSize
         val cx = d.centerX * width
         val cy = d.centerY * height
-        val transform = lay.transform
-        val warpMatrix = warpMatrix(d, transform, lay.box, width, height)
-        // Transformación completa del reloj en pantalla: deformación ∘ (giro + estiramiento).
-        val full = android.graphics.Matrix(transform).apply { warpMatrix?.let { postConcat(it) } }
-        val camo = if (d.chameleon > 0 && backdrop != null) chameleonShader(backdrop, full, d) else null
-        val camoTone = if (camo != null) {
-            averageBehind(backdrop!!, cx, cy, lay.box.width() * d.stretchX, lay.box.height() * d.stretchY)
+        val full = fullMatrix(d, lay, width, height)
+        val camoTone = if (d.chameleon > 0 && backdrop != null) {
+            averageBehind(backdrop, cx, cy, lay.box.width() * d.stretchX, lay.box.height() * d.stretchY)
         } else {
             null
         }
-        val runs = lay.runs
 
         // Luz: vector unitario hacia donde llega; la sombra y la extrusión van al lado contrario.
         val a = Math.toRadians(d.lightAngle.toDouble())
-        val lx = cos(a).toFloat()
-        val ly = sin(a).toFloat()
+        val light = floatArrayOf(cos(a).toFloat(), sin(a).toFloat())
 
         val outer = canvas.save()
         canvas.concat(full)
         val layer = canvas.saveLayerAlpha(null, (d.opacity * 255 / 100f).roundToInt())
-
-        // 1. Sombra difusa
-        if (d.shadow > 0) {
-            val dist = textSize * (0.03f + 0.07f * d.shadow / 100f)
-            runs.forEach { r ->
-                paint.reset(textSize, r.face, d.letterSpacing)
-                paint.color = Color.argb((90 + 120 * d.shadow / 100f).roundToInt().coerceAtMost(220), 0, 0, 0)
-                paint.maskFilter = BlurMaskFilter(textSize * (0.02f + 0.06f * d.shadow / 100f), BlurMaskFilter.Blur.NORMAL)
-                canvas.drawText(r.text, r.x - lx * dist, r.baseline - ly * dist, paint)
-            }
-        }
-
-        // 2. Extrusión: copias apiladas cada vez más oscuras en dirección opuesta a la luz.
-        val depthPx = textSize * 0.09f * d.depth / 100f
-        if (depthPx >= 1f) {
-            val steps = depthPx.roundToInt().coerceIn(1, 48)
-            // En modo camaleón el canto toma el tono medio del fondo, más oscuro.
-            val side = camoTone?.let { mix(sideColor(d), shade(it, 0.6f), d.chameleon / 100f) } ?: sideColor(d)
-            for (s in steps downTo 1) {
-                val t = s / steps.toFloat()
-                runs.forEach { r ->
-                    paint.reset(textSize, r.face, d.letterSpacing)
-                    paint.color = shade(side, 1f - 0.45f * t)
-                    canvas.drawText(r.text, r.x - lx * depthPx * t, r.baseline - ly * depthPx * t, paint)
-                }
-            }
-        }
-
-        // 3. Brillo (neón y cualquier material con «glow»)
-        if (d.glow > 0) {
-            val glowColor = if (d.material == ClockMaterial.NEON) d.accentColor else d.color
-            listOf(0.22f, 0.10f, 0.04f).forEach { k ->
-                runs.forEach { r ->
-                    paint.reset(textSize, r.face, d.letterSpacing)
-                    paint.color = withAlpha(glowColor, (60 + 150 * d.glow / 100f).roundToInt().coerceAtMost(230))
-                    paint.maskFilter = BlurMaskFilter(textSize * k * (0.4f + d.glow / 100f), BlurMaskFilter.Blur.NORMAL)
-                    canvas.drawText(r.text, r.x, r.baseline, paint)
-                }
-            }
-        }
-
-        // 4. Cara
-        runs.forEach { r ->
-            val top = r.baseline - textSize * 0.74f
-            val bottom = r.baseline + textSize * 0.02f
-            paint.reset(textSize, r.face, d.letterSpacing)
-            applyFace(paint, d, top, bottom, r.x, r.width)
-            canvas.drawText(r.text, r.x, r.baseline, paint)
-            if (camo != null) {
-                paint.reset(textSize, r.face, d.letterSpacing)
-                paint.shader = camo
-                paint.alpha = (255 * d.chameleon / 100f).roundToInt()
-                paint.colorFilter = liftFilter(d.chameleonLift)
-                canvas.drawText(r.text, r.x, r.baseline, paint)
-            }
-            if (d.material == ClockMaterial.GLASS) {
-                paint.reset(textSize, r.face, d.letterSpacing)
-                paint.style = Paint.Style.STROKE
-                paint.strokeWidth = max(1f, textSize * 0.012f)
-                paint.color = withAlpha(Color.WHITE, 170)
-                canvas.drawText(r.text, r.x, r.baseline, paint)
-            }
-        }
-
-        // 5. Bisel: borde iluminado hacia la luz y en sombra del lado opuesto.
-        if (d.bevel > 0) {
-            val w = max(1f, textSize * 0.018f * d.bevel / 100f)
-            val off = w * 0.6f
-            runs.forEach { r ->
-                paint.reset(textSize, r.face, d.letterSpacing)
-                paint.style = Paint.Style.STROKE
-                paint.strokeWidth = w
-                paint.color = withAlpha(Color.WHITE, (60 + 140 * d.bevel / 100f).roundToInt())
-                canvas.drawText(r.text, r.x + lx * off, r.baseline + ly * off, paint)
-                paint.color = withAlpha(Color.BLACK, (40 + 110 * d.bevel / 100f).roundToInt())
-                canvas.drawText(r.text, r.x - lx * off, r.baseline - ly * off, paint)
-            }
-        }
-
-        // 6. Reflejo: brillo especular en la mitad superior de cada línea.
-        if (d.reflection > 0) {
-            runs.forEach { r ->
-                val top = r.baseline - textSize * 0.74f
-                val bottom = r.baseline + textSize * 0.02f
-                paint.reset(textSize, r.face, d.letterSpacing)
-                paint.shader = LinearGradient(
-                    0f, top, 0f, top + (bottom - top) * 0.55f,
-                    intArrayOf(withAlpha(Color.WHITE, (200 * d.reflection / 100f).roundToInt()), Color.TRANSPARENT),
-                    null, Shader.TileMode.CLAMP,
-                )
-                canvas.drawText(r.text, r.x, r.baseline, paint)
-            }
+        // Primero lo que no es un dígito (dos puntos, a. m./p. m.), después los dígitos en su orden de capas.
+        val order = d.artistic.drawOrder()
+        val sorted = lay.runs.sortedBy { r -> r.slot?.let { order.indexOf(it) + 1 } ?: 0 }
+        for (r in sorted) {
+            if (r.style?.hidden == true) continue
+            val behind = r.slot?.let { d.artistic.isBehind(it, d.behindSubject) } ?: d.behindSubject
+            if (pass == Pass.BEHIND && !behind || pass == Pass.FRONT && behind) continue
+            drawRun(canvas, r, d, textSize, light, full, backdrop, camoTone, phase)
         }
         canvas.restoreToCount(layer)
         canvas.restoreToCount(outer)
 
         // Subtítulo (fecha · clima), sobrio y legible; acompaña la posición y el alto del reloj.
-        extras.subtitle?.takeIf { it.isNotBlank() }?.let { sub ->
+        val subtitleHere = pass == Pass.ALL || (pass == Pass.BEHIND) == d.behindSubject
+        extras.subtitle?.takeIf { it.isNotBlank() && subtitleHere }?.let { sub ->
             paint.reset(width * 0.042f, Typeface.create("sans-serif", Typeface.NORMAL), 0.02f)
             val sw = paint.measureText(sub)
             val sy = (cy + (lay.lastBaseline - cy + textSize * 0.34f) * d.stretchY + width * 0.03f)
@@ -172,6 +102,207 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
             paint.color = withAlpha(d.color, (d.opacity * 2.4f).roundToInt().coerceIn(0, 240))
             canvas.drawText(sub, d.centerX * width - sw / 2f, sy, paint)
         }
+    }
+
+    /**
+     * Un grupo de cifras completo: sombra → extrusión → brillo → cara con el material → bisel → reflejo.
+     * Si es un dígito independiente, se dibuja con su propia transformación, color, fuente, opacidad y material.
+     */
+    private fun drawRun(
+        canvas: Canvas, r: Run, base: ClockDesign, textSize: Float, light: FloatArray,
+        full: android.graphics.Matrix, backdrop: Backdrop?, camoTone: Int?, phase: Float,
+    ) {
+        val st = r.style
+        val d = if (st == null) base else base.copy(
+            color = st.color ?: base.color,
+            material = st.material ?: base.material,
+            elementIntensity = if (st.material != null) st.intensity else base.elementIntensity,
+        )
+        val lx = light[0]
+        val ly = light[1]
+        val saved = canvas.save()
+        r.matrix?.let { canvas.concat(it) }
+        if (st != null && st.opacity < 100) canvas.saveLayerAlpha(null, (st.opacity * 255 / 100f).roundToInt())
+        val baseline = r.baseline
+        val px = r.x
+        val element = d.material.isElement
+        val pal = if (element) ElementTexture.palette(d.material) else null
+
+        // 1. Sombra difusa
+        if (d.shadow > 0) {
+            val dist = textSize * (0.03f + 0.07f * d.shadow / 100f)
+            paint.reset(textSize, r.face, d.letterSpacing)
+            paint.color = Color.argb((90 + 120 * d.shadow / 100f).roundToInt().coerceAtMost(220), 0, 0, 0)
+            paint.maskFilter = BlurMaskFilter(textSize * (0.02f + 0.06f * d.shadow / 100f), BlurMaskFilter.Blur.NORMAL)
+            canvas.drawText(r.text, px - lx * dist, baseline - ly * dist, paint)
+        }
+
+        // 2. Extrusión: copias apiladas cada vez más oscuras en dirección opuesta a la luz.
+        val depthPx = textSize * 0.09f * d.depth / 100f
+        if (depthPx >= 1f) {
+            val steps = depthPx.roundToInt().coerceIn(1, 48)
+            // En modo camaleón el canto toma el tono medio del fondo, más oscuro.
+            val sideBase = pal?.let { shade(it[1], 0.8f) } ?: sideColor(d)
+            val side = camoTone?.let { mix(sideBase, shade(it, 0.6f), d.chameleon / 100f) } ?: sideBase
+            paint.reset(textSize, r.face, d.letterSpacing)
+            for (s in steps downTo 1) {
+                val t = s / steps.toFloat()
+                paint.color = shade(side, 1f - 0.45f * t)
+                canvas.drawText(r.text, px - lx * depthPx * t, baseline - ly * depthPx * t, paint)
+            }
+        }
+
+        // 3. Brillo (neón, Elements luminosos y cualquier material con «glow»)
+        if (d.glow > 0) {
+            val glowColor = when {
+                pal != null -> pal[2]
+                d.material == ClockMaterial.NEON -> d.accentColor
+                else -> d.color
+            }
+            listOf(0.22f, 0.10f, 0.04f).forEach { k ->
+                paint.reset(textSize, r.face, d.letterSpacing)
+                paint.color = withAlpha(glowColor, (60 + 150 * d.glow / 100f).roundToInt().coerceAtMost(230))
+                paint.maskFilter = BlurMaskFilter(textSize * k * (0.4f + d.glow / 100f), BlurMaskFilter.Blur.NORMAL)
+                canvas.drawText(r.text, px, baseline, paint)
+            }
+        }
+
+        // 4. Cara
+        val top = baseline - textSize * 0.74f
+        val bottom = baseline + textSize * 0.02f
+        paint.reset(textSize, r.face, d.letterSpacing)
+        if (element) {
+            // Textura Elements con la intensidad elegida; el resto es el color del reloj.
+            paint.shader = elementShader(d, textSize, phase)
+            canvas.drawText(r.text, px, baseline, paint)
+            if (d.elementIntensity < 100) {
+                paint.reset(textSize, r.face, d.letterSpacing)
+                paint.color = withAlpha(d.color, ((100 - d.elementIntensity) * 2.55f).roundToInt())
+                canvas.drawText(r.text, px, baseline, paint)
+            }
+            elementOverlay(canvas, r, d, textSize, top, bottom)
+        } else {
+            applyFace(paint, d, top, bottom, px, r.width)
+            canvas.drawText(r.text, px, baseline, paint)
+        }
+        if (d.chameleon > 0 && backdrop != null) {
+            val m = android.graphics.Matrix(full)
+            r.matrix?.let { m.preConcat(it) }
+            paint.reset(textSize, r.face, d.letterSpacing)
+            paint.shader = chameleonShader(backdrop, m, d)
+            paint.alpha = (255 * d.chameleon / 100f).roundToInt()
+            paint.colorFilter = liftFilter(d.chameleonLift)
+            canvas.drawText(r.text, px, baseline, paint)
+        }
+        if (d.material == ClockMaterial.GLASS || d.material == ClockMaterial.GLACIUS) {
+            paint.reset(textSize, r.face, d.letterSpacing)
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = max(1f, textSize * 0.012f)
+            paint.color = withAlpha(Color.WHITE, 170)
+            canvas.drawText(r.text, px, baseline, paint)
+        }
+
+        // 5. Bisel: borde iluminado hacia la luz y en sombra del lado opuesto.
+        if (d.bevel > 0) {
+            val w = max(1f, textSize * 0.018f * d.bevel / 100f)
+            val off = w * 0.6f
+            paint.reset(textSize, r.face, d.letterSpacing)
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = w
+            paint.color = withAlpha(Color.WHITE, (60 + 140 * d.bevel / 100f).roundToInt())
+            canvas.drawText(r.text, px + lx * off, baseline + ly * off, paint)
+            paint.color = withAlpha(Color.BLACK, (40 + 110 * d.bevel / 100f).roundToInt())
+            canvas.drawText(r.text, px - lx * off, baseline - ly * off, paint)
+        }
+
+        // 6. Reflejo: brillo especular en la mitad superior.
+        if (d.reflection > 0) {
+            paint.reset(textSize, r.face, d.letterSpacing)
+            paint.shader = LinearGradient(
+                0f, top, 0f, top + (bottom - top) * 0.55f,
+                intArrayOf(withAlpha(Color.WHITE, (200 * d.reflection / 100f).roundToInt()), Color.TRANSPARENT),
+                null, Shader.TileMode.CLAMP,
+            )
+            canvas.drawText(r.text, px, baseline, paint)
+        }
+        canvas.restoreToCount(saved)
+    }
+
+    /** Textura Elements repetida; la escala sigue al tamaño de los números y [phase] la desplaza. */
+    private fun elementShader(d: ClockDesign, textSize: Float, phase: Float): Shader {
+        val tile = ElementTextures.tile(d.material)
+        val k = textSize * (0.35f + 1.3f * d.textureScale / 100f) / tile.width
+        val drift = when (d.material) {
+            ClockMaterial.IGNIS -> floatArrayOf(0f, -1f)   // el fuego sube
+            ClockMaterial.VENTUS -> floatArrayOf(1f, 0f)   // el humo va de costado
+            ClockMaterial.AQUA -> floatArrayOf(0.4f, 0.3f)
+            else -> floatArrayOf(0.3f, 0.15f)
+        }
+        val m = android.graphics.Matrix().apply {
+            setScale(k, k)
+            postTranslate(drift[0] * phase * tile.width * k, drift[1] * phase * tile.width * k)
+        }
+        return BitmapShader(tile, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT).apply { setLocalMatrix(m) }
+    }
+
+    /** Detalles propios de cada elemento sobre la cara: luz interna, musgo al pie, escarcha, etc. */
+    private fun elementOverlay(canvas: Canvas, r: Run, d: ClockDesign, textSize: Float, top: Float, bottom: Float) {
+        val pal = ElementTexture.palette(d.material)
+        val k = d.elementIntensity / 100f
+        paint.reset(textSize, r.face, d.letterSpacing)
+        paint.shader = when (d.material) {
+            // Agua y hielo: más claros arriba (refracción), más profundos abajo.
+            ClockMaterial.AQUA, ClockMaterial.GLACIUS -> LinearGradient(
+                0f, top, 0f, bottom,
+                intArrayOf(withAlpha(Color.WHITE, (110 * k).roundToInt()), Color.TRANSPARENT, withAlpha(pal[1], (120 * k).roundToInt())),
+                floatArrayOf(0f, 0.45f, 1f), Shader.TileMode.CLAMP,
+            )
+            // Fuego: base incandescente.
+            ClockMaterial.IGNIS -> LinearGradient(
+                0f, top, 0f, bottom,
+                intArrayOf(Color.TRANSPARENT, withAlpha(0xFFFFE08A.toInt(), (150 * k).roundToInt())),
+                null, Shader.TileMode.CLAMP,
+            )
+            // Tierra: musgo que crece desde abajo.
+            ClockMaterial.TERRA -> LinearGradient(
+                0f, top, 0f, bottom,
+                intArrayOf(Color.TRANSPARENT, Color.TRANSPARENT, withAlpha(pal[2], (170 * k).roundToInt())),
+                floatArrayOf(0f, 0.65f, 1f), Shader.TileMode.CLAMP,
+            )
+            // Luz: núcleo casi blanco.
+            ClockMaterial.LUX -> LinearGradient(
+                0f, top, 0f, bottom,
+                intArrayOf(withAlpha(Color.WHITE, (160 * k).roundToInt()), withAlpha(pal[1], (60 * k).roundToInt())),
+                null, Shader.TileMode.CLAMP,
+            )
+            else -> null
+        } ?: return
+        canvas.drawText(r.text, r.x, r.baseline, paint)
+    }
+
+    /** Transformación completa del reloj en pantalla: deformación ∘ (giro + estiramiento). */
+    private fun fullMatrix(d: ClockDesign, lay: Layout, width: Int, height: Int): android.graphics.Matrix {
+        val warp = warpMatrix(d, lay.transform, lay.box, width, height)
+        return android.graphics.Matrix(lay.transform).apply { warp?.let { postConcat(it) } }
+    }
+
+    /**
+     * Caja de cada dígito en pantalla (con su transformación propia y la del reloj), para tocarlo,
+     * seleccionarlo y calcular guías magnéticas en el editor. Vacío si el reloj no es artístico.
+     */
+    fun digitBounds(width: Int, height: Int, rawDesign: ClockDesign, extras: ClockExtras): Map<DigitSlot, RectF> {
+        val d = rawDesign.normalized()
+        if (!d.artistic.enabled) return emptyMap()
+        val lay = layout(d, extras, width, height)
+        val full = fullMatrix(d, lay, width, height)
+        return lay.runs.mapNotNull { r ->
+            val slot = r.slot ?: return@mapNotNull null
+            val box = RectF(r.x, r.baseline - lay.textSize * 0.74f, r.x + r.width, r.baseline + lay.textSize * 0.04f)
+            val m = android.graphics.Matrix(full)
+            r.matrix?.let { m.preConcat(it) }
+            m.mapRect(box)
+            slot to box
+        }.toMap()
     }
 
     /**
@@ -239,7 +370,7 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
             )
             val w = max(hW, mW)
             val box = RectF(cx - w / 2f, bH - textSize * 0.80f, cx + w / 2f, bM + textSize * 0.08f)
-            return Layout(runs, box, textSize, transform, bM)
+            return Layout(splitDigits(runs, d, textSize, width, height), box, textSize, transform, bM)
         }
 
         // Sin los dos puntos queda su hueco, así las cifras no se pegan.
@@ -255,7 +386,51 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
             add(Run(minutes, family, startX + hW + sW + shiftM, baseline, mW))
         }
         val box = RectF(startX - shiftH, baseline - textSize * 0.80f, startX + total + shiftM, baseline + textSize * 0.08f)
-        return Layout(runs, box, textSize, transform, baseline)
+        return Layout(splitDigits(runs, d, textSize, width, height), box, textSize, transform, baseline)
+    }
+
+    /**
+     * Reloj artístico: separa horas y minutos en dígitos independientes (cada uno en su lugar fijo, así
+     * conserva su estilo aunque cambie la hora) y les aplica su transformación, fuente y estilo.
+     */
+    private fun splitDigits(runs: List<Run>, d: ClockDesign, textSize: Float, width: Int, height: Int): List<Run> {
+        if (!d.artistic.enabled) return runs
+        val hoursRun = runs.first()
+        val minutesRun = runs.last()
+        val out = mutableListOf<Run>()
+        fun explode(run: Run, slots: List<DigitSlot>) {
+            var x = run.x
+            var digitIndex = 0
+            val digitCount = run.text.count { it.isDigit() }
+            run.text.forEach { ch ->
+                paint.reset(textSize, run.face, d.letterSpacing)
+                val w = paint.measureText(ch.toString())
+                val slot = if (ch.isDigit()) slots.getOrNull(slots.size - digitCount + digitIndex++) else null
+                if (slot == null) {
+                    if (!ch.isWhitespace()) out += Run(ch.toString(), run.face, x, run.baseline, w)
+                } else {
+                    val st = d.artistic.style(slot)
+                    val face = st.fontId?.let(fonts) ?: run.face
+                    paint.reset(textSize, face, d.letterSpacing)
+                    val fw = paint.measureText(ch.toString())
+                    val fx = x + (w - fw) / 2f
+                    val pivotX = fx + fw / 2f
+                    val pivotY = run.baseline - textSize * 0.36f
+                    val m = android.graphics.Matrix().apply {
+                        postSkew(-st.skewX * 0.6f, 0f, pivotX, pivotY)
+                        postScale(st.scaleX, st.scaleY, pivotX, pivotY)
+                        postRotate(st.rotation, pivotX, pivotY)
+                        postTranslate(st.offsetX * width / d.stretchX, st.offsetY * height / d.stretchY)
+                    }
+                    out += Run(ch.toString(), face, fx, run.baseline, fw, slot, st, m)
+                }
+                x += w
+            }
+        }
+        explode(hoursRun, listOf(DigitSlot.HOUR_TENS, DigitSlot.HOUR_UNITS))
+        runs.drop(1).dropLast(1).forEach { out += it } // los dos puntos
+        explode(minutesRun, listOf(DigitSlot.MINUTE_TENS, DigitSlot.MINUTE_UNITS))
+        return out
     }
 
     /**
@@ -375,6 +550,7 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
                 p.shader = BitmapShader(stone(), Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
                 p.colorFilter = android.graphics.PorterDuffColorFilter(withAlpha(d.color, 90), android.graphics.PorterDuff.Mode.MULTIPLY)
             }
+            else -> p.color = d.color
         }
     }
 
@@ -384,6 +560,7 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
         ClockMaterial.NEON -> shade(d.accentColor, 0.4f)
         ClockMaterial.STONE -> 0xFF4E4A46.toInt()
         ClockMaterial.MINIMAL -> shade(d.color, 0.55f)
+        else -> shade(ElementTexture.palette(d.material)[1], 0.8f)
     }
 
     /** Textura de granito procedural (sin imágenes externas), generada una sola vez. */
@@ -399,8 +576,20 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
         stoneTexture = bmp
     }
 
-    /** Un grupo de cifras ya colocado: texto, tipografía, x izquierda, línea de base y ancho. */
-    private class Run(val text: String, val face: Typeface, val x: Float, val baseline: Float, val width: Float)
+    /**
+     * Un grupo de cifras ya colocado: texto, tipografía, x izquierda, línea de base y ancho. Si es un
+     * dígito independiente, también su lugar, su estilo y su transformación propia.
+     */
+    private class Run(
+        val text: String,
+        val face: Typeface,
+        val x: Float,
+        val baseline: Float,
+        val width: Float,
+        val slot: DigitSlot? = null,
+        val style: DigitStyle? = null,
+        val matrix: android.graphics.Matrix? = null,
+    )
 
     /** Disposición del reloj: grupos, caja que los contiene (para la deformación) y última línea de base. */
     private class Layout(val runs: List<Run>, val box: RectF, val textSize: Float, val transform: android.graphics.Matrix, val lastBaseline: Float)

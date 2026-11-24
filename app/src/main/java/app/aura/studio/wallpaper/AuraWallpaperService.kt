@@ -183,8 +183,8 @@ class AuraWallpaperService : WallpaperService() {
                 val extras = runBlocking {
                     ClockExtrasBuilder.build(applicationContext, p.design, app.settings.current(), app.weather.cached(), time)
                 }
-                compositor.clock.draw(c, width, height, p.design, extras, Backdrop(bg, Matrix()))
-                subject?.let { c.drawBitmap(it, 0f, 0f, null) }
+                // Las texturas Elements avanzan un poco cada minuto (sin dibujar entre minutos).
+                compositor.drawClock(c, width, height, p.design, extras, Backdrop(bg, Matrix()), subject, phase = (minute % 60) / 60f)
             }
             return out
         }

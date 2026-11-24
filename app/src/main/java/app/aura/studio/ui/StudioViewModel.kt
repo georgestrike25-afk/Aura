@@ -14,7 +14,10 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import app.aura.aura
+import app.aura.core.studio.ArtisticClock
 import app.aura.core.studio.ClockDesign
+import app.aura.core.studio.DigitSlot
+import app.aura.core.studio.MagneticGuides
 import app.aura.core.studio.History
 import app.aura.core.studio.MaskStroke
 import app.aura.core.studio.PhotoFrame
@@ -251,6 +254,94 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
         val span = (xs.max() - xs.min()).takeIf { it > 1f } ?: return
         val k = (w * 0.94f) / span
         design { it.copy(size = it.size * k, centerX = 0.5f) }
+    }
+
+    // ---------------------------------------------------------------- dígitos independientes
+
+    private val _selection = MutableStateFlow<Set<DigitSlot>>(emptySet())
+    /** Dígitos elegidos para editar; vacío = todos. */
+    val selection: StateFlow<Set<DigitSlot>> = _selection.asStateFlow()
+
+    /** Guías magnéticas activas durante un arrastre, en px de la vista previa: (vertical, posición). */
+    private val _guides = MutableStateFlow<List<Pair<Boolean, Float>>>(emptyList())
+    val guides: StateFlow<List<Pair<Boolean, Float>>> = _guides.asStateFlow()
+
+    /** Desplazamientos «sin imán» acumulados durante el arrastre, para poder despegarse de una guía. */
+    private var dragRaw: Map<DigitSlot, Pair<Float, Float>>? = null
+
+    fun select(slots: Set<DigitSlot>) { _selection.value = slots }
+
+    /** Los dígitos a los que se aplican los controles (la selección, o todos si no hay). */
+    val targets: Set<DigitSlot> get() = _selection.value.ifEmpty { DigitSlot.entries.toSet() }
+
+    fun artistic(transform: (ArtisticClock) -> ArtisticClock) = design { it.copy(artistic = transform(it.artistic)) }
+    fun artisticLive(transform: (ArtisticClock) -> ArtisticClock) = designLive { it.copy(artistic = transform(it.artistic)) }
+
+    /** Número que muestra ahora cada lugar (para las etiquetas del panel). */
+    fun glyphs(): Map<DigitSlot, Char> = lastExtras?.let { current?.design?.artistic?.glyphs(it.hours, it.minutes) }.orEmpty()
+
+    /** Caja de cada dígito en la vista previa (px). */
+    fun digitBounds(): Map<DigitSlot, android.graphics.RectF> {
+        val p = current ?: return emptyMap()
+        val extras = lastExtras ?: return emptyMap()
+        val (w, h) = previewSize
+        return compositor.clock.digitBounds(w, h, p.design, extras)
+    }
+
+    /** Toque en la vista previa (fracciones 0–1): elige el dígito tocado o, si no hay ninguno, limpia la selección. */
+    fun selectAt(fx: Float, fy: Float) {
+        val (w, h) = previewSize
+        val x = fx * w
+        val y = fy * h
+        val hit = digitBounds().entries
+            .filter { (_, r) -> android.graphics.RectF(r).apply { inset(-12f, -12f) }.contains(x, y) }
+            .minByOrNull { (_, r) -> kotlin.math.hypot(r.centerX() - x, r.centerY() - y) }?.key
+        _selection.value = hit?.let { setOf(it) } ?: emptySet()
+    }
+
+    /**
+     * Gesto sobre los dígitos elegidos: mover (fracciones del lienzo), escalar y girar. Con guías
+     * magnéticas: el centro de la selección se pega al centro de la pantalla o a otros dígitos.
+     */
+    fun moveDigitsLive(dx: Float, dy: Float, zoom: Float, rotation: Float) {
+        val p = current ?: return
+        val slots = targets.filterNot { p.design.artistic.style(it).locked }.toSet()
+        if (slots.isEmpty()) return
+        val raw = (dragRaw ?: slots.associateWith { p.design.artistic.style(it).let { s -> s.offsetX to s.offsetY } })
+            .mapValues { (_, o) -> (o.first + dx) to (o.second + dy) }
+        dragRaw = raw
+        val art = p.design.artistic
+        val moved = art.copy(digits = art.digits + slots.associateWith { s ->
+            art.style(s).let { st ->
+                st.copy(
+                    offsetX = raw.getValue(s).first, offsetY = raw.getValue(s).second,
+                    scaleX = st.scaleX * zoom, scaleY = st.scaleY * zoom, rotation = st.rotation + rotation,
+                ).normalized()
+            }
+        })
+        val extras = lastExtras ?: return designLive { it.copy(artistic = moved) }
+        val (w, h) = previewSize
+        val bounds = compositor.clock.digitBounds(w, h, p.design.copy(artistic = moved), extras)
+        val sel = slots.mapNotNull { bounds[it] }
+        if (sel.isEmpty()) return designLive { it.copy(artistic = moved) }
+        val box = android.graphics.RectF(sel.first()).apply { sel.drop(1).forEach { union(it) } }
+        val others = bounds.filterKeys { it !in slots }.values
+        val threshold = w * 0.018f
+        val (sx, gx) = MagneticGuides.snap(box.centerX(), listOf(w / 2f) + others.map { it.centerX() }, threshold)
+        val (sy, gy) = MagneticGuides.snap(box.centerY(), listOf(h / 2f) + others.map { it.centerY() } + others.map { it.bottom - (box.height() / 2f) }, threshold)
+        val ddx = (sx - box.centerX()) / w
+        val ddy = (sy - box.centerY()) / h
+        _guides.value = listOfNotNull(gx?.let { true to it }, gy?.let { false to it })
+        designLive { d ->
+            d.copy(artistic = moved.copy(digits = moved.digits + slots.associateWith { s -> moved.style(s).copy(offsetX = raw.getValue(s).first + ddx, offsetY = raw.getValue(s).second + ddy).normalized() }))
+        }
+    }
+
+    /** Fin de un gesto de dígitos: guarda el paso en el historial y oculta las guías. */
+    fun endDigitGesture() {
+        dragRaw = null
+        _guides.value = emptyList()
+        commit()
     }
 
     fun undo() { gestureBase = null; _history.value = _history.value?.undo() }
