@@ -27,6 +27,7 @@ import app.aura.core.studio.PhotoFrame
 import app.aura.core.studio.StudioProject
 import app.aura.studio.mask.MaskRenderer
 import app.aura.studio.mask.SubjectSegmenter
+import app.aura.studio.render.AtmospherePainter
 import app.aura.studio.render.ClockExtrasBuilder
 import app.aura.studio.render.ClockPainter
 import app.aura.studio.render.StudioCompositor
@@ -508,7 +509,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
             val snapshot = app.weather.cached()
             val extras = ClockExtrasBuilder.build(getApplication(), p.design, app.settings.current(), snapshot, _now.value)
             lastExtras = extras
-            val tint = app.aura.studio.render.AtmospherePainter.tintFor(p.atmosphere, _now.value, snapshot)
+            val tint = AtmospherePainter.tintFor(p.atmosphere, _now.value, snapshot)
             // En la vista previa las partículas las anima el editor por encima; al exportar quedan quietas.
             compositor.render(out, src, m, p, extras, subject, tint = tint, particlesAt = if (preview) null else 0f)
             if (!preview) subject?.recycle()
