@@ -37,8 +37,15 @@ class StudioCompositor(private val painter: ClockPainter) {
         val c = Canvas(out)
         val m = photoMatrix(w, h, photo, project)
         val maskMatrix = Matrix(m).apply { preScale(photo.width / mask.width.toFloat(), photo.height / mask.height.toFloat()) }
-        val feather = project.mask.feather / 1000f * w
+        val grow = project.mask.grow.coerceIn(-20, 20)
+        val feather = (project.mask.feather + kotlin.math.abs(grow)) / 1000f * w
         maskPaint.maskFilter = if (feather >= 0.5f) BlurMaskFilter(feather, BlurMaskFilter.Blur.NORMAL) else null
+        // Expandir: el borde difuminado se vuelve opaco antes; contraer: solo queda opaco el interior.
+        maskPaint.colorFilter = when {
+            grow > 0 -> android.graphics.ColorMatrixColorFilter(floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 3f, 0f))
+            grow < 0 -> android.graphics.ColorMatrixColorFilter(floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 2.5f, -380f))
+            else -> null
+        }
         maskPaint.color = Color.BLACK
         if (project.mask.inverted) {
             c.drawColor(Color.BLACK)

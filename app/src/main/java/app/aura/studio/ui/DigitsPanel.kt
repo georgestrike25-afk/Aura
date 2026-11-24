@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -223,6 +224,67 @@ internal fun ColumnScope.FusionSection(vm: StudioViewModel) {
                 OutlinedButton(onClick = vm::applyHarmony) { Text("Aplicar") }
                 TextButton(onClick = vm::analyzePhoto) { Text("Volver a analizar") }
             }
+        }
+    }
+}
+
+/**
+ * Aura Layers: pila de capas de arriba hacia abajo. Cada dígito se puede poner delante o detrás del
+ * sujeto, ocultar, bloquear y reordenar; el sujeto se corrige con el pincel.
+ */
+@Composable
+internal fun ColumnScope.LayersSection(vm: StudioViewModel, p: StudioProject, onEditMask: () -> Unit) {
+    val art = p.design.artistic
+    val glyphs = vm.glyphs()
+    Text("Capas (de arriba hacia abajo)", style = MaterialTheme.typography.titleMedium)
+    if (!art.enabled) {
+        LayerRow("Reloj", if (p.design.behindSubject) "Detrás del sujeto" else "Delante del sujeto", selected = false) {
+            TextButton(onClick = { vm.design { it.copy(behindSubject = !it.behindSubject) } }, enabled = p.hasMask) { Text("Cambiar") }
+        }
+        Text("Activá «Dígitos independientes» para tener una capa por número.", style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
+    } else {
+        val order = art.drawOrder()
+        // Los dígitos que van delante del sujeto se ven por encima de él; los demás, por debajo.
+        val front = order.filter { !art.isBehind(it, p.design.behindSubject) }.reversed()
+        val behind = order.filter { art.isBehind(it, p.design.behindSubject) }.reversed()
+        fun row(slot: DigitSlot) {
+            val st = art.style(slot)
+            val pos = order.indexOf(slot)
+            val isBehind = art.isBehind(slot, p.design.behindSubject)
+            LayerRow("${SLOT_LABELS[slot]} · ${glyphs[slot] ?: "–"}", if (isBehind) "detrás" else "delante", selected = vm.selection.value == setOf(slot)) {
+                TextButton(onClick = { vm.select(setOf(slot)) }) { Text("Editar") }
+                TextButton(onClick = {
+                    vm.artistic { a -> a.edit(slot) { it.copy(depth = if (isBehind) DigitDepth.IN_FRONT_OF_SUBJECT else DigitDepth.BEHIND_SUBJECT) } }
+                }, enabled = p.hasMask && !st.locked) { Text(if (isBehind) "Al frente" else "Atrás") }
+                TextButton(onClick = { vm.artistic { a -> a.edit(slot) { it.copy(hidden = !it.hidden) } } }, enabled = !st.locked) { Text(if (st.hidden) "Mostrar" else "Ocultar") }
+                TextButton(onClick = { vm.artistic { it.setLocked(setOf(slot), !st.locked) } }) { Text(if (st.locked) "Desbloquear" else "Bloquear") }
+                TextButton(onClick = { vm.artistic { it.moveLayer(slot, +1) } }, enabled = pos < 3) { Text("▲") }
+                TextButton(onClick = { vm.artistic { it.moveLayer(slot, -1) } }, enabled = pos > 0) { Text("▼") }
+            }
+        }
+        front.forEach { row(it) }
+        LayerRow("Sujeto de la foto", if (p.hasMask) "máscara lista" else "sin máscara", selected = false) {
+            TextButton(onClick = onEditMask) { Text("Pincel") }
+        }
+        behind.forEach { row(it) }
+    }
+    LayerRow("Foto", "fondo", selected = false) {}
+    Spacer(Modifier.padding(top = 8.dp))
+}
+
+@Composable
+private fun LayerRow(title: String, subtitle: String, selected: Boolean, actions: @Composable () -> Unit) {
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = if (selected) Aura.tokens.accent.copy(alpha = 0.18f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+        modifier = Modifier.padding(vertical = 3.dp),
+    ) {
+        Column(Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(title, style = MaterialTheme.typography.titleSmall)
+                Text("  $subtitle", style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
+            }
+            Row(Modifier.horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically) { actions() }
         }
     }
 }

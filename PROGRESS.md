@@ -21,7 +21,7 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
 | 2 | Studio: cuatro dígitos independientes (mover, escalar, rotar, deformar, color, fuente, opacidad), grupos, guías magnéticas, bloqueo | hecho (validar en CI) |
 | 3 | Aura Elements: 8 materiales paramétricos + controles | hecho (validar en CI) |
 | 4 | Aura Fusion: análisis de la imagen y «Armonizar» | hecho (validar en CI) |
-| 5 | Aura Layers: capas, dígitos delante/detrás del sujeto, orden/ocultar/bloquear, máscara | pendiente |
+| 5 | Aura Layers: capas, dígitos delante/detrás del sujeto, orden/ocultar/bloquear, máscara | hecho (validar en CI) |
 | 6 | Aura Fonts: familias, nuevas fuentes libres, importar TTF/OTF | pendiente |
 | 7 | Atmosphere y Living: partículas, luz según la hora, desactivable | pendiente |
 | 8 | Aura Signature: galería con catálogo remoto y obras originales | pendiente |
@@ -58,3 +58,7 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   saturación, calidez, brillo en la zona del reloj y dirección de la luz; `harmonize` propone material,
   color legible (contraste ≥ 3), acento, tipografía y ángulo de luz con motivos. UI: sección «Aura Fusion»
   en Efectos (paleta tocable + «Aplicar», un paso de deshacer). El camaleón sigue igual y combinable.
+- Etapa 5: pestaña «Capas» (antes Profundidad) con la pila real: dígitos de adelante, sujeto, dígitos de atrás
+  y foto; por capa: editar, delante/detrás, ocultar, bloquear, subir/bajar. Máscara: nuevo «Borde del
+  sujeto» (`MaskSettings.grow`, expandir/contraer con desenfoque + curva de alfa); pincel manual intacto.
+  La segmentación automática sigue siendo ML Kit (no hay un modelo local mejor y gratuito que entre en el APK).

@@ -81,7 +81,7 @@ import app.aura.ui.theme.Aura
 import kotlin.math.roundToInt
 
 private enum class EditorTab(val label: String) {
-    FRAME("Encuadre"), CLOCK("Reloj"), DIGITS("Dígitos"), ADJUST("Ajuste"), WARP("Deformar"), EFFECTS("Efectos"), DEPTH("Profundidad"), EXPORT("Exportar")
+    FRAME("Encuadre"), CLOCK("Reloj"), DIGITS("Dígitos"), ADJUST("Ajuste"), WARP("Deformar"), EFFECTS("Efectos"), DEPTH("Capas"), EXPORT("Exportar")
 }
 
 @Composable
@@ -423,6 +423,7 @@ private fun ColumnScope.EffectsPanel(vm: StudioViewModel, p: StudioProject) {
 
 @Composable
 private fun ColumnScope.DepthPanel(vm: StudioViewModel, p: StudioProject, onEditMask: () -> Unit) {
+    LayersSection(vm, p, onEditMask)
     LabeledRow("Sujeto delante del reloj", supporting = if (p.hasMask) "Máscara lista" else "Todavía no hay máscara") {
         Switch(p.design.behindSubject, { v -> vm.design { it.copy(behindSubject = v) } }, enabled = p.hasMask)
     }
@@ -438,6 +439,11 @@ private fun ColumnScope.DepthPanel(vm: StudioViewModel, p: StudioProject, onEdit
         }
     }
     StudioSlider("Suavizado de bordes", p.mask.feather.toFloat(), 0f..30f, "${p.mask.feather}", { v -> vm.live { it.copy(mask = it.mask.copy(feather = v.roundToInt())) } }, vm::commit)
+    StudioSlider(
+        "Borde del sujeto", p.mask.grow.toFloat(), -20f..20f,
+        when { p.mask.grow > 0 -> "Expandir +${p.mask.grow}"; p.mask.grow < 0 -> "Contraer ${p.mask.grow}"; else -> "Exacto" },
+        { v -> vm.live { it.copy(mask = it.mask.copy(grow = v.roundToInt())) } }, vm::commit,
+    )
     LabeledRow("Invertir máscara") { Switch(p.mask.inverted, { v -> vm.edit { it.copy(mask = it.mask.copy(inverted = v)) } }) }
     if (p.hasMask) TextButton(onClick = vm::clearMask) { Text("Quitar máscara") }
     Text(

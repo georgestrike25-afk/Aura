@@ -201,6 +201,8 @@ data class MaskSettings(
     val feather: Int = 4,
     /** Umbral de confianza para la máscara automática (0,2–0,8). */
     val threshold: Float = 0.5f,
+    /** Expandir (+) o contraer (−) el borde del sujeto, en milésimas del ancho (−20 a 20). */
+    val grow: Int = 0,
 )
 
 /** Trazo de pincel o borrador en coordenadas normalizadas de la foto (0–1). */
