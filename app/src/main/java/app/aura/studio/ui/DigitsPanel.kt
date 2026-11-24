@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -247,29 +248,33 @@ internal fun ColumnScope.LayersSection(vm: StudioViewModel, p: StudioProject, on
         // Los dígitos que van delante del sujeto se ven por encima de él; los demás, por debajo.
         val front = order.filter { !art.isBehind(it, p.design.behindSubject) }.reversed()
         val behind = order.filter { art.isBehind(it, p.design.behindSubject) }.reversed()
-        fun row(slot: DigitSlot) {
-            val st = art.style(slot)
-            val pos = order.indexOf(slot)
-            val isBehind = art.isBehind(slot, p.design.behindSubject)
-            LayerRow("${SLOT_LABELS[slot]} · ${glyphs[slot] ?: "–"}", if (isBehind) "detrás" else "delante", selected = vm.selection.value == setOf(slot)) {
-                TextButton(onClick = { vm.select(setOf(slot)) }) { Text("Editar") }
-                TextButton(onClick = {
-                    vm.artistic { a -> a.edit(slot) { it.copy(depth = if (isBehind) DigitDepth.IN_FRONT_OF_SUBJECT else DigitDepth.BEHIND_SUBJECT) } }
-                }, enabled = p.hasMask && !st.locked) { Text(if (isBehind) "Al frente" else "Atrás") }
-                TextButton(onClick = { vm.artistic { a -> a.edit(slot) { it.copy(hidden = !it.hidden) } } }, enabled = !st.locked) { Text(if (st.hidden) "Mostrar" else "Ocultar") }
-                TextButton(onClick = { vm.artistic { it.setLocked(setOf(slot), !st.locked) } }) { Text(if (st.locked) "Desbloquear" else "Bloquear") }
-                TextButton(onClick = { vm.artistic { it.moveLayer(slot, +1) } }, enabled = pos < 3) { Text("▲") }
-                TextButton(onClick = { vm.artistic { it.moveLayer(slot, -1) } }, enabled = pos > 0) { Text("▼") }
-            }
-        }
-        front.forEach { row(it) }
+        front.forEach { DigitLayerRow(vm, p, it, glyphs) }
         LayerRow("Sujeto de la foto", if (p.hasMask) "máscara lista" else "sin máscara", selected = false) {
             TextButton(onClick = onEditMask) { Text("Pincel") }
         }
-        behind.forEach { row(it) }
+        behind.forEach { DigitLayerRow(vm, p, it, glyphs) }
     }
     LayerRow("Foto", "fondo", selected = false) {}
     Spacer(Modifier.padding(top = 8.dp))
+}
+
+@Composable
+private fun DigitLayerRow(vm: StudioViewModel, p: StudioProject, slot: DigitSlot, glyphs: Map<DigitSlot, Char>) {
+    val art = p.design.artistic
+    val st = art.style(slot)
+    val pos = art.drawOrder().indexOf(slot)
+    val isBehind = art.isBehind(slot, p.design.behindSubject)
+    val selection by vm.selection.collectAsStateWithLifecycle()
+    LayerRow("${SLOT_LABELS[slot]} · ${glyphs[slot] ?: "–"}", if (isBehind) "detrás" else "delante", selected = selection == setOf(slot)) {
+        TextButton(onClick = { vm.select(setOf(slot)) }) { Text("Editar") }
+        TextButton(onClick = {
+            vm.artistic { a -> a.edit(slot) { it.copy(depth = if (isBehind) DigitDepth.IN_FRONT_OF_SUBJECT else DigitDepth.BEHIND_SUBJECT) } }
+        }, enabled = p.hasMask && !st.locked) { Text(if (isBehind) "Al frente" else "Atrás") }
+        TextButton(onClick = { vm.artistic { a -> a.edit(slot) { it.copy(hidden = !it.hidden) } } }, enabled = !st.locked) { Text(if (st.hidden) "Mostrar" else "Ocultar") }
+        TextButton(onClick = { vm.artistic { it.setLocked(setOf(slot), !st.locked) } }) { Text(if (st.locked) "Desbloquear" else "Bloquear") }
+        TextButton(onClick = { vm.artistic { it.moveLayer(slot, +1) } }, enabled = pos < 3) { Text("▲") }
+        TextButton(onClick = { vm.artistic { it.moveLayer(slot, -1) } }, enabled = pos > 0) { Text("▼") }
+    }
 }
 
 @Composable
@@ -285,6 +290,69 @@ private fun LayerRow(title: String, subtitle: String, selected: Boolean, actions
                 Text("  $subtitle", style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
             }
             Row(Modifier.horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically) { actions() }
+        }
+    }
+}
+
+/**
+ * Aura Fonts: familias (Editorial, Monument, Zen, Future, Poetry, Display, Retro) con vista previa real
+ * de los números, y fuentes TTF/OTF propias importadas desde el teléfono.
+ */
+@Composable
+internal fun ColumnScope.FontPicker(selected: String?, onPick: (String) -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    var group by androidx.compose.runtime.saveable.rememberSaveable {
+        androidx.compose.runtime.mutableStateOf(
+            StudioFonts.all.firstOrNull { it.id == selected }?.group ?: if (selected?.startsWith(StudioFonts.USER_PREFIX) == true) app.aura.studio.render.FontFamilyGroup.MINE else app.aura.studio.render.FontFamilyGroup.EDITORIAL,
+        )
+    }
+    var userFonts by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(StudioFonts.userFonts(context)) }
+    var error by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
+    val picker = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        val name = context.contentResolver.query(uri, arrayOf(android.provider.OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c ->
+            if (c.moveToFirst()) c.getString(0) else null
+        }
+        StudioFonts.import(context, uri, name)
+            .onSuccess { id -> userFonts = StudioFonts.userFonts(context); error = null; group = app.aura.studio.render.FontFamilyGroup.MINE; onPick(id) }
+            .onFailure { error = it.message ?: "No se pudo importar la fuente" }
+    }
+    Text("Aura Fonts", style = MaterialTheme.typography.bodyMedium)
+    Row(Modifier.horizontalScroll(rememberScrollState()).padding(vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        app.aura.studio.render.FontFamilyGroup.entries.forEach { g -> SelectChip(g.label, g == group) { group = g } }
+    }
+    Row(Modifier.horizontalScroll(rememberScrollState()).padding(vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        if (group == app.aura.studio.render.FontFamilyGroup.MINE) {
+            OutlinedButton(onClick = { picker.launch(arrayOf("font/ttf", "font/otf", "font/sfnt", "application/x-font-ttf", "application/x-font-otf", "application/octet-stream")) }) {
+                Text("Importar TTF/OTF")
+            }
+            userFonts.forEach { (id, label, file) ->
+                val family = androidx.compose.runtime.remember(file) { runCatching { FontFamily(Font(file)) }.getOrNull() }
+                FontTile("09:50", label, family, id == selected) { onPick(id) }
+            }
+        } else {
+            StudioFonts.all.filter { it.group == group }.forEach { f ->
+                FontTile("09:50", f.label, FontFamily(Font(f.res)), f.id == selected) { onPick(f.id) }
+            }
+        }
+    }
+    error?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
+    if (group == app.aura.studio.render.FontFamilyGroup.MINE && userFonts.isEmpty()) {
+        Text("Tus fuentes se guardan solo en este teléfono.", style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
+    }
+}
+
+@Composable
+private fun FontTile(sample: String, label: String, family: FontFamily?, on: Boolean, onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(12.dp),
+        color = if (on) Aura.tokens.accent.copy(alpha = 0.25f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        border = if (on) androidx.compose.foundation.BorderStroke(1.5.dp, Aura.tokens.accent) else null,
+    ) {
+        Column(Modifier.padding(horizontal = 12.dp, vertical = 6.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(sample, fontFamily = family, style = MaterialTheme.typography.headlineMedium)
+            Text(label, style = MaterialTheme.typography.labelSmall, color = Aura.tokens.mutedText, maxLines = 1)
         }
     }
 }

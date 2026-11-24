@@ -39,4 +39,4 @@ fun Modifier.transformGesture(
         } while (event.changes.any { it.pressed })
         if (!transformed && onTap != null) onTap(down.position) else onEnd()
     }
-}}
+}

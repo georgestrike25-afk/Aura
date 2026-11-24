@@ -271,27 +271,7 @@ private fun ColumnScope.FramePanel(vm: StudioViewModel, p: StudioProject) {
 @Composable
 private fun ColumnScope.ClockPanel(vm: StudioViewModel, p: StudioProject) {
     val d = p.design
-    Text("Fuentes para números", style = MaterialTheme.typography.bodyMedium)
-    Row(Modifier.horizontalScroll(rememberScrollState()).padding(vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        app.aura.studio.render.StudioFonts.all.forEach { f ->
-            val on = d.customFont == f.id
-            Surface(
-                onClick = { vm.design { it.copy(customFont = f.id) } },
-                shape = RoundedCornerShape(12.dp),
-                color = if (on) Aura.tokens.accent.copy(alpha = 0.25f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                border = if (on) androidx.compose.foundation.BorderStroke(1.5.dp, Aura.tokens.accent) else null,
-            ) {
-                Column(Modifier.padding(horizontal = 12.dp, vertical = 6.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        "09:50",
-                        fontFamily = androidx.compose.ui.text.font.FontFamily(androidx.compose.ui.text.font.Font(f.res)),
-                        style = MaterialTheme.typography.headlineMedium,
-                    )
-                    Text(f.label, style = MaterialTheme.typography.labelSmall, color = Aura.tokens.mutedText)
-                }
-            }
-        }
-    }
+    FontPicker(selected = d.customFont, onPick = { id -> vm.design { it.copy(customFont = id) } })
     Text("Fuentes del sistema", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 6.dp))
     Chips(
         listOf(

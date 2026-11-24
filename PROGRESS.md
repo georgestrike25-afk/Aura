@@ -22,7 +22,7 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
 | 3 | Aura Elements: 8 materiales paramétricos + controles | hecho (validar en CI) |
 | 4 | Aura Fusion: análisis de la imagen y «Armonizar» | hecho (validar en CI) |
 | 5 | Aura Layers: capas, dígitos delante/detrás del sujeto, orden/ocultar/bloquear, máscara | hecho (validar en CI) |
-| 6 | Aura Fonts: familias, nuevas fuentes libres, importar TTF/OTF | pendiente |
+| 6 | Aura Fonts: familias, nuevas fuentes libres, importar TTF/OTF | hecho (validar en CI) |
 | 7 | Atmosphere y Living: partículas, luz según la hora, desactivable | pendiente |
 | 8 | Aura Signature: galería con catálogo remoto y obras originales | pendiente |
 | 9 | Widgets meteorológicos nuevos + migración | pendiente |
@@ -62,3 +62,8 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   y foto; por capa: editar, delante/detrás, ocultar, bloquear, subir/bajar. Máscara: nuevo «Borde del
   sujeto» (`MaskSettings.grow`, expandir/contraer con desenfoque + curva de alfa); pincel manual intacto.
   La segmentación automática sigue siendo ML Kit (no hay un modelo local mejor y gratuito que entre en el APK).
+- Etapa 6: 20 fuentes OFL nuevas (61 en total, ~700 KB, recortadas a los caracteres del reloj; licencias en
+  docs/licencias/fuentes); `StudioFonts` con familias Editorial, Monument, Zen, Future, Poetry, Display,
+  Retro y «Mis fuentes»; importar TTF/OTF con el selector del sistema (se copia a filesDir/fonts, se valida
+  con `Typeface.createFromFile`, máx. 8 MB, id `user:…`). Selector `FontPicker` con vista previa real.
+- CI: el registro ahora muestra al final solo los errores de compilación (antes los tapaba la traza).
