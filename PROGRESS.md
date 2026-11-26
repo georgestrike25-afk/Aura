@@ -6,7 +6,7 @@ Rama de trabajo `aura-artistic-evolution-2`, derivada de `72313ef` en `aura-arti
 
 ## Validación y distribución
 
-[Descargar APK firmado](https://raw.githubusercontent.com/georgestrike25-afk/Aura/f88f5299413c5f134482a8d60aea1ff8c5a4665b/dist/Aura-2-Prueba.apk) · [Versión preliminar en GitHub](https://github.com/georgestrike25-afk/Aura/releases/tag/aura-artistic-evolution-2-test)
+[Descargar APK firmado](https://github.com/georgestrike25-afk/Aura/releases/download/aura-artistic-evolution-2-test/Aura.apk) · [Versión preliminar en GitHub](https://github.com/georgestrike25-afk/Aura/releases/tag/aura-artistic-evolution-2-test)
 
 - Gradle local con JDK 17 y SDK 35: 80 pruebas de núcleo aprobadas, APK debug y APK de instrumentación compilados. El módulo Android no tiene pruebas JVM propias.
 - `:app:lintDebug` finalizó sin errores. El informe incluye advertencias de los layouts de widgets generados y de atributos introducidos después del SDK mínimo.
@@ -14,7 +14,7 @@ Rama de trabajo `aura-artistic-evolution-2`, derivada de `72313ef` en `aura-arti
 - [GitHub Actions, ejecución 45741807846](https://github.com/georgestrike25-afk/Aura/actions/runs/45741807846) compiló el APK de distribución con la configuración de firma del repositorio y aprobó `:app:lintDebug`. En el emulador API 34 pasaron 30 de 31 pruebas. La única falla fue la expectativa anterior de diez widgets en el selector, que mostró los seis meteorológicos.
 - La revisión `2cc3a0c` actualiza esa prueba para validar el nuevo selector y verificar también que los cuatro receptores heredados conservan sus metadatos. Pasaron las 31 pruebas instrumentadas en Android 14, además de las 80 pruebas del núcleo y el análisis estático. [Segunda ejecución de GitHub Actions](https://github.com/georgestrike25-afk/Aura/actions/runs/45743377212).
 - APK de la revisión `2cc3a0c` verificado con `apksigner` y `aapt`: `app.aura.preview`, `1.0.0-evolution2`, «Aura 2 · Prueba». SHA-256 del APK `8d24f018b446064109be7fc277efb7689f2039fc485a465c44418651b3b8cf1d`. Certificado de Aura `1f6f0c68557969d4f59cc8281f86c09437ce3f94511c10471867908c92867c2c`.
-- El APK exacto de CI se descargó desde la rama de prueba y coincidió byte por byte con el artefacto firmado. GitHub rechazó adjuntar el binario con la integración de Actions, por lo que la versión preliminar enlaza al archivo del commit de distribución. El workflow conserva esa vía de distribución para las próximas compilaciones.
+- La descarga pública de GitHub Releases coincide byte por byte con el APK firmado de CI. La publicación se recuperó reutilizando la compilación que pasó las pruebas. El workflow también distribuye el binario en la rama de prueba para mantener una descarga directa cuando no pueda adjuntarlo a Releases. [Ejecución de publicación](https://github.com/georgestrike25-afk/Aura/actions/runs/45745385489).
 
 ## Estado de las etapas
 
