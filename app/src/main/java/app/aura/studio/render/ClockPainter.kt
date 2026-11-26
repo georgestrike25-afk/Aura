@@ -346,7 +346,17 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
      * cada línea centrada; al separar se alejan hacia arriba y hacia abajo.
      */
     private fun layout(d: ClockDesign, extras: ClockExtras, width: Int, height: Int): Layout {
-        val textSize = d.size * width
+        val lay = layoutAt(d, d.size, extras, width, height)
+        // Si el reloj no entra a lo ancho (p. ej. un diseño enorme con «p. m.»), se achica hasta entrar.
+        if (d.spread > 0f) return lay
+        val cx = d.centerX * width
+        val available = (2f * minOf(cx, width - cx) - width * 0.04f).coerceAtLeast(width * 0.3f)
+        val wide = lay.box.width() * d.stretchX
+        return if (wide <= available) lay else layoutAt(d, d.size * available / wide, extras, width, height)
+    }
+
+    private fun layoutAt(d: ClockDesign, size: Float, extras: ClockExtras, width: Int, height: Int): Layout {
+        val textSize = size * width
         val custom = d.customFont?.let(fonts)
         val family = custom ?: Typeface.create(d.font.androidFamily, Typeface.NORMAL)
         val hoursFace = when {
