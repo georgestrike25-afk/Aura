@@ -2,7 +2,6 @@ package app.aura.studio.render
 
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.RadialGradient
 import android.graphics.Shader
@@ -91,15 +90,18 @@ object AtmospherePainter {
     private fun drawFog(c: Canvas, w: Int, h: Int, a: Atmosphere, t: Float) {
         val paint = checkNotNull(paints.get())
         val alpha = (a.intensity * 0.8f).roundToInt()
-        for (i in 0 until 4) {
-            val y = h * (0.35f + i * 0.17f)
-            val shift = sin(t * 0.12f + i) * w * 0.12f
+        for (i in 0 until 3) {
+            val y = h * (0.37f + i * 0.21f)
+            val x = w * (0.40f + i * 0.10f) + sin(t * 0.12f + i) * w * 0.12f
+            val radius = w * 0.82f
+            val layer = c.save()
+            c.translate(x, y)
+            c.scale(1f, 0.23f)
             paint.reset()
-            paint.shader = LinearGradient(
-                shift - w * 0.3f, 0f, shift + w * 1.3f, 0f,
-                intArrayOf(Color.TRANSPARENT, Color.argb(alpha, 235, 240, 244), Color.TRANSPARENT), null, Shader.TileMode.CLAMP,
-            )
-            c.drawRect(0f, y, w.toFloat(), y + h * 0.14f, paint)
+            paint.shader = RadialGradient(0f, 0f, radius,
+                Color.argb(alpha, 235, 240, 244), Color.TRANSPARENT, Shader.TileMode.CLAMP)
+            c.drawCircle(0f, 0f, radius, paint)
+            c.restoreToCount(layer)
         }
         paint.shader = null
     }

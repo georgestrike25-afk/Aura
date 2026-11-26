@@ -188,10 +188,20 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             val updated = p.copy(updatedAt = System.currentTimeMillis())
             val thumb = renderAt(THUMB_WIDTH, (THUMB_WIDTH * screen.height / screen.width.toFloat()).roundToInt(), updated, preview = true)
-            repo.save(updated, thumb)
-            thumb.recycle()
-            _history.value = _history.value?.replace(updated)
-            savedVersion = updated
+            try {
+                repo.save(updated, thumb)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _message.value = "No se pudo guardar el diseño."
+                return@launch
+            } finally {
+                thumb.recycle()
+            }
+            if (current?.id == p.id) {
+                if (current == p) _history.value = _history.value?.replace(updated)
+                savedVersion = updated
+            }
             _message.value = "Diseño guardado"
             onDone?.invoke()
         }

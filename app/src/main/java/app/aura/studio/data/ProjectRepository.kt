@@ -9,6 +9,7 @@ import android.graphics.ImageDecoder
 import android.graphics.Paint
 import android.net.Uri
 import android.os.Build
+import android.util.AtomicFile
 import app.aura.core.studio.ClockDesign
 import app.aura.core.studio.StudioProject
 import kotlinx.coroutines.Dispatchers
@@ -58,17 +59,25 @@ class ProjectRepository(context: Context) {
             id = UUID.randomUUID().toString(), name = name, createdAt = now, updatedAt = now,
             design = design?.normalized() ?: ClockDesign(), hasMask = mask != null, autoMask = mask != null,
         )
-        dir(project.id).mkdirs()
-        File(dir(project.id), PHOTO).outputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 92, it) }
-        bitmap.recycle()
-        mask?.copyTo(File(dir(project.id), MASK))
-        save(project)
-        project
+        val folder = dir(project.id).apply { mkdirs() }
+        try {
+            File(folder, PHOTO).outputStream().use {
+                check(bitmap.compress(Bitmap.CompressFormat.JPEG, 92, it)) { "No se pudo guardar la foto" }
+            }
+            mask?.copyTo(File(folder, MASK))
+            save(project)
+            project
+        } catch (e: Exception) {
+            folder.deleteRecursively()
+            throw e
+        } finally {
+            bitmap.recycle()
+        }
     }
 
     suspend fun save(project: StudioProject, thumb: Bitmap? = null) = withContext(Dispatchers.IO) {
         val d = dir(project.id).apply { mkdirs() }
-        File(d, PROJECT).writeText(json.encodeToString(project))
+        writeProject(d, project)
         thumb?.let { File(d, THUMB).outputStream().use { o -> it.compress(Bitmap.CompressFormat.JPEG, 85, o) } }
         refresh()
     }
@@ -106,7 +115,7 @@ class ProjectRepository(context: Context) {
         val now = System.currentTimeMillis()
         val copy = original.copy(id = UUID.randomUUID().toString(), name = "${original.name} (copia)", createdAt = now, updatedAt = now)
         dir(id).copyRecursively(dir(copy.id), overwrite = true)
-        File(dir(copy.id), PROJECT).writeText(json.encodeToString(copy))
+        writeProject(dir(copy.id), copy)
         refresh()
         copy
     }
@@ -124,6 +133,19 @@ class ProjectRepository(context: Context) {
     }
 
     fun activeIdBlocking(): String? = activeFile.takeIf { it.exists() }?.readText()?.trim()?.ifBlank { null }
+
+    @Synchronized
+    private fun writeProject(folder: File, project: StudioProject) {
+        val file = AtomicFile(File(folder, PROJECT))
+        val output = file.startWrite()
+        try {
+            output.write(json.encodeToString(project).toByteArray(Charsets.UTF_8))
+            file.finishWrite(output)
+        } catch (e: Exception) {
+            file.failWrite(output)
+            throw e
+        }
+    }
 
     private fun decodeScaled(uri: Uri, maxSide: Int): Bitmap? {
         val resolver = appContext.contentResolver
@@ -144,8 +166,10 @@ class ProjectRepository(context: Context) {
                 BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample })
             } ?: return null
             val scale = minOf(1f, maxSide / maxOf(decoded.width, decoded.height).toFloat())
-            if (scale < 1f) Bitmap.createScaledBitmap(decoded, (decoded.width * scale).roundToInt(), (decoded.height * scale).roundToInt(), true)
-            else decoded
+            if (scale >= 1f) return decoded
+            val width = (decoded.width * scale).roundToInt().coerceAtLeast(1)
+            val height = (decoded.height * scale).roundToInt().coerceAtLeast(1)
+            Bitmap.createScaledBitmap(decoded, width, height, true).also { if (it !== decoded) decoded.recycle() }
         }
     }
 
