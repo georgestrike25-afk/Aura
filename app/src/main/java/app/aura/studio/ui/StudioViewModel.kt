@@ -34,6 +34,7 @@ import app.aura.studio.render.ClockPainter
 import app.aura.studio.render.StudioCompositor
 import app.aura.studio.render.StudioFonts
 import app.aura.studio.wallpaper.WallpaperApplier
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -406,6 +407,10 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
                     DesignPreview(proposal, image.asImageBitmap())
                 }
                 if (current?.id == project.id) _proposals.value = previews
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _message.value = "No se pudieron componer las propuestas. Podés volver a intentar."
             } finally {
                 _busy.value = null
             }
@@ -461,37 +466,65 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
     // ---------------------------------------------------------------- máscara
 
     fun detectSubject(silent: Boolean = false, onFinished: () -> Unit = {}) {
-        val ph = photo ?: return
         val p = current ?: return
+        if (_busy.value != null) return
+        _busy.value = "Buscando el sujeto…"
         viewModelScope.launch {
-            _busy.value = "Buscando el sujeto…"
-            val result = withContext(Dispatchers.Default) { segmenter.segment(ph, p.mask.threshold) }
-            _busy.value = null
-            if (current?.id != p.id) {
-                if (result is SubjectSegmenter.Result.Mask) result.alpha.recycle()
-                return@launch
-            }
-            when (result) {
-                is SubjectSegmenter.Result.Mask -> {
-                    val (w, h) = MaskRenderer.workingSize(ph.width, ph.height)
-                    val scaled = Bitmap.createScaledBitmap(result.alpha, w, h, true)
-                    if (scaled !== result.alpha) result.alpha.recycle()
-                    repo.saveBaseMask(p.id, scaled)
+            try {
+                val result = withContext(Dispatchers.Default) {
                     renderLock.withLock {
-                        baseMask?.recycle()
-                        baseMask = scaled
-                        maskKey = null
+                        val source = photo
+                        if (source == null || current?.id != p.id) {
+                            SubjectSegmenter.Result.Unavailable("El diseño se cerró")
+                        } else {
+                            segmenter.segment(source, p.mask.threshold)
+                        }
                     }
-                    edit { it.copy(autoMask = true, hasMask = true, strokes = emptyList()) }
-                    _message.value = "Sujeto detectado (${(result.coverage * 100).roundToInt()} % de la foto). Podés retocarlo con el pincel."
                 }
-                is SubjectSegmenter.Result.Unavailable -> {
-                    // Se marca como intentado para no repetir en cada apertura.
-                    _history.value = _history.value?.let { it.replace(it.current.copy(autoMask = true)) }
-                    if (!silent) _message.value = "Detección automática no disponible (${result.reason}). Usá el pincel."
+                if (current?.id != p.id) {
+                    if (result is SubjectSegmenter.Result.Mask) result.alpha.recycle()
+                    return@launch
                 }
+                when (result) {
+                    is SubjectSegmenter.Result.Mask -> {
+                        val sourceSize = photoSize
+                        if (sourceSize == null) {
+                            result.alpha.recycle()
+                            return@launch
+                        }
+                        val (w, h) = MaskRenderer.workingSize(sourceSize.first, sourceSize.second)
+                        val scaled = Bitmap.createScaledBitmap(result.alpha, w, h, true)
+                        if (scaled !== result.alpha) result.alpha.recycle()
+                        try {
+                            repo.saveBaseMask(p.id, scaled)
+                            renderLock.withLock {
+                                if (current?.id == p.id) {
+                                    baseMask?.recycle()
+                                    baseMask = scaled
+                                    maskKey = null
+                                }
+                            }
+                            if (current?.id == p.id) {
+                                edit { it.copy(autoMask = true, hasMask = true, strokes = emptyList()) }
+                                if (!silent) _message.value = "Sujeto detectado. Podés retocarlo con el pincel."
+                            }
+                        } finally {
+                            if (baseMask !== scaled) scaled.recycle()
+                        }
+                    }
+                    is SubjectSegmenter.Result.Unavailable -> {
+                        _history.value = _history.value?.let { it.replace(it.current.copy(autoMask = true)) }
+                        if (!silent) _message.value = "Detección automática no disponible. Usá el pincel."
+                    }
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                if (!silent) _message.value = "No se pudo guardar la máscara."
+            } finally {
+                _busy.value = null
             }
-            onFinished()
+            if (current?.id == p.id) onFinished()
         }
     }
 

@@ -5,6 +5,8 @@ import app.aura.core.studio.AtmosphereEffect
 import app.aura.core.studio.AtmosphereParticles
 import app.aura.core.studio.StudioProject
 import app.aura.core.studio.TimeLight
+import app.aura.core.weather.CurrentConditions
+import app.aura.core.weather.WeatherCondition
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -23,12 +25,24 @@ class AtmosphereTest {
                 assertTrue("$e y ${p.y}", p.y >= -80f && p.y <= 2360f)
                 assertTrue(p.alpha in 0f..1f)
             }
-            if (e != AtmosphereEffect.NONE && e != AtmosphereEffect.FOG) {
+            if (AtmosphereParticles.count(a) > 0) {
                 assertTrue(f0.isNotEmpty())
                 assertNotEquals("$e se mueve", f0, AtmosphereParticles.frame(a, 4.5f, 1080, 2340))
             }
         }
         assertTrue(AtmosphereParticles.count(Atmosphere(AtmosphereEffect.RAIN, 100)) > AtmosphereParticles.count(Atmosphere(AtmosphereEffect.RAIN, 0)))
+    }
+
+    @Test
+    fun weatherDrivesEffectsOnlyWhenEnabled() {
+        val weather = CurrentConditions(0, 14.0, weatherCode = 3, isDay = true, condition = WeatherCondition.CLOUDY)
+        val a = Atmosphere(followWeather = true)
+        assertEquals(AtmosphereEffect.CLOUDS, a.resolved(weather).effect)
+        assertEquals(AtmosphereEffect.WIND, a.resolved(weather.copy(windSpeedKmh = 35.0)).effect)
+        assertEquals(AtmosphereEffect.RAIN, a.resolved(weather.copy(condition = WeatherCondition.RAIN)).effect)
+        assertTrue(!a.copy(enabled = false).resolved(weather).active)
+        assertTrue(!a.copy(intensity = 0).resolved(weather).active)
+        assertTrue(!a.resolved(weather).moving)
     }
 
     @Test
