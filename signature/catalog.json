@@ -14,6 +14,33 @@
           "dhash": "06070f4d0d4c6811001d1f022d2f03333700262a00171a102b2c0e2a2c001a1f0a2021304138283932051c1f333b2d4246333b4434434b3d",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-desierto-de-las-mantas-9a1616780f4a",
+          "title": "El desierto de las mantas",
+          "image": "photos/7f1103f07099a1f9a12cd041.webp",
+          "thumb": "photos/7f1103f07099a1f9a12cd041-thumb.webp",
+          "dhash": "7f3f1f1b3b1f0f0f54574046503d27332917221d232e24323b2d222e2514221e51442865512d5948283f37215f3f1b8d5a2298602374481a",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-refugio-del-nautilo-557adea3150b",
+          "title": "El refugio del nautilo",
+          "image": "photos/0a99e7c091f2e460e056d2bf.webp",
+          "thumb": "photos/0a99e7c091f2e460e056d2bf-thumb.webp",
+          "dhash": "5f1b0e0f9624093b524d6d6c69935d5c824241632529465049625a4d5e2427434a467079608381678e5b547c6963957a6da17d6ea482689d",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-fuente-del-abismo-6d2ae2a8b08e",
+          "title": "La fuente del abismo",
+          "image": "photos/842db7cd1c67a80bcc2ad430.webp",
+          "thumb": "photos/842db7cd1c67a80bcc2ad430-thumb.webp",
+          "dhash": "0a120d0a4f171b27160e16180f18180f18160e17140d151a1017190f17150d15170e1625151a25121b180e162213192d171c2d141c23121a",
+          "width": 1440,
+          "height": 3120
         }
       ]
     },
