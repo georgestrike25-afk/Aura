@@ -89,7 +89,7 @@ import kotlin.math.sin
 /**
  * Pantalla Clima (pestaña Pronóstico, y la que abre el toque en un widget): cielo animado según el
  * clima y la hora, temperatura grande, próximas 48 h con curva de temperatura y probabilidad de
- * lluvia por hora, aviso de cuándo va a llover, 14 días y detalles (UV, sol, humedad, viento).
+ * lluvia por hora, aviso de cuándo va a llover, 10 días y detalles (UV, sol, humedad, viento).
  */
 @Composable
 fun ForecastScreen(viewModel: AuraViewModel, onOpenLocation: () -> Unit) {
@@ -264,7 +264,7 @@ internal fun WeatherDetail(snap: WeatherSnapshot, settings: AppSettings, refresh
             SunCard(todayPoint, nowSec, ::clock)
 
             Text(
-                "Actualizado hace ${WeatherText.age(context, age)} · Pronóstico: Open-Meteo.com (CC BY 4.0)" +
+                "Actualizado hace ${WeatherText.age(context, age)} · Pronóstico: MET Norway (CC BY 4.0)" +
                     if (current.observedBy != null) " · Observación: aviationweather.gov (NOAA)" else "",
                 color = Soft, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp),

@@ -176,3 +176,6 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   y se nombran según lo que muestran (ML Kit Image Labeling de Play Services, en el teléfono). La misma foto no se
   repite aunque tenga otro nombre o tamaño (huella visual dHash; la bandeja de GitHub hace lo mismo). Tocar una
   foto abre un visor a pantalla completa: se desliza para pasar a la siguiente y «Usar en Studio» la abre.
+- **MET Norway** reemplaza a Open-Meteo (cuyo plan gratis es solo no comercial): pronóstico de 10 días (ECMWF),
+  48 h horarias, probabilidad y milímetros de lluvia, UV de cielo despejado; sol calculado en el teléfono (NOAA).
+  Búsqueda de ciudades con el geocodificador de Android y zona horaria deducida del país.

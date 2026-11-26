@@ -10,12 +10,13 @@ data class ProviderInfo(
 )
 
 /**
- * Contrato independiente del proveedor. Para sustituir Open-Meteo basta con implementar esta
+ * Contrato independiente del proveedor. Para sustituir el proveedor basta con implementar esta
  * interfaz (y [PlaceSearchProvider] si el nuevo servicio ofrece búsqueda de ciudades).
  */
 interface WeatherProvider {
     val info: ProviderInfo
-    suspend fun fetch(coordinates: Coordinates): WeatherData
+    /** [timeZoneId]: zona del lugar (para agrupar los días); null = la del teléfono. */
+    suspend fun fetch(coordinates: Coordinates, timeZoneId: String? = null): WeatherData
 }
 
 interface PlaceSearchProvider {

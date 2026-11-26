@@ -27,7 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.aura.BuildConfig
-import app.aura.core.openmeteo.OpenMeteoWeatherProvider
+import app.aura.core.metno.MetNorwayWeatherProvider
 import app.aura.core.settings.AppSettings
 import app.aura.core.settings.LocationMode
 import app.aura.core.settings.ThemeMode
@@ -46,7 +46,7 @@ fun SettingsScreen(viewModel: AuraViewModel, onOpenLocation: () -> Unit, onBack:
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var confirmClear by remember { mutableStateOf(false) }
-    val provider = OpenMeteoWeatherProvider.INFO
+    val provider = MetNorwayWeatherProvider.INFO
 
     Column(
         Modifier
@@ -102,7 +102,7 @@ fun SettingsScreen(viewModel: AuraViewModel, onOpenLocation: () -> Unit, onBack:
             Text(provider.termsSummary, style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
             TextButton(onClick = {
                 runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(provider.attributionUrl)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
-            }) { Text("open-meteo.com") }
+            }) { Text("api.met.no") }
         }
         Spacer(Modifier.height(10.dp))
         AuraCard(padding = 16) {
@@ -112,7 +112,7 @@ fun SettingsScreen(viewModel: AuraViewModel, onOpenLocation: () -> Unit, onBack:
             Text(
                 "Temperatura, viento y si llueve o hay tormenta, informados cada hora por la estación del aeropuerto " +
                     "(por ejemplo Córdoba Taravella). Se usa si está a menos de 30 km y el dato tiene menos de 2 horas; " +
-                    "el pronóstico sigue siendo de Open-Meteo. Servicio público y gratuito de NOAA, sin clave.",
+                    "el pronóstico sigue siendo de MET Norway. Servicio público y gratuito de NOAA, sin clave.",
                 style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText,
             )
             TextButton(onClick = {
@@ -124,7 +124,8 @@ fun SettingsScreen(viewModel: AuraViewModel, onOpenLocation: () -> Unit, onBack:
         AuraCard(padding = 16) {
             Text(
                 "Aura no tiene cuentas, anuncios ni analítica. Guarda tus ajustes y la última respuesta meteorológica solo en este teléfono. " +
-                    "Para consultar el tiempo envía a Open-Meteo las coordenadas del lugar (redondeadas a ~1 km si usás tu ubicación) " +
+                    "Para consultar el tiempo envía a MET Norway (api.met.no) las coordenadas del lugar (redondeadas a ~1 km si usás tu ubicación) " +
+                    "y, para buscar ciudades, el texto que escribas al buscador de Android del teléfono " +
                     "y, si las observaciones de aeropuertos están activadas, a aviationweather.gov una zona de unos 35 km alrededor. " +
                     "La ubicación se lee con permiso aproximado y únicamente con la app abierta.",
                 style = MaterialTheme.typography.bodySmall,

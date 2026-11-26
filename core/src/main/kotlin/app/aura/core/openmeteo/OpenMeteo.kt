@@ -29,7 +29,7 @@ class OpenMeteoWeatherProvider(
 
     override val info = INFO
 
-    override suspend fun fetch(coordinates: Coordinates): WeatherData = withContext(dispatcher) {
+    override suspend fun fetch(coordinates: Coordinates, timeZoneId: String?): WeatherData = withContext(dispatcher) {
         val response = try {
             http.get(forecastUrl(coordinates))
         } catch (e: IOException) {

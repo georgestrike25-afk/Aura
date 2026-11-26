@@ -31,6 +31,13 @@ las fotos se procesan en el teléfono. Pensada para un Samsung Galaxy S24+.
   para todos: subir a `signature/inbox/<Colección>/` y el workflow `.github/workflows/signature.yml` las
   publica (también descarta repetidas). Las obras remotas deben ser 1440×3120.
 
+- **Clima**: MET Norway (`core/metno/MetNorway.kt`, gratis también comercial, CC BY 4.0, 10 días con ECMWF;
+  User-Agent con contacto obligatorio). Salida/puesta del sol calculadas en el teléfono (`core/weather/SunTimes.kt`).
+  Buscador de ciudades: geocodificador de Android (`data/AndroidPlaceSearch.kt`). Open-Meteo quedó en el código
+  pero NO se usa: su plan gratis es solo no comercial y la app se va a vender.
+- **Publicación en Play (pendiente)**: política de privacidad, ficha de la tienda, `uses-feature` para excluir
+  TV/autos/relojes, Play Billing (compra única), cuenta de desarrollador del usuario.
+
 ## Compilar y entregar
 - Se compila en GitHub Actions (`.github/workflows/android.yml`): pruebas de `core`, APK firmado, lint y
   pruebas en emulador con capturas en `docs/capturas/`. En el contenedor local Gradle no baja las

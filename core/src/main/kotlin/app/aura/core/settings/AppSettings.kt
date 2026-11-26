@@ -25,7 +25,7 @@ data class AppSettings(
     val wifiOnly: Boolean = false,
     /** Usar la observación real del aeropuerto más cercano (METAR) para el estado de «ahora». */
     val useObservations: Boolean = true,
-    val providerId: String = "open-meteo",
+    val providerId: String = "met-norway",
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val onboardingDone: Boolean = false,
 ) {

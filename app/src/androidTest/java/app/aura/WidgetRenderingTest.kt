@@ -120,7 +120,7 @@ class WidgetRenderingTest {
     @Test
     fun weatherDataIsAvailableFromProvider() = runBlocking {
         val snap = context.aura.weather.cached()
-        assertNotNull("Sin datos de Open-Meteo (¿red del emulador?)", snap)
+        assertNotNull("Sin datos de MET Norway (¿red del emulador?)", snap)
         assertEquals("Madrid", snap!!.place.name)
         assertTrue(snap.data.hourly.isNotEmpty())
         assertTrue(snap.data.daily.isNotEmpty())

@@ -115,7 +115,7 @@ fun LocationScreen(viewModel: AuraViewModel, onBack: () -> Unit) {
             }
             item {
                 Text(
-                    "Búsqueda de ciudades: Open-Meteo Geocoding (datos GeoNames, CC BY 4.0). " +
+                    "Búsqueda de ciudades: buscador de Android del teléfono. " +
                         "Aura no guarda tu historial de ubicaciones fuera del teléfono.",
                     style = MaterialTheme.typography.bodySmall,
                     color = Aura.tokens.mutedText,

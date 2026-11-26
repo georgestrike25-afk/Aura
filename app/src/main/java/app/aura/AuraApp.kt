@@ -3,9 +3,9 @@ package app.aura
 import android.app.Application
 import android.content.Context
 import app.aura.core.net.UrlConnectionHttpClient
-import app.aura.core.openmeteo.OpenMeteoGeocoder
 import app.aura.core.observation.MetarClient
-import app.aura.core.openmeteo.OpenMeteoWeatherProvider
+import app.aura.core.metno.MetNorwayWeatherProvider
+import app.aura.data.AndroidPlaceSearch
 import app.aura.data.LocationRepository
 import app.aura.data.SettingsRepository
 import app.aura.data.WeatherRepository
@@ -33,10 +33,11 @@ class AuraApp : Application() {
 /** Contenedor de dependencias manual: la app es pequeña y no justifica un framework de DI. */
 class AppContainer(context: Context) {
     val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private val http = UrlConnectionHttpClient(userAgent = "Aura/${BuildConfig.VERSION_NAME} (Android)")
+    private val http = UrlConnectionHttpClient(userAgent = "Aura/${BuildConfig.VERSION_NAME} (Android; github.com/georgestrike25-afk/Aura)")
 
-    val weatherProvider = OpenMeteoWeatherProvider(http)
-    val placeSearch = OpenMeteoGeocoder(http)
+    // MET Norway pide identificar la app en el User-Agent (nombre y una dirección de contacto).
+    val weatherProvider = MetNorwayWeatherProvider(http)
+    val placeSearch = AndroidPlaceSearch(context)
     val settings = SettingsRepository(context)
     val weather = WeatherRepository(context, weatherProvider, settings, MetarClient(http))
     val location = LocationRepository(context)

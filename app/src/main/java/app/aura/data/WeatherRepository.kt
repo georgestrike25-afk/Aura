@@ -74,12 +74,14 @@ class WeatherRepository(
         val appSettings = settings.current()
         val place = appSettings.activePlace ?: return RefreshResult.NoPlace
         val now = clock()
-        if (!RefreshPolicy.shouldRefresh(cached(), place, now, appSettings.refreshIntervalMinutes, manual)) {
+        // Con otro proveedor (p. ej. tras pasar de Open-Meteo a MET Norway) se descarga ya, sin esperar.
+        val otherProvider = cached()?.let { it.providerId != provider.info.id } == true
+        if (!RefreshPolicy.shouldRefresh(cached(), place, now, appSettings.refreshIntervalMinutes, manual || otherProvider)) {
             return RefreshResult.NotNeeded
         }
         _refreshing.value = true
         try {
-            val data = provider.fetch(place.coordinates)
+            val data = provider.fetch(place.coordinates, place.timeZoneId)
             // Observación real del aeropuerto más cercano (si falla, sigue solo con el pronóstico).
             val observation = if (appSettings.useObservations) observations?.nearest(place.coordinates, clock() / 1000) else null
             val snap = WeatherSnapshot(place, data, provider.info.id, fetchedAtMillis = clock(), observation = observation)
