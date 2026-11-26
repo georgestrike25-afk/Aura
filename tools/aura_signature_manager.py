@@ -27,7 +27,7 @@ from PIL import Image, ImageTk
 import aura_signature_sync as sync
 
 APP = "Aura Signature"
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 TOKEN_URL = "https://github.com/settings/personal-access-tokens/new"
 IS_WINDOWS = sys.platform == "win32"
 
@@ -157,7 +157,8 @@ def open_path(path: Path):
 # ------------------------------------------------------------------ ventana
 
 PALETTE = {"bg": "#111418", "panel": "#1A1F25", "card": "#20262C", "text": "#EDE9E1", "muted": "#9AA3AB", "accent": "#D8BA8B"}
-THUMB = (108, 234)
+THUMB_SIZES = {"Chicas": (108, 156), "Medianas": (156, 224), "Grandes": (216, 300)}
+ALL_WORKS = ":all:"
 
 
 class ManagerApp:
@@ -168,14 +169,21 @@ class ManagerApp:
         self.jobs: queue.Queue = queue.Queue()
         self.gallery: sync.Gallery | None = None
         self.folder: sync.FolderSync | None = None
-        self.selected_col: str | None = None
+        self.selected_col = ALL_WORKS
+        self.selection_anchor = None
+        self.cards = {}
+        self.drag_origin = None
+        self.drop_target = None
+        self.resize_job = None
+        self.failed_uploads = []
+        self.thumb_size = THUMB_SIZES["Grandes"]
         self.selected_works: set[str] = set()
-        self.images: dict[str, ImageTk.PhotoImage] = {}
+        self.images: dict[tuple[str, tuple[int, int]], ImageTk.PhotoImage] = {}
         self.cache = data_dir() / "cache"
         self.busy = False
 
         root.title(f"{APP}")
-        root.geometry("1120x740")
+        root.geometry("1320x860")
         root.minsize(860, 560)
         self._style()
         self._build()
@@ -190,79 +198,154 @@ class ManagerApp:
     # ---------- aspecto
 
     def _style(self):
-        try:
-            import sv_ttk
-            sv_ttk.set_theme("dark")
-        except Exception:
-            pass
-        s = ttk.Style()
-        s.configure("Title.TLabel", font=("Segoe UI Semibold", 18))
-        s.configure("Muted.TLabel", foreground=PALETTE["muted"])
-        s.configure("Accent.TButton")
+        self.root.configure(bg=PALETTE["bg"])
+        style = ttk.Style()
+        style.theme_use("clam")
+        style.configure(".", font=("Segoe UI", 10), background=PALETTE["bg"], foreground=PALETTE["text"])
+        style.configure("TButton", padding=(10, 6), background=PALETTE["card"], bordercolor=PALETTE["panel"])
+        style.map("TButton", background=[("active", "#333a41")])
+        style.configure("Accent.TButton", background=PALETTE["accent"], foreground=PALETTE["bg"])
+        style.map("Accent.TButton", background=[("active", "#ecd2aa")])
+        style.configure("Title.TLabel", font=("Segoe UI Semibold", 24))
+        style.configure("Muted.TLabel", foreground=PALETTE["muted"])
+        style.configure("Sidebar.TFrame", background=PALETTE["panel"])
+        style.configure("Sidebar.TLabel", background=PALETTE["panel"], font=("Segoe UI Semibold", 16))
+        style.configure("Gallery.Treeview", background=PALETTE["panel"], fieldbackground=PALETTE["panel"],
+                        borderwidth=0, rowheight=50)
+        style.map("Gallery.Treeview", background=[("selected", "#534735")], foreground=[("selected", "#fff0d5")])
+        style.configure("TEntry", fieldbackground=PALETTE["bg"], insertcolor=PALETTE["text"])
+        style.configure("TCombobox", fieldbackground=PALETTE["card"], arrowsize=14)
+        style.map("TCombobox", fieldbackground=[("readonly", PALETTE["card"])])
+        self.root.option_add("*TCombobox*Listbox.background", PALETTE["card"])
+        self.root.option_add("*TCombobox*Listbox.foreground", PALETTE["text"])
 
     def _build(self):
-        top = ttk.Frame(self.root, padding=(16, 12))
-        top.pack(fill="x")
-        ttk.Label(top, text="Aura Signature", style="Title.TLabel").pack(side="left")
-        self.status = ttk.Label(top, text="", style="Muted.TLabel")
-        self.status.pack(side="left", padx=16)
-        ttk.Button(top, text="Configuración", command=self.settings).pack(side="right", padx=4)
-        ttk.Button(top, text="Actualizar", command=lambda: self.run(self._refresh, "Actualizando la galería…")).pack(side="right", padx=4)
-        ttk.Button(top, text="Abrir carpeta", command=self.open_folder).pack(side="right", padx=4)
-        ttk.Button(top, text="Agregar imágenes…", style="Accent.TButton", command=self.add_images).pack(side="right", padx=4)
-
-        body = ttk.PanedWindow(self.root, orient="horizontal")
-        body.pack(fill="both", expand=True, padx=16)
-
-        left = ttk.Frame(body, padding=(0, 0, 12, 0))
-        ttk.Label(left, text="Colecciones", style="Muted.TLabel").pack(anchor="w")
-        self.cols = ttk.Treeview(left, show="tree", selectmode="browse", height=18)
-        self.cols.pack(fill="both", expand=True, pady=6)
+        body = ttk.Frame(self.root)
+        body.pack(fill="both", expand=True)
+        left = ttk.Frame(body, padding=(14, 18), style="Sidebar.TFrame")
+        left.pack(side="left", fill="y")
+        ttk.Label(left, text="Colecciones", style="Sidebar.TLabel").pack(anchor="w")
+        self.search = tk.StringVar()
+        search = ttk.Entry(left, textvariable=self.search, width=28)
+        search.pack(fill="x", pady=(12, 6))
+        search.bind("<Escape>", lambda _: self.search.set(""))
+        ttk.Label(left, text="Buscar por nombre", style="Muted.TLabel").pack(anchor="w", pady=(0, 8))
+        self.cols = ttk.Treeview(left, show="tree", selectmode="browse", style="Gallery.Treeview", height=10)
+        self.cols.column("#0", width=235, minwidth=235, stretch=False)
+        self.cols.tag_configure("drop", background="#79613c", foreground="#ffffff")
+        side_scroll = ttk.Scrollbar(left, orient="vertical", command=self.cols.yview)
+        self.cols.configure(yscrollcommand=side_scroll.set)
+        side_scroll.pack(side="right", fill="y")
+        row = ttk.Frame(left, style="Sidebar.TFrame")
+        row.pack(side="bottom", fill="x", pady=(10, 0))
+        ttk.Button(row, text="Nueva colección", command=self.new_collection).pack(fill="x", pady=(0, 6))
+        meta = ttk.Frame(row, style="Sidebar.TFrame")
+        meta.pack(fill="x")
+        for text, command in (("Editar", self.edit_collection), ("↑", lambda: self.move_collection(-1)),
+                              ("↓", lambda: self.move_collection(1)), ("Quitar", self.delete_collection)):
+            ttk.Button(meta, text=text, command=command, width=6 if len(text) > 1 else 2).pack(side="left")
+        self.cols.pack(fill="both", expand=True)
         self.cols.bind("<<TreeviewSelect>>", lambda _: self._select_collection())
-        row = ttk.Frame(left)
-        row.pack(fill="x")
-        for text, cmd in (("Nueva", self.new_collection), ("Editar", self.edit_collection), ("↑", lambda: self.move_collection(-1)),
-                          ("↓", lambda: self.move_collection(1)), ("Borrar", self.delete_collection)):
-            ttk.Button(row, text=text, command=cmd, width=6 if len(text) > 1 else 3).pack(side="left", padx=2)
-        body.add(left, weight=1)
+        self.search.trace_add("write", lambda *_: self._render_collections())
 
-        right = ttk.Frame(body)
+        right = ttk.Frame(body, padding=(18, 16, 18, 0))
+        right.pack(side="left", fill="both", expand=True)
         bar = ttk.Frame(right)
-        bar.pack(fill="x")
-        self.col_title = ttk.Label(bar, text="", font=("Segoe UI Semibold", 14))
+        bar.pack(fill="x", pady=(0, 14))
+        self.col_title = ttk.Label(bar, text="Todas las obras", style="Title.TLabel")
         self.col_title.pack(side="left")
-        self.sel_label = ttk.Label(bar, text="", style="Muted.TLabel")
-        self.sel_label.pack(side="left", padx=12)
-        ttk.Button(bar, text="Borrar", command=self.delete_works).pack(side="right", padx=2)
-        ttk.Button(bar, text="Mover a…", command=self.move_works).pack(side="right", padx=2)
-        ttk.Button(bar, text="Renombrar", command=self.rename_work).pack(side="right", padx=2)
-        ttk.Button(bar, text="Ver en grande", command=self.view_selected).pack(side="right", padx=2)
+        menu_button = ttk.Menubutton(bar, text="⋯", width=3)
+        menu = tk.Menu(menu_button, tearoff=False)
+        menu.add_command(label="Abrir carpeta", command=self.open_folder)
+        menu.add_command(label="Actualizar", command=self.refresh_catalog)
+        menu.add_command(label="Configuración", command=self.settings)
+        menu_button.configure(menu=menu)
+        menu_button.pack(side="right")
+        size = ttk.Combobox(bar, values=list(THUMB_SIZES), state="readonly", width=10)
+        size.set("Grandes")
+        size.bind("<<ComboboxSelected>>", lambda _: self.set_thumb_size(size.get()))
+        size.pack(side="right", padx=8)
+        ttk.Button(bar, text="+  Agregar fotos", style="Accent.TButton", command=self.add_images).pack(side="right")
+
+        self.actions = ttk.Frame(right, padding=(0, 8))
+        self.actions.pack(side="bottom", fill="x")
+        self.sel_label = ttk.Label(self.actions, style="Muted.TLabel")
+        self.sel_label.pack(side="left", padx=(0, 12))
+        self.work_buttons = []
+        for label, cmd in (("Ver en grande", self.view_selected), ("Renombrar", self.rename_work),
+                           ("Mover a…", self.move_works), ("Quitar de Signature", self.delete_works)):
+            button = ttk.Button(self.actions, text=label, command=cmd, state="disabled")
+            button.pack(side="left", padx=(0, 6))
+            self.work_buttons.append(button)
 
         holder = ttk.Frame(right)
-        holder.pack(fill="both", expand=True, pady=8)
+        holder.pack(fill="both", expand=True)
         self.canvas = tk.Canvas(holder, highlightthickness=0, bg=PALETTE["bg"])
         scroll = ttk.Scrollbar(holder, orient="vertical", command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=scroll.set)
         scroll.pack(side="right", fill="y")
         self.canvas.pack(side="left", fill="both", expand=True)
         self.grid = tk.Frame(self.canvas, bg=PALETTE["bg"])
-        self.canvas.create_window((0, 0), window=self.grid, anchor="nw")
+        self.grid_window = self.canvas.create_window((0, 0), window=self.grid, anchor="nw")
         self.grid.bind("<Configure>", lambda _: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
-        self.canvas.bind("<Configure>", lambda _: self._render_works())
-        self.canvas.bind_all("<MouseWheel>", lambda e: self.canvas.yview_scroll(int(-e.delta / 120), "units"))
-        body.add(right, weight=4)
+        self.canvas.bind("<Configure>", self._resize_gallery)
+        self.root.bind("<MouseWheel>", self._scroll_gallery)
+        self.root.bind("<Button-4>", self._scroll_gallery)
+        self.root.bind("<Button-5>", self._scroll_gallery)
+        self.root.bind("<Delete>", self._delete_selection)
+        self.root.bind("<Control-f>", lambda _: search.focus_set())
 
-        bottom = ttk.Frame(self.root, padding=(16, 6, 16, 12))
+        bottom = ttk.Frame(self.root, padding=(16, 8))
         bottom.pack(fill="x")
-        self.progress = ttk.Progressbar(bottom, mode="indeterminate", length=160)
+        self.status = ttk.Label(bottom, text="", style="Muted.TLabel")
+        self.status.pack(side="left")
+        self.activity = ttk.Label(bottom, text="", style="Muted.TLabel", width=44)
+        self.activity.pack(side="left", padx=12)
+        self.progress = ttk.Progressbar(bottom, mode="indeterminate", length=90)
         self.progress.pack(side="right")
+        ttk.Button(bottom, text="Actividad", command=self._toggle_log).pack(side="right", padx=8)
+        self.retry_uploads = ttk.Button(bottom, text="Reintentar", command=self._retry_failed, state="disabled")
+        self.retry_uploads.pack(side="right")
         self.log_box = tk.Text(bottom, height=5, bg=PALETTE["panel"], fg=PALETTE["text"], relief="flat", wrap="word",
                                font=("Segoe UI", 9), state="disabled")
-        self.log_box.pack(side="left", fill="x", expand=True, padx=(0, 12))
-
         if TkinterDnD is not None and hasattr(self.root, "drop_target_register"):
             self.root.drop_target_register(DND_FILES)
             self.root.dnd_bind("<<Drop>>", self._on_drop)
+
+    def _toggle_log(self):
+        if self.log_box.winfo_manager():
+            self.log_box.pack_forget()
+        else:
+            self.log_box.pack(side="bottom", fill="x", pady=(8, 0), before=self.status)
+
+    def refresh_catalog(self):
+        if self.gallery:
+            self.run(self._refresh, "Actualizando la galería…")
+        else:
+            self.settings()
+
+    def _resize_gallery(self, event):
+        self.canvas.itemconfigure(self.grid_window, width=event.width)
+        if self.resize_job:
+            self.root.after_cancel(self.resize_job)
+        self.resize_job = self.root.after(85, self._render_works)
+
+    def _scroll_gallery(self, event):
+        if event.widget not in (self.canvas, self.grid) and not str(event.widget).startswith(str(self.grid) + "."):
+            return
+        delta = -1 if event.num == 4 else 1 if event.num == 5 else -1 if event.delta > 0 else 1
+        self.canvas.yview_scroll(delta, "units")
+
+    def _delete_selection(self, event):
+        if event.widget == self.cols or str(event.widget).startswith(str(self.grid)):
+            if self.selected_works:
+                self.delete_works()
+                return "break"
+
+    def set_thumb_size(self, label):
+        self.thumb_size = THUMB_SIZES[label]
+        self.images.clear()
+        self._render_collections()
 
     def _first_run_shortcut(self):
         """La primera vez deja el acceso directo en el escritorio."""
@@ -313,6 +396,7 @@ class ManagerApp:
                 self.events.put(("idle", None))
 
     def _drain(self):
+        refresh = False
         try:
             while True:
                 kind, value = self.events.get_nowait()
@@ -326,12 +410,15 @@ class ManagerApp:
                 elif kind == "idle":
                     self.busy = False
                     self.progress.stop()
-                elif kind == "catalog":
-                    self._render_collections()
-                elif kind == "thumb":
-                    self._render_works()
+                elif kind in ("catalog", "thumb"):
+                    refresh = True
+                elif kind == "failed":
+                    self.failed_uploads = value
+                    self.retry_uploads.configure(state="normal" if value else "disabled")
         except queue.Empty:
             pass
+        if refresh:
+            self._render_collections()
         self.root.after(150, self._drain)
 
     def _tick(self):
@@ -369,8 +456,9 @@ class ManagerApp:
             path = self.cache / thumb
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(data)
-        done = [p for p, _ in items]
-        self.folder.mark(done)
+        self.folder.mark([p for p, _ in items])
+        failed_paths = {path for path, _ in r.failed}
+        self.events.put(("failed", [(path, collection) for path, collection in items if path in failed_paths]))
         parts = []
         if r.added:
             parts.append(f"✓ Publicadas {len(r.added)}: " + ", ".join(w["title"] for w in r.added[:6]) + ("…" if len(r.added) > 6 else ""))
@@ -383,11 +471,18 @@ class ManagerApp:
             self.events.put(("log", "En unos minutos aparecen en Signature (el teléfono revisa cada 5 minutos)."))
         self.events.put(("catalog", None))
 
+    def _retry_failed(self):
+        if self.failed_uploads and not self.busy:
+            items = self.failed_uploads[:]
+            self.retry_uploads.configure(state="disabled")
+            self.run(lambda: self._publish(items), f"Reintentando {len(items)} imágenes…")
+
     # ---------- listas
 
     def log(self, text: str):
         if not text:
             return
+        self.activity.configure(text=text.splitlines()[0][:65] if text else "")
         self.log_box.configure(state="normal")
         self.log_box.insert("end", time.strftime("%H:%M  ") + text + "\n")
         self.log_box.see("end")
@@ -398,76 +493,171 @@ class ManagerApp:
 
     def _render_collections(self):
         self.cols.delete(*self.cols.get_children())
-        for col in self._collections():
-            self.cols.insert("", "end", iid=col["id"], text=f"{col['title']}  ({len(col['items'])})")
-        ids = [c["id"] for c in self._collections()]
-        if self.selected_col not in ids:
-            self.selected_col = ids[0] if ids else None
-        if self.selected_col:
-            self.cols.selection_set(self.selected_col)
+        collections = self._collections()
+        all_count = sum(len(col["items"]) for col in collections)
+        self.cols.insert("", "end", iid=ALL_WORKS, text=f"Todas las obras  ·  {all_count}")
+        query = self.search.get().strip().casefold()
+        for col in collections:
+            items = col["items"]
+            if query and query not in col["title"].casefold() and not any(query in w["title"].casefold() for w in items):
+                continue
+            cover = self._thumb_image(items[0], (38, 38)) if items else None
+            options = {"image": cover} if cover else {}
+            self.cols.insert("", "end", iid=col["id"], text=f"{col['title']}  ·  {len(items)}", **options)
+        if not self.cols.exists(self.selected_col):
+            self.selected_col = ALL_WORKS
+            self.selected_works.clear()
+        self.cols.selection_set(self.selected_col)
         self._render_works()
 
     def _select_collection(self):
-        sel = self.cols.selection()
-        if sel and sel[0] != self.selected_col:
-            self.selected_col = sel[0]
+        selected = self.cols.selection()
+        if selected and selected[0] != self.selected_col:
+            self.selected_col = selected[0]
             self.selected_works.clear()
+            self.selection_anchor = None
+            self.canvas.yview_moveto(0)
             self._render_works()
 
     def _current(self) -> dict | None:
         return next((c for c in self._collections() if c["id"] == self.selected_col), None)
 
-    def _thumb_image(self, item: dict) -> ImageTk.PhotoImage | None:
-        key = item["thumb"]
+    def _visible_works(self):
+        col = self._current()
+        groups = [col] if col else self._collections()
+        query = self.search.get().strip().casefold()
+        return [item for group in groups for item in group["items"]
+                if query in group["title"].casefold() or query in item["title"].casefold()]
+
+    def _thumb_image(self, item: dict, size=None) -> ImageTk.PhotoImage | None:
+        size = size or self.thumb_size
+        key = (item["thumb"], size)
         if key in self.images:
             return self.images[key]
-        path = self.cache / key
-        if not path.exists():
-            return None
+        path = self.cache / item["thumb"]
         try:
-            im = Image.open(path).convert("RGB")
-            im.thumbnail(THUMB)
-            self.images[key] = ImageTk.PhotoImage(im)
+            with Image.open(path) as source:
+                image = source.convert("RGB")
+            image.thumbnail(size, Image.Resampling.LANCZOS)
+            self.images[key] = ImageTk.PhotoImage(image, master=self.root)
             return self.images[key]
-        except Exception:
+        except (OSError, ValueError):
             return None
 
     def _render_works(self):
-        for w in self.grid.winfo_children():
-            w.destroy()
+        if self.resize_job:
+            self.root.after_cancel(self.resize_job)
+            self.resize_job = None
+        items = self._visible_works()
+        self.selected_works.intersection_update(item["id"] for item in items)
+        for widget in self.grid.winfo_children():
+            widget.destroy()
+        self.cards.clear()
         col = self._current()
-        self.col_title.configure(text=col["title"] if col else "Todavía no hay colecciones")
-        self.sel_label.configure(text=f"{len(self.selected_works)} seleccionadas" if self.selected_works else "")
-        if not col:
-            tk.Label(self.grid, text="Arrastrá imágenes acá o guardalas en la carpeta «Aura Signature».",
-                     bg=PALETTE["bg"], fg=PALETTE["muted"], font=("Segoe UI", 11)).grid(padx=20, pady=40)
-            return
-        per_row = max(1, (self.canvas.winfo_width() - 10) // (THUMB[0] + 22))
-        for i, item in enumerate(col["items"]):
-            selected = item["id"] in self.selected_works
-            cell = tk.Frame(self.grid, bg=PALETTE["accent"] if selected else PALETTE["card"], padx=3, pady=3)
-            cell.grid(row=i // per_row, column=i % per_row, padx=6, pady=6, sticky="n")
-            img = self._thumb_image(item)
-            pic = tk.Label(cell, image=img, bg=PALETTE["card"], width=THUMB[0], height=THUMB[1]) if img else \
-                tk.Label(cell, text="…", bg=PALETTE["card"], fg=PALETTE["muted"], width=13, height=14)
-            pic.pack()
-            name = tk.Label(cell, text=item["title"][:18], bg=cell["bg"], fg="#111418" if selected else PALETTE["text"], font=("Segoe UI", 9))
-            name.pack(fill="x")
-            for widget in (cell, pic, name):
-                widget.bind("<Button-1>", lambda e, wid=item["id"]: self._toggle(wid, e))
-                widget.bind("<Double-Button-1>", lambda e, it=item: self.preview(it))
+        self.col_title.configure(text=col["title"] if col else "Todas las obras")
+        if not items:
+            text = "No hay resultados para esa búsqueda." if self.search.get().strip() else "Arrastrá fotos acá o usá Agregar fotos."
+            tk.Label(self.grid, text=text, bg=PALETTE["bg"], fg=PALETTE["muted"],
+                     font=("Segoe UI", 11)).grid(padx=22, pady=44)
+        width, height = self.thumb_size
+        per_row = max(1, (self.canvas.winfo_width() - 4) // (width + 18))
+        for i, item in enumerate(items):
+            wid = item["id"]
+            cell = tk.Frame(self.grid, bg=PALETTE["bg"], takefocus=True, padx=0, pady=0)
+            cell.grid(row=i // per_row, column=i % per_row, padx=6, pady=(0, 14), sticky="n")
+            art = tk.Canvas(cell, width=width, height=height, bg=PALETTE["card"], bd=0, highlightthickness=2,
+                            highlightbackground=PALETTE["bg"], highlightcolor=PALETTE["accent"])
+            art.pack()
+            image = self._thumb_image(item)
+            if image is not None:
+                art.create_image(width // 2, height // 2, image=image)
+            else:
+                art.create_text(width // 2, height // 2, text="Cargando…", fill=PALETTE["muted"])
+            name = tk.Label(cell, text=item["title"], width=max(8, width // 8), anchor="w",
+                            bg=PALETTE["bg"], fg=PALETTE["text"], font=("Segoe UI", 10))
+            name.pack(fill="x", pady=(3, 0))
+            self.cards[wid] = art
+            for widget in (cell, art, name):
+                widget.bind("<Button-1>", lambda e, key=wid, card=cell: self._press_work(e, key, card))
+                widget.bind("<Double-Button-1>", lambda e, current=item: self._open_preview(current))
+                widget.bind("<B1-Motion>", self._drag_work)
+                widget.bind("<ButtonRelease-1>", self._drop_work)
+            cell.bind("<Return>", lambda _, current=item: self._open_preview(current))
+        self._paint_selection()
 
-    def _toggle(self, work_id: str, event):
+    def _paint_selection(self):
+        count = len(self.selected_works)
+        self.sel_label.configure(text=f"{count} seleccionadas" if count else "")
+        for button, enabled in zip(self.work_buttons, (count > 0, count == 1, count > 0, count > 0)):
+            button.configure(state="normal" if enabled else "disabled")
+        for wid, art in self.cards.items():
+            selected = wid in self.selected_works
+            art.configure(highlightbackground=PALETTE["accent"] if selected else PALETTE["bg"])
+            art.delete("selection")
+            if selected:
+                x = self.thumb_size[0] - 18
+                art.create_oval(x - 11, 7, x + 11, 29, fill=PALETTE["accent"], outline="", tags="selection")
+                art.create_text(x, 18, text="✓", fill=PALETTE["bg"], tags="selection")
+
+    def _press_work(self, event, wid, cell):
+        cell.focus_set()
         ctrl = bool(event.state & 0x0004)
-        if ctrl:
-            self.selected_works ^= {work_id}
-        else:
-            self.selected_works = set() if self.selected_works == {work_id} else {work_id}
-        self._render_works()
+        shift = bool(event.state & 0x0001)
+        ids = list(self.cards)
+        if shift and self.selection_anchor in ids:
+            first, last = sorted((ids.index(self.selection_anchor), ids.index(wid)))
+            selected = set(ids[first:last + 1])
+            self.selected_works = self.selected_works | selected if ctrl else selected
+        elif ctrl:
+            self.selected_works ^= {wid}
+            self.selection_anchor = wid
+        elif wid not in self.selected_works or len(self.selected_works) == 1:
+            self.selected_works = {wid}
+            self.selection_anchor = wid
+        self.drag_origin = (event.x_root, event.y_root, wid, ctrl or shift)
+        self._paint_selection()
+
+    def _collection_at(self, x, y):
+        offset_x, offset_y = x - self.cols.winfo_rootx(), y - self.cols.winfo_rooty()
+        if not (0 <= offset_x < self.cols.winfo_width() and 0 <= offset_y < self.cols.winfo_height()):
+            return None
+        row = self.cols.identify_row(offset_y)
+        return next((col for col in self._collections() if col["id"] == row), None)
+
+    def _highlight_drop(self, col):
+        if self.drop_target and self.cols.exists(self.drop_target):
+            self.cols.item(self.drop_target, tags=())
+        self.drop_target = col["id"] if col else None
+        if self.drop_target:
+            self.cols.item(self.drop_target, tags=("drop",))
+
+    def _drag_work(self, event):
+        if self.drag_origin and self.selected_works:
+            self._highlight_drop(self._collection_at(event.x_root, event.y_root))
+
+    def _drop_work(self, event):
+        origin, self.drag_origin = self.drag_origin, None
+        self._highlight_drop(None)
+        if origin is None:
+            return
+        x, y, wid, modifier = origin
+        if abs(event.x_root - x) + abs(event.y_root - y) < 8:
+            if not modifier and wid in self.selected_works:
+                self.selected_works = {wid}
+                self.selection_anchor = wid
+                self._paint_selection()
+            return
+        col = self._collection_at(event.x_root, event.y_root)
+        if col and col["id"] != self.selected_col and self.selected_works:
+            self._queue_move(col["title"], col["id"])
+
+    def _open_preview(self, item):
+        self.drag_origin = None
+        self.preview(item)
+        return "break"
 
     def preview(self, item: dict):
-        col = self._current()
-        items = list(col["items"]) if col else [item]
+        items = self._visible_works() or [item]
         start = next((i for i, it in enumerate(items) if it["id"] == item["id"]), 0)
         Viewer(self, items, start)
 
@@ -491,8 +681,11 @@ class ManagerApp:
         name = "".join(ch for ch in title if ch not in '<>:"/\\|?*').strip().rstrip(".") or sync.DEFAULT_COLLECTION
         return self.folder.root / name
 
-    def _copy_in(self, paths: list[Path]):
-        col = self._current()
+    def _copy_in(self, paths: list[Path], col: dict | None = None):
+        if self.folder is None:
+            self.settings()
+            return
+        col = col or self._current()
         target = self._folder_for(col["title"] if col else sync.DEFAULT_COLLECTION)
         target.mkdir(parents=True, exist_ok=True)
         n = 0
@@ -510,7 +703,9 @@ class ManagerApp:
             self._copy_in([Path(f) for f in files])
 
     def _on_drop(self, event):
-        self._copy_in([Path(p) for p in self.root.tk.splitlist(event.data)])
+        col = self._collection_at(event.x_root, event.y_root)
+        self._copy_in([Path(p) for p in self.root.tk.splitlist(event.data)], col)
+        return "copy"
 
     def open_folder(self):
         open_path(self.folder.root)
@@ -552,11 +747,10 @@ class ManagerApp:
             self.run(lambda: (self.gallery.delete_collection(col["id"]), self.events.put(("catalog", None))), f"Borrando «{col['title']}»…")
 
     def view_selected(self):
-        col = self._current()
-        if not col or not col["items"]:
-            return
-        first = next((i for i in col["items"] if i["id"] in self.selected_works), col["items"][0])
-        self.preview(first)
+        items = self._visible_works()
+        if items:
+            first = next((item for item in items if item["id"] in self.selected_works), items[0])
+            self.preview(first)
 
     def rename_work(self):
         if len(self.selected_works) != 1:
@@ -574,15 +768,22 @@ class ManagerApp:
             return
         names = ", ".join(c["title"] for c in self._collections())
         title = simpledialog.askstring(APP, f"¿A qué colección? (existentes: {names})", parent=self.root)
-        if title:
-            ids = list(self.selected_works)
+        if title and title.strip():
+            self._queue_move(title.strip())
 
-            def job():
-                for wid in ids:
-                    self.gallery.move_work(wid, title.strip())
-                self.events.put(("catalog", None))
-            self.selected_works.clear()
-            self.run(job, f"Moviendo {len(ids)} fondos a «{title}»…")
+    def _queue_move(self, title, collection_id=None):
+        ids = list(self.selected_works)
+        if collection_id is None:
+            match = next((col for col in self._collections() if col["title"].casefold() == title.casefold()), None)
+            collection_id = match["id"] if match else None
+
+        def job():
+            self.gallery.move_works(ids, title, collection_id=collection_id)
+            self.events.put(("catalog", None))
+
+        self.selected_works.clear()
+        self._paint_selection()
+        self.run(job, f"Moviendo {len(ids)} fondos a «{title}»…")
 
     def delete_works(self):
         if not self.selected_works:
@@ -688,7 +889,7 @@ class Viewer:
         w.minsize(720, 520)
         self.canvas = tk.Canvas(w, bg=self.BG, highlightthickness=0)
         self.canvas.pack(fill="both", expand=True)
-        bar = tk.Frame(w, bg=self.BAR, padx=14, pady=10)
+        bar = self.bar = tk.Frame(w, bg=self.BAR, padx=14, pady=10)
         bar.pack(fill="x")
         self.title = tk.Label(bar, text="", bg=self.BAR, fg=self.TEXT, font=("Segoe UI Semibold", 13), anchor="w")
         self.title.pack(fill="x")
@@ -697,7 +898,9 @@ class Viewer:
         row = tk.Frame(bar, bg=self.BAR)
         row.pack(fill="x", pady=(8, 0))
         for text, cmd in (("←", lambda: self.go(-1)), ("→", lambda: self.go(1)), ("Renombrar (F2)", self.rename),
-                          ("Mover (M)", self.move), ("Pantalla completa", self.fullscreen)):
+                          ("Mover (M)", self.move), ("−", lambda: self.zoom_by(0.8)),
+                          ("Ajustar", lambda: self.set_zoom(None)), ("+", lambda: self.zoom_by(1.25)),
+                          ("Pantalla completa (F11)", self.fullscreen)):
             ttk.Button(row, text=text, command=cmd).pack(side="left", padx=(0, 6))
         ttk.Button(row, text="Borrar (Supr)", command=self.delete).pack(side="right")
 
@@ -720,9 +923,9 @@ class Viewer:
         w.bind("<minus>", lambda e: self.zoom_by(0.8))
         self.canvas.bind("<Configure>", lambda e: self.draw())
         self.canvas.bind("<Double-Button-1>", lambda e: self.fullscreen())
-        self.canvas.bind("<MouseWheel>", lambda e: self.zoom_by(1.2 if e.delta > 0 else 1 / 1.2))
-        self.canvas.bind("<Button-4>", lambda e: self.zoom_by(1.2))
-        self.canvas.bind("<Button-5>", lambda e: self.zoom_by(1 / 1.2))
+        self.canvas.bind("<MouseWheel>", lambda e: self.zoom_by(1.2 if e.delta > 0 else 1 / 1.2, (e.x, e.y)))
+        self.canvas.bind("<Button-4>", lambda e: self.zoom_by(1.2, (e.x, e.y)))
+        self.canvas.bind("<Button-5>", lambda e: self.zoom_by(1 / 1.2, (e.x, e.y)))
         self.canvas.bind("<ButtonPress-1>", self._drag_start)
         self.canvas.bind("<B1-Motion>", self._drag)
         w.focus_force()
@@ -781,9 +984,16 @@ class Viewer:
         fit = min(cw / im.width, ch / im.height)
         scale = fit if self.zoom is None else self.zoom
         w, h = max(1, int(im.width * scale)), max(1, int(im.height * scale))
-        shown = im.resize((w, h), Image.LANCZOS if scale < 1 else Image.BILINEAR) if (w, h) != im.size else im
-        self.photo = ImageTk.PhotoImage(shown)
-        c.create_image(cw / 2 + self.offset[0], ch / 2 + self.offset[1], image=self.photo)
+        left = (cw - w) / 2 + self.offset[0]
+        top = (ch - h) / 2 + self.offset[1]
+        x0, y0 = max(0, int(left)), max(0, int(top))
+        x1, y1 = min(cw, int(left + w)), min(ch, int(top + h))
+        if x1 > x0 and y1 > y0:
+            box = (max(0, (x0 - left) * im.width / w), max(0, (y0 - top) * im.height / h),
+                   min(im.width, (x1 - left) * im.width / w), min(im.height, (y1 - top) * im.height / h))
+            shown = im.resize((x1 - x0, y1 - y0), Image.LANCZOS if scale < 1 else Image.BILINEAR, box=box)
+            self.photo = ImageTk.PhotoImage(shown)
+            c.create_image(x0, y0, image=self.photo, anchor="nw")
         if self.zoom is not None:
             c.create_text(12, 12, anchor="nw", text=f"{int(scale * 100)} %", fill=self.AMBER, font=("Segoe UI", 10))
 
@@ -800,13 +1010,19 @@ class Viewer:
         self.offset = [0.0, 0.0]
         self.draw()
 
-    def zoom_by(self, k: float):
+    def zoom_by(self, k: float, point=None):
         item = self.current()
         im = self.images.get(item["id"]) if item else None
         if im is None:
             return
         fit = min(self.canvas.winfo_width() / im.width, self.canvas.winfo_height() / im.height)
-        self.zoom = max(fit, min(4.0, (self.zoom or fit) * k))
+        old_zoom = self.zoom or fit
+        self.zoom = max(fit, min(4.0, old_zoom * k))
+        if point is not None and old_zoom > 0:
+            ratio = self.zoom / old_zoom
+            for axis, dimension in enumerate((self.canvas.winfo_width(), self.canvas.winfo_height())):
+                position = point[axis] - dimension / 2
+                self.offset[axis] = position + (self.offset[axis] - position) * ratio
         if abs(self.zoom - fit) < 1e-3:
             self.zoom, self.offset = None, [0.0, 0.0]
         self.draw()
@@ -817,14 +1033,26 @@ class Viewer:
     def _drag(self, e):
         if self.zoom is None:
             return
-        self.offset[0] += e.x - self._last[0]
-        self.offset[1] += e.y - self._last[1]
+        item = self.current()
+        im = self.images.get(item["id"]) if item else None
+        if im is None:
+            return
+        for axis, new, length, viewport in (
+            (0, e.x, im.width, self.canvas.winfo_width()),
+            (1, e.y, im.height, self.canvas.winfo_height()),
+        ):
+            limit = max(0.0, (length * self.zoom - viewport) / 2)
+            self.offset[axis] = max(-limit, min(limit, self.offset[axis] + new - self._last[axis]))
         self._last = (e.x, e.y)
         self.draw()
 
     def fullscreen(self, on: bool | None = None):
         on = not self.win.attributes("-fullscreen") if on is None else on
         self.win.attributes("-fullscreen", on)
+        if on:
+            self.bar.pack_forget()
+        else:
+            self.bar.pack(fill="x")
 
     # ---------- decidir
 

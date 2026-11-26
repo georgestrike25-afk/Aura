@@ -237,25 +237,30 @@ class Gallery:
         self._apply(f"Signature: renombrar «{title}»", change)
 
     def move_work(self, work_id: str, collection: str) -> None:
-        col_id = publisher.slug(collection)
+        self.move_works([work_id], collection)
+
+    def move_works(self, work_ids: list[str], collection: str, *, collection_id: str | None = None) -> None:
+        col_id = collection_id or publisher.slug(collection)
         if not col_id:
             raise ValueError("La colección necesita un nombre con letras o números")
+        ids = set(work_ids)
 
         def change(catalog):
-            moved = None
+            moved = []
             for col in catalog["collections"]:
-                for item in col["items"]:
-                    if item["id"] == work_id:
-                        moved = item
-                col["items"] = [i for i in col["items"] if i["id"] != work_id]
-            if moved is not None:
-                target = next((c for c in catalog["collections"] if c["id"] == col_id), None)
-                if target is None:
-                    target = {"id": col_id, "title": collection, "items": []}
-                    catalog["collections"].insert(0, target)
-                target["items"].append(moved)
-            catalog["collections"] = [c for c in catalog["collections"] if c["items"]]
+                if col["id"] != col_id:
+                    moved.extend(item for item in col["items"] if item["id"] in ids)
+                    col["items"] = [item for item in col["items"] if item["id"] not in ids]
+            if not moved:
+                return {}
+            target = next((col for col in catalog["collections"] if col["id"] == col_id), None)
+            if target is None:
+                target = {"id": col_id, "title": collection, "items": []}
+                catalog["collections"].insert(0, target)
+            target["items"].extend(moved)
+            catalog["collections"] = [col for col in catalog["collections"] if col["items"]]
             return {}
+
         self._apply(f"Signature: mover a «{collection}»", change)
 
     def delete_works(self, work_ids: list[str]) -> None:

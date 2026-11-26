@@ -1,5 +1,12 @@
 # Aura Artistic Evolution 2.0
 
+## Galería para Windows
+
+- Rama `aura-signature-gallery`. Cuadrícula grafito, portadas de colección, búsqueda, tamaños de miniatura, selección por rango y arrastre a colecciones. Los movimientos de varias obras se publican juntos.
+- El primer clic conserva la tarjeta para que el doble clic abra el visor. El visor ofrece zoom al cursor, desplazamiento, ajuste y pantalla completa.
+- Prueba local con Tk y pantalla virtual para selección, doble clic, zoom, búsqueda y arrastre. La compilación y el arranque del ejecutable se verifican en Windows en el workflow de Signature.
+
+
 Rama de trabajo `aura-artistic-evolution-2`, derivada de `72313ef` en `aura-artistic-evolution`.
 
 **El clima se siente. El tiempo se convierte en arte.**

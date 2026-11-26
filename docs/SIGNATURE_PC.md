@@ -31,10 +31,17 @@ teléfono, para todos los usuarios.
   y en las colecciones **Nueva**, **Editar** (nombre y descripción), **↑ ↓** (orden en la app) y **Borrar**.
   Borrar en el gestor quita el fondo de Signature; **las imágenes de tu carpeta no se tocan**.
 
+## Galería
+
+- Usá **Todas las obras** o elegí una colección en la barra lateral. **Buscar por nombre** filtra colecciones y obras. Podés cambiar el tamaño de las miniaturas.
+- Arrastrá archivos desde el Explorador a la cuadrícula o directamente sobre una colección. Para mover obras publicadas, seleccionalas y arrastralas a la colección de destino.
+- Seleccioná con **Ctrl + clic** o por rango con **Shift + clic**. La barra inferior indica la selección y ofrece **Mover a…** y **Quitar de Signature**.
+- **Actividad** despliega el registro. **Reintentar** vuelve a preparar los archivos que fallaron en el último lote.
+
 ## Visor
 
 Doble clic en un fondo (o **Ver en grande**) abre el visor, con los atajos de Mirador: **← →** pasar,
-**rueda** zoom, **arrastrar** para moverse, **0** ajustar, **1** al 100 %, **F11** o doble clic pantalla completa.
+**rueda** zoom, **arrastrar** para moverse, **0** ajustar, **1** al 100 %, **F11** o doble clic para alternar pantalla completa. **Esc** vuelve a la ventana y la rueda también funciona con los controles ocultos.
 Para decidir rápido: **Supr** borrar de Signature (pasa a la siguiente), **F2** renombrar, **M** mover a otra colección.
 
 ## Cómo funciona

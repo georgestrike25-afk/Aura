@@ -4,10 +4,10 @@ name: "Signature: gestor para PC"
 # «aura-signature-pc». Las pruebas de la lógica corren antes, en Linux.
 on:
   push:
-    branches: [main]
+    branches: [main, aura-signature-gallery]
     paths:
       - "tools/aura_signature_*.py"
-      - "tools/test_aura_signature_sync.py"
+      - "tools/test_aura_signature*.py"
       - "tools/requirements-signature.txt"
       - ".github/workflows/signature-manager.yml"
   workflow_dispatch:
@@ -39,6 +39,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install --quiet -r tools/requirements-signature.txt
+      - name: Probar la galería y el visor con Tk
+        run: cd tools && python -m unittest test_aura_signature_manager -v
       - name: Compilar AuraSignature.exe
         shell: bash
         run: |
@@ -62,7 +64,7 @@ jobs:
           name: AuraSignature
           path: dist/AuraSignature.exe
       - name: Publicar en dist/ y en la versión aura-signature-pc
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: github.ref_name == 'main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
