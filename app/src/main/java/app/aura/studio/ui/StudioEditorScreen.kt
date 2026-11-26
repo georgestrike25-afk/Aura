@@ -66,6 +66,10 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.aura.R
+import app.aura.core.studio.ClockInformationMode
+import app.aura.core.studio.ClockInformationStyle
+import app.aura.core.studio.fields
+import app.aura.core.studio.informationStyle
 import app.aura.core.studio.ClockMaterial
 import app.aura.core.studio.StudioProject
 import app.aura.core.style.Brand
@@ -362,14 +366,41 @@ private fun ColumnScope.ClockPanel(vm: StudioViewModel, p: StudioProject) {
         OutlinedButton(onClick = { vm.design { it.copy(centerX = 0.5f, centerY = 0.28f) } }) { Text("Arriba") }
         OutlinedButton(onClick = { vm.design { it.copy(centerX = 0.5f, centerY = 0.5f) } }) { Text("Medio") }
     }
-    LabeledRow("Fecha") { Switch(d.showDate, { v -> vm.design { it.copy(showDate = v) } }) }
-    if (d.showDate) {
-        Segmented(
-            listOf(DateStyle.TEXT to "Palabras", DateStyle.NUMERIC to "dd/mm/aaaa", DateStyle.WEEKDAY_NUMERIC to "Día + nº"),
-            d.dateStyle, { f -> vm.design { it.copy(dateStyle = f) } }, Modifier.padding(bottom = 6.dp),
-        )
+    Text("Fecha y clima", style = MaterialTheme.typography.titleMedium)
+    Chips(listOf(null to "Original") + ClockInformationMode.entries.map { it to it.label }, d.informationMode) { mode ->
+        vm.design { it.copy(informationMode = mode) }
     }
-    LabeledRow("Clima de Aura", supporting = "Temperatura y ciudad de la última actualización") { Switch(d.showWeather, { v -> vm.design { it.copy(showWeather = v) } }) }
+    d.informationMode?.fields()?.forEach { field ->
+        val style = d.informationStyle(field)
+        var expanded by rememberSaveable(field) { mutableStateOf(false) }
+        fun change(live: Boolean = false, transform: (ClockInformationStyle) -> ClockInformationStyle) {
+            val update: (app.aura.core.studio.ClockDesign) -> app.aura.core.studio.ClockDesign = {
+                it.copy(informationStyles = it.informationStyles + (field to transform(it.informationStyle(field))))
+            }
+            if (live) vm.designLive(update) else vm.design(update)
+        }
+        TextButton(onClick = { expanded = !expanded }) { Text(field.label) }
+        if (expanded) {
+            LabeledRow("Visible") { Switch(style.visible, { value -> change { it.copy(visible = value) } }) }
+            FontPicker(selected = style.fontId, onPick = { font -> change { it.copy(fontId = font) } })
+            ColorSwatches(INKS.map { Color(it) }, Color(style.color ?: d.color),
+                { color -> change { it.copy(color = color.toArgb()) } }, Modifier.padding(vertical = 8.dp))
+            StudioSlider("Horizontal", style.x, 0f..1f, "${(style.x * 100).roundToInt()} %", { v -> change(true) { it.copy(x = v) } }, vm::commit)
+            StudioSlider("Vertical", style.y, 0f..1f, "${(style.y * 100).roundToInt()} %", { v -> change(true) { it.copy(y = v) } }, vm::commit)
+            StudioSlider("Tamaño", style.size, 0.015f..0.10f, "${(style.size * 100).roundToInt()} %", { v -> change(true) { it.copy(size = v) } }, vm::commit)
+            StudioSlider("Opacidad", style.opacity.toFloat(), 0f..100f, "${style.opacity} %", { v -> change(true) { it.copy(opacity = v.roundToInt()) } }, vm::commit)
+        }
+    }
+    if (d.informationMode == null) {
+        LabeledRow("Fecha") { Switch(d.showDate, { v -> vm.design { it.copy(showDate = v) } }) }
+        if (d.showDate) {
+            Segmented(
+                listOf(DateStyle.TEXT to "Palabras", DateStyle.NUMERIC to "dd/mm/aaaa", DateStyle.WEEKDAY_NUMERIC to "Día + nº"),
+                d.dateStyle, { f -> vm.design { it.copy(dateStyle = f) } }, Modifier.padding(bottom = 6.dp),
+            )
+        }
+        LabeledRow("Clima de Aura", supporting = "Temperatura y ciudad de la última actualización") { Switch(d.showWeather, { v -> vm.design { it.copy(showWeather = v) } }) }
+    }
     Segmented(listOf(HourFormat.SYSTEM to "Como la app", HourFormat.H12 to "12 h", HourFormat.H24 to "24 h"), d.hourFormat, { f -> vm.design { it.copy(hourFormat = f) } })
 }
 

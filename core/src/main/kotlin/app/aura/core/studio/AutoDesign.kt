@@ -56,6 +56,7 @@ object AutoDesign {
             spread = if (split) 0.54f else 0f,
             showColon = !split,
             behindSubject = split,
+            informationMode = ClockInformationMode.ESSENTIAL,
             artistic = ArtisticClock(enabled = true),
         ).withMaterial(material ?: harmony.material)
         return Proposal(title, design.copy(shadow = maxOf(design.shadow, 42)))

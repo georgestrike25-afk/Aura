@@ -12,6 +12,8 @@ import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
 import app.aura.core.studio.ClockDesign
+import app.aura.core.studio.ClockInformationField
+import app.aura.core.studio.informationStyle
 import app.aura.core.studio.ClockLayout
 import app.aura.core.studio.ClockMaterial
 import app.aura.core.studio.DigitSlot
@@ -24,7 +26,7 @@ import kotlin.math.sin
 import kotlin.random.Random
 
 /** Texto que acompaña a la hora (fecha y clima en caché), ya formateado por quien llama. */
-data class ClockExtras(val hours: String, val minutes: String, val subtitle: String?)
+data class ClockExtras(val hours: String, val minutes: String, val subtitle: String?, val information: List<Pair<ClockInformationField, String>> = emptyList())
 
 /** Lo que hay detrás del reloj: imagen y su colocación en el lienzo (para el modo camaleón). */
 class Backdrop(val bitmap: Bitmap, val matrix: android.graphics.Matrix)
@@ -87,6 +89,25 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
         }
         canvas.restoreToCount(layer)
         canvas.restoreToCount(outer)
+
+        if (pass != Pass.BEHIND) {
+            for ((field, text) in extras.information) {
+                val style = d.informationStyle(field)
+                if (!style.visible) continue
+                val face = style.fontId?.let(fonts) ?: Typeface.create("sans-serif", Typeface.NORMAL)
+                paint.reset(width * style.size.coerceIn(0.015f, 0.10f), face, 0.01f)
+                val available = width * 0.94f
+                val measured = paint.measureText(text)
+                if (measured > available) paint.textSize *= available / measured
+                val half = paint.measureText(text) / 2f
+                val x = (style.x.coerceIn(0f, 1f) * width).coerceIn(half, width - half)
+                val baseline = (style.y.coerceIn(0f, 1f) * height).coerceIn(-paint.ascent(), height - paint.descent())
+                val alpha = style.opacity.coerceIn(0, 100) * 255 / 100
+                paint.color = withAlpha(style.color ?: d.color, alpha)
+                paint.setShadowLayer(width * 0.004f, 0f, width * 0.002f, withAlpha(Color.BLACK, alpha / 2))
+                canvas.drawText(text, x - half, baseline, paint)
+            }
+        }
 
         // Subtítulo (fecha · clima), sobrio y legible; acompaña la posición y el alto del reloj.
         val subtitleHere = pass == Pass.ALL || (pass == Pass.BEHIND) == d.behindSubject
