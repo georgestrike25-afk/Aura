@@ -71,6 +71,7 @@ import app.aura.core.studio.ClockInformationStyle
 import app.aura.core.studio.fields
 import app.aura.core.studio.informationStyle
 import app.aura.core.studio.ClockMaterial
+import app.aura.core.studio.ElementTexture
 import app.aura.core.studio.StudioProject
 import app.aura.core.style.Brand
 import app.aura.core.style.FontChoice
@@ -483,9 +484,11 @@ private fun ColumnScope.EffectsPanel(vm: StudioViewModel, p: StudioProject) {
     if (d.material.isElement) {
         Text(ELEMENT_NOTES[d.material].orEmpty(), style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
         StudioSlider("Intensidad del material", d.elementIntensity.toFloat(), 0f..100f, "${d.elementIntensity} %", { v -> vm.designLive { it.copy(elementIntensity = v.roundToInt()) } }, vm::commit)
-        StudioSlider("Textura", d.textureScale.toFloat(), 0f..100f, if (d.textureScale < 34) "Fina" else if (d.textureScale < 67) "Media" else "Grande", { v -> vm.designLive { it.copy(textureScale = v.roundToInt()) } }, vm::commit)
         StudioSlider("Transparencia", (100 - d.opacity).toFloat(), 0f..90f, "${100 - d.opacity} %", { v -> vm.designLive { it.copy(opacity = 100 - v.roundToInt()) } }, vm::commit)
         Text("En el fondo animado la textura se mueve un poco cada minuto (sin gasto extra de batería).", style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
+    }
+    if (d.material.isElement || ElementTexture.hasSurface(d.material)) {
+        StudioSlider("Textura", d.textureScale.toFloat(), 0f..100f, if (d.textureScale < 34) "Fina" else if (d.textureScale < 67) "Media" else "Grande", { v -> vm.designLive { it.copy(textureScale = v.roundToInt()) } }, vm::commit)
     }
     LabeledRow("Camaleón", supporting = "Los números toman los colores de la foto que tienen detrás") {
         Switch(d.chameleon > 0, { v -> vm.design { it.copy(chameleon = if (v) 85 else 0) } })

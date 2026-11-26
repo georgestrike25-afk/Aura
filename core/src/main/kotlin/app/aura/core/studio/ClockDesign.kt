@@ -127,8 +127,8 @@ data class ClockDesign(
         ClockMaterial.GLASS -> copy(material = m, shadow = 35, depth = 10, bevel = 60, reflection = 60, glow = 0)
         ClockMaterial.NEON -> copy(material = m, shadow = 0, depth = 0, bevel = 10, reflection = 0, glow = 70)
         ClockMaterial.STONE -> copy(material = m, shadow = 65, depth = 60, bevel = 35, reflection = 0, glow = 0)
-        ClockMaterial.AQUA -> copy(material = m, shadow = 35, depth = 10, bevel = 40, reflection = 55, glow = 15)
-        ClockMaterial.IGNIS -> copy(material = m, shadow = 20, depth = 20, bevel = 20, reflection = 0, glow = 70)
+        ClockMaterial.AQUA -> copy(material = m, shadow = 27, depth = 7, bevel = 36, reflection = 31, glow = 8)
+        ClockMaterial.IGNIS -> copy(material = m, shadow = 17, depth = 12, bevel = 12, reflection = 0, glow = 35)
         ClockMaterial.VENTUS -> copy(material = m, shadow = 10, depth = 0, bevel = 10, reflection = 10, glow = 30)
         ClockMaterial.LUX -> copy(material = m, shadow = 0, depth = 0, bevel = 15, reflection = 30, glow = 90)
         ClockMaterial.TERRA -> copy(material = m, shadow = 60, depth = 55, bevel = 35, reflection = 0, glow = 0)
@@ -214,7 +214,12 @@ data class MaskStroke(
     /** Radio como fracción del lado mayor de la foto. */
     val radius: Float,
     val erase: Boolean,
+    val selection: MaskRegion? = null,
 )
+
+/** Tramos [fila, inicio, fin exclusivo] en la grilla original de la selección asistida. */
+@Serializable
+data class MaskRegion(val width: Int, val height: Int, val runs: List<Int>)
 
 @Serializable
 data class StudioProject(
