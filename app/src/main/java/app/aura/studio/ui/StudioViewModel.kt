@@ -37,6 +37,7 @@ import app.aura.studio.render.StudioCompositor
 import app.aura.studio.render.StudioFonts
 import app.aura.studio.wallpaper.WallpaperApplier
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -741,7 +742,11 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     override fun onCleared() {
-        releaseBitmaps()
+        // A canceled render can still be returning from native Canvas code.
+        // Wait for its lock off the main thread before recycling its input.
+        CoroutineScope(Dispatchers.Default).launch {
+            renderLock.withLock { releaseBitmaps() }
+        }
     }
 
     companion object {

@@ -66,8 +66,12 @@ class StudioFlowTest {
         c.drawCircle(w / 2f, 640f, 150f, subject)
         c.drawRoundRect(w / 2f - 300f, 450f, w / 2f + 300f, h.toFloat() + 100f, 220f, 220f, subject)
         val f = File(context.cacheDir, "studio_test_photo.jpg")
-        f.outputStream().use { bmp.compress(Bitmap.CompressFormat.JPEG, 95, it) }
-        return Uri.fromFile(f)
+        try {
+            f.outputStream().use { bmp.compress(Bitmap.CompressFormat.JPEG, 95, it) }
+            return Uri.fromFile(f)
+        } finally {
+            bmp.recycle()
+        }
     }
 
     private fun save(name: String, bmp: Bitmap) {

@@ -218,3 +218,7 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   por ciclos completos, con el mismo intervalo de actualización del fondo.
 - Se validaron localmente las teselas de todos los materiales, incluidas sus uniones horizontales y
   verticales. Compilación de prueba y capturas del emulador en curso.
+- En la CI de `186d056` pasaron las pruebas de renderizado de Aura Elements y selección inteligente.
+  La suite se interrumpió dos veces al comenzar la comprobación exhaustiva de AutoDesign, por cierre
+  del proceso durante la instrumentación. Se corrigió la liberación de bitmaps al destruir Studio para
+  que espere el bloqueo de renderizado. Se liberan también las imágenes temporales de las pruebas.
