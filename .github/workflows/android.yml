@@ -217,7 +217,7 @@ jobs:
           apk="$(find apk -name app-release.apk -print -quit)"
           tools="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
           "$tools/apksigner" verify --print-certs "$apk" | tee certificate.txt
-          grep -Eiq 'certificate SHA-256 digest: 1f6f0c68557969d4f[0-9a-f]{48}$' certificate.txt
+          grep -Fiqx 'Signer #1 certificate SHA-256 digest: 1f6f0c68557969d4f59cc8281f86c09437ce3f94511c10471867908c92867c2c' certificate.txt
           "$tools/aapt" dump badging "$apk" > package.txt
           grep -F "package: name='app.aura.preview'" package.txt
           cp "$apk" Aura.apk

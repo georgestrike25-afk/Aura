@@ -40,6 +40,8 @@ android {
         release {
             if (providers.gradleProperty("aura.preview").orNull == "true") {
                 applicationIdSuffix = ".preview"
+                versionNameSuffix = "-evolution2"
+                resValue("string", "app_name", "Aura 2 · Prueba")
             }
             isMinifyEnabled = true
             isShrinkResources = true

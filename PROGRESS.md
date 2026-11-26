@@ -7,12 +7,12 @@ Rama de trabajo `aura-artistic-evolution-2`, derivada de `72313ef` en `aura-arti
 | Etapa | Avance | Verificación |
 |---|---|---|
 | Auditoría | Se revisaron documentación, navegación, clima, widgets, Studio, Signature, fondo animado y CI. La base ya incluye capas, cuatro dígitos editables, importación TTF/OTF, materiales, Open-Meteo y el reloj del sistema. | Rama base verificada. |
-| AutoDesign | Importar una foto abre tres propuestas generadas localmente a partir del encuadre, paleta, contraste, detalle y máscara del sujeto cuando está disponible. Cada diseño ofrece aplicar, editar y generar alternativas. | Pruebas JVM añadidas. Flujo Android pendiente de verificación. |
+| AutoDesign | Importar una foto abre tres propuestas generadas localmente a partir del encuadre, paleta, contraste, detalle y máscara del sujeto cuando está disponible. Cada diseño ofrece aplicar, editar y generar alternativas. | Pruebas JVM en verde. Flujo Android pendiente de verificación. |
 | Información del reloj | Puro, Esencial, Ambiental y Completo, con posición, tamaño, fuente, color, opacidad y visibilidad por campo. Los proyectos anteriores conservan el modo Original. | Pendiente de verificación Android. |
 | Signature | Catálogo 2.0 remoto dedicado a fotografía, favoritos persistentes, colecciones, miniaturas, descarga bajo demanda, caché local, máscara y reloj recomendado opcionales. | El catálogo está vacío a la espera de las fotografías del propietario. |
 | Atmosphere | Puede seguir las condiciones meteorológicas guardadas, incluidos viento y nubosidad, con intensidad y apagado. El fondo limita el movimiento a periodos visibles. | Pendiente de verificación Android y Galaxy S24+. |
 | Clima y Widgets | Clima abre la app, muestra el estado de carga o antigüedad de los datos y conserva el pronóstico. El catálogo de widgets ofrece los meteorológicos. Los receptores e identificadores heredados siguen declarados para conservar widgets existentes. | Pendiente de pruebas del selector de One UI Home y de migración real. |
-| Compilación y distribución | CI prepara un APK firmado con el identificador `app.aura.preview`, instalable junto a la estable, y verifica las pruebas y el prefijo de la huella de firma antes de publicar. | Pendiente de ejecución y comprobación del artefacto. |
+| Compilación y distribución | CI prepara un APK firmado con el identificador `app.aura.preview`, instalable junto a la estable, y verifica las pruebas y la huella SHA-256 de firma, comprobada con el APK de la rama base antes de publicar. | Pendiente de ejecución y comprobación del artefacto. |
 
 ## Límites y siguientes pasos
 

@@ -75,6 +75,13 @@ object AutoDesign {
             showColon = !split,
             behindSubject = split,
             informationMode = ClockInformationMode.ESSENTIAL,
+            informationStyles = listOf(ClockInformationField.DATE, ClockInformationField.TEMPERATURE)
+                .mapIndexed { index, field ->
+                    val y = 0.075f + index * 0.027f
+                    val textRegion = floatArrayOf(0.2f, y - 0.02f, 0.8f, y)
+                    val color = Fusion.harmonize(Fusion.analyze(pixels, width, height, textRegion)).color
+                    field to ClockInformationStyle(y = y, size = 0.036f, color = color)
+                }.toMap(),
             artistic = ArtisticClock(enabled = true),
         ).withMaterial(material ?: harmony.material)
         return Proposal(title, design.copy(shadow = maxOf(design.shadow, 42)))

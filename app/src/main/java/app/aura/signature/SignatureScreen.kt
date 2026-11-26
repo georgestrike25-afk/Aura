@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -98,6 +99,8 @@ class SignatureViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Descarga la obra completa y la entrega como Uri para crear un proyecto de Studio. */
     fun open(base: String, w: SignatureWork, onReady: (Uri, java.io.File?) -> Unit) = viewModelScope.launch {
+        if (_opening.value != null) return@launch
+        _error.value = null
         _opening.value = w.id
         val f = repo.full(base, w)
         val mask = if (f != null) repo.mask(base, w) else null
@@ -118,6 +121,37 @@ fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: Sign
     val opening by vm.opening.collectAsStateWithLifecycle()
     val favorites by vm.favorites.collectAsStateWithLifecycle()
     var favoritesOnly by rememberSaveable { mutableStateOf(false) }
+    var previewId by rememberSaveable { mutableStateOf<String?>(null) }
+    val currentCatalog = catalog
+    val selected = currentCatalog?.first?.collections?.asSequence()
+        ?.flatMap { it.items.asSequence() }?.firstOrNull { it.id == previewId }
+    if (selected != null && currentCatalog != null) {
+        AlertDialog(
+            onDismissRequest = { if (opening == null) previewId = null },
+            title = { Text(selected.title) },
+            text = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    vm.thumbs[selected.id]?.let {
+                        Image(it, contentDescription = selected.title, contentScale = ContentScale.Fit,
+                            modifier = Modifier.fillMaxWidth().height(320.dp))
+                    }
+                    if (opening == selected.id) CircularProgressIndicator(Modifier.padding(12.dp))
+                    error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                }
+            },
+            confirmButton = {
+                TextButton(enabled = opening == null, onClick = {
+                    vm.open(currentCatalog.second, selected) { uri, mask ->
+                        previewId = null
+                        onUse(uri, selected, mask)
+                    }
+                }) { Text("Abrir en Studio") }
+            },
+            dismissButton = {
+                TextButton(enabled = opening == null, onClick = { previewId = null }) { Text("Cerrar") }
+            },
+        )
+    }
 
     LazyColumn(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.statusBars), contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 24.dp)) {
         item {
@@ -164,7 +198,7 @@ fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: Sign
                     LazyRow(contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 20.dp, vertical = 10.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(works, key = { it.id }) { w ->
                             LaunchedEffect(w.id) { vm.loadThumb(base, w) }
-                            Column(Modifier.width(150.dp).clickable(enabled = opening == null) { vm.open(base, w) { uri, mask -> onUse(uri, w, mask) } }) {
+                            Column(Modifier.width(150.dp).clickable(enabled = opening == null) { previewId = w.id }) {
                                 Box(
                                     Modifier.fillMaxWidth().aspectRatio(w.width / w.height.toFloat()).clip(RoundedCornerShape(18.dp))
                                         .background(MaterialTheme.colorScheme.surfaceVariant),
