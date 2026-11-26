@@ -32,7 +32,7 @@ data class SignatureWork(
     val image: String,
     val thumb: String,
     val mask: String? = null,
-    /** Huella visual (dHash, 16 hex) para no repetir la misma foto. */
+    /** Huella visual (forma + colores, ver ContentNames.fingerprint) para no repetir la misma foto. */
     val dhash: String? = null,
     val recommendedDesign: ClockDesign? = null,
     val width: Int = 1440,

@@ -37,4 +37,16 @@ class ContentNamesTest {
         assertTrue(ContentNames.sameImage(ContentNames.dHash(a), ContentNames.dHash(b)))
         assertFalse(ContentNames.sameImage(ContentNames.dHash(a), ContentNames.dHash(c)))
     }
+
+    @Test
+    fun sameShapeButOtherColorsIsNotTheSamePhoto() {
+        val gray = IntArray(72) { (it * 37) % 255 }
+        val blue = IntArray(16) { 0x3A6EA5 }
+        val orange = IntArray(16) { 0xE07A2E }
+        val blueish = IntArray(16) { 0x3C70A2 }
+        val a = ContentNames.fingerprint(gray, blue)
+        assertFalse(ContentNames.same(a, ContentNames.fingerprint(gray, orange)))
+        assertTrue(ContentNames.same(a, ContentNames.fingerprint(gray, blueish)))
+        assertTrue(ContentNames.same(a, a.take(16))) // huella vieja: solo forma
+    }
 }

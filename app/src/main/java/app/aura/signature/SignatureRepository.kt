@@ -107,7 +107,7 @@ class SignatureRepository(context: Context) {
      */
     suspend fun importImages(uris: List<Uri>): ImportResult = withContext(Dispatchers.IO) {
         val collections = mineCatalog().collections.associate { it.id to it }.toMutableMap()
-        val known = (collections.values.flatMap { it.items } + remoteWorks()).mapNotNull { it.dhash?.toULongOrNull(16)?.toLong() }.toMutableList()
+        val known = (collections.values.flatMap { it.items } + remoteWorks()).mapNotNull { it.dhash }.toMutableList()
         val names = collections.values.flatMap { it.items }.map { it.title }.toMutableList()
         var added = 0
         var repeated = 0
@@ -116,12 +116,12 @@ class SignatureRepository(context: Context) {
             val bitmap = runCatching { decodeCover(uri, W, H) }.getOrNull()
             if (bitmap == null) { failed++; continue }
             try {
-                val hash = hashOf(bitmap)
-                if (known.any { ContentNames.sameImage(it, hash) }) { repeated++; continue }
+                val hash = fingerprintOf(bitmap)
+                if (known.any { ContentNames.same(it, hash) }) { repeated++; continue }
                 val small = Bitmap.createScaledBitmap(bitmap, W / 4, H / 4, true)
                 val content = ContentNames.classify(PhotoLabeler.labels(small))
-                val hex = "%016x".format(hash)
-                val id = "mine-" + hex + "-" + System.currentTimeMillis().toString(36)
+                val hex = hash
+                val id = "mine-" + hash.take(16) + "-" + System.currentTimeMillis().toString(36)
                 val image = "$id.webp"
                 val thumb = "$id-thumb.webp"
                 writeAtomic(File(mineDir, image), encode(bitmap, 92))
@@ -145,15 +145,18 @@ class SignatureRepository(context: Context) {
     private fun remoteWorks(): List<SignatureWork> =
         Signature.BASE_URLS.mapNotNull { cachedSource(it) }.flatMap { c -> c.collections.flatMap { it.items } }
 
-    /** dHash de la imagen (ver ContentNames.dHash). */
-    private fun hashOf(bitmap: Bitmap): Long {
+    /** Huella de la imagen: forma (dHash) + colores (ver ContentNames.fingerprint). */
+    private fun fingerprintOf(bitmap: Bitmap): String {
         val tiny = Bitmap.createScaledBitmap(bitmap, 9, 8, true)
         val gray = IntArray(72) { i ->
             val c = tiny.getPixel(i % 9, i / 9)
             (((c shr 16) and 0xFF) * 299 + ((c shr 8) and 0xFF) * 587 + (c and 0xFF) * 114) / 1000
         }
         tiny.recycle()
-        return ContentNames.dHash(gray)
+        val grid = Bitmap.createScaledBitmap(bitmap, 4, 4, true)
+        val colors = IntArray(16) { grid.getPixel(it % 4, it / 4) }
+        grid.recycle()
+        return ContentNames.fingerprint(gray, colors)
     }
 
     fun deleteMine(id: String) {

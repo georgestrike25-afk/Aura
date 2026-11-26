@@ -33,18 +33,25 @@ def encode(image, quality):
 
 
 def dhash(image):
-    """Huella visual de 64 bits (igual que ContentNames.dHash en la app)."""
+    """Huella visual: dHash de 64 bits + colores 4×4 (igual que ContentNames.fingerprint en la app)."""
     gray = image.convert("L").resize((9, 8), Image.Resampling.LANCZOS)
     px = list(gray.tobytes())
     value = 0
     for y in range(8):
         for x in range(8):
             value = (value << 1) | (1 if px[y * 9 + x] > px[y * 9 + x + 1] else 0)
-    return f"{value:016x}"
+    colors = image.convert("RGB").resize((4, 4), Image.Resampling.BILINEAR).tobytes()
+    return f"{value:016x}" + colors.hex()
 
 
 def same(a, b):
-    return bin(int(a, 16) ^ int(b, 16)).count("1") <= 6
+    """Igual que ContentNames.same en la app: misma forma y colores parecidos."""
+    if bin(int(a[:16], 16) ^ int(b[:16], 16)).count("1") > 6:
+        return False
+    if len(a) < 112 or len(b) < 112:
+        return True
+    diff = sum(abs(int(a[16 + i * 2:18 + i * 2], 16) - int(b[16 + i * 2:18 + i * 2], 16)) for i in range(48))
+    return diff / 48 <= 12
 
 
 def prepare(path, collection_id):

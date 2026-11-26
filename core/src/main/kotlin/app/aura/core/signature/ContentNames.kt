@@ -84,4 +84,28 @@ object ContentNames {
     }
 
     fun sameImage(a: Long, b: Long): Boolean = java.lang.Long.bitCount(a xor b) <= 6
+
+    /**
+     * Huella completa: dHash (forma) + color medio de una grilla de 4×4 (ARGB, fila por fila). Así dos
+     * fotos con la misma composición pero otros colores no se confunden. Texto: 16 hex + 96 hex.
+     */
+    fun fingerprint(gray: IntArray, colors4x4: IntArray): String {
+        require(colors4x4.size == 16)
+        return "%016x".format(dHash(gray)) + colors4x4.joinToString("") { "%06x".format(it and 0xFFFFFF) }
+    }
+
+    /** ¿Es la misma foto? Con huellas viejas (solo dHash) compara solo la forma. */
+    fun same(a: String, b: String): Boolean {
+        val ha = a.take(16).toULongOrNull(16)?.toLong() ?: return false
+        val hb = b.take(16).toULongOrNull(16)?.toLong() ?: return false
+        if (!sameImage(ha, hb)) return false
+        if (a.length < 112 || b.length < 112) return true
+        var diff = 0
+        for (i in 0 until 48) {
+            val x = a.substring(16 + i * 2, 18 + i * 2).toIntOrNull(16) ?: return false
+            val y = b.substring(16 + i * 2, 18 + i * 2).toIntOrNull(16) ?: return false
+            diff += kotlin.math.abs(x - y)
+        }
+        return diff / 48 <= 12
+    }
 }
