@@ -36,6 +36,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,7 +69,9 @@ fun MaskEditorScreen(viewModel: StudioViewModel, onDone: () -> Unit) {
     val photo = remember(history?.current?.id) { viewModel.previewPhotoBitmap }
     val project = history?.current
 
-    var erase by remember { mutableStateOf(false) }
+    var tool by remember { mutableStateOf(MaskTool.SMART) }
+    val erase = tool == MaskTool.ERASE
+    val handlingStroke by rememberUpdatedState(busy != null)
     var brushDp by remember { mutableFloatStateOf(28f) }
     var zoom by remember { mutableFloatStateOf(1f) }
     var pan by remember { mutableStateOf(Offset.Zero) }
@@ -80,8 +83,8 @@ fun MaskEditorScreen(viewModel: StudioViewModel, onDone: () -> Unit) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onDone) { Icon(painterResource(R.drawable.ic_ui_back), "Volver", tint = Color.White) }
             Text("Máscara de profundidad", color = Color.White, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-            IconButton(onClick = viewModel::undo, enabled = history?.canUndo == true) { Icon(painterResource(R.drawable.ic_ui_undo), "Deshacer", tint = Color.White) }
-            IconButton(onClick = viewModel::redo, enabled = history?.canRedo == true) { Icon(painterResource(R.drawable.ic_ui_redo), "Rehacer", tint = Color.White) }
+            IconButton(onClick = viewModel::undo, enabled = busy == null && history?.canUndo == true) { Icon(painterResource(R.drawable.ic_ui_undo), "Deshacer", tint = Color.White) }
+            IconButton(onClick = viewModel::redo, enabled = busy == null && history?.canRedo == true) { Icon(painterResource(R.drawable.ic_ui_redo), "Rehacer", tint = Color.White) }
         }
 
         Box(Modifier.weight(1f).fillMaxWidth()) {
@@ -108,10 +111,12 @@ fun MaskEditorScreen(viewModel: StudioViewModel, onDone: () -> Unit) {
                     .pointerInput(project.id) {
                         awaitEachGesture {
                             val down = awaitFirstDown(requireUnconsumed = false)
-                            var drawing = true
+                            var drawing = !handlingStroke
                             live.clear()
-                            live += down.position
-                            cursor = down.position
+                            if (drawing) {
+                                live += down.position
+                                cursor = down.position
+                            }
                             do {
                                 val event = awaitPointerEvent()
                                 if (event.changes.count { it.pressed } > 1) {
@@ -125,10 +130,14 @@ fun MaskEditorScreen(viewModel: StudioViewModel, onDone: () -> Unit) {
                                 }
                                 event.changes.forEach { if (it.positionChanged()) it.consume() }
                             } while (event.changes.any { it.pressed })
-                            if (drawing && live.isNotEmpty()) {
-                                val pts = live.flatMap { val q = toImage(it); listOf(q.x, q.y) }
-                                val radius = (brushDp * density / (fitScale() * zoom)) / maxOf(imgW, imgH)
-                                viewModel.addStroke(MaskStroke(pts, radius, erase))
+                            if (drawing && !handlingStroke && live.isNotEmpty()) {
+                                val start = toImage(live.first())
+                                if (start.x in 0f..1f && start.y in 0f..1f) {
+                                    val pts = live.flatMap { val q = toImage(it); listOf(q.x, q.y) }
+                                    val radius = (brushDp * density / (fitScale() * zoom)) / maxOf(imgW, imgH)
+                                    val stroke = MaskStroke(pts, radius, tool == MaskTool.ERASE)
+                                    if (tool == MaskTool.SMART) viewModel.refineStroke(stroke) else viewModel.addStroke(stroke)
+                                }
                             }
                             live.clear()
                             cursor = null
@@ -157,7 +166,16 @@ fun MaskEditorScreen(viewModel: StudioViewModel, onDone: () -> Unit) {
                 }
                 cursor?.let { drawCircle(Color.White, radius = brushDp * density, center = it, style = Stroke(width = 2f)) }
             }
-            if (busy != null) CircularProgressIndicator(Modifier.align(Alignment.Center), color = Aura.tokens.accent)
+            busy?.let { status ->
+                Column(
+                    Modifier.align(Alignment.Center).background(MaterialTheme.colorScheme.surface).padding(14.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    CircularProgressIndicator(Modifier.size(28.dp), color = Aura.tokens.accent)
+                    Text(status, color = Aura.tokens.mutedText, style = MaterialTheme.typography.bodySmall)
+                }
+            }
         }
 
         Column(
@@ -166,39 +184,56 @@ fun MaskEditorScreen(viewModel: StudioViewModel, onDone: () -> Unit) {
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 FilterChip(
-                    selected = !erase, onClick = { erase = false }, label = { Text("Pincel") },
+                    selected = tool == MaskTool.SMART, enabled = busy == null,
+                    onClick = { tool = MaskTool.SMART }, label = { Text("Inteligente") },
+                    leadingIcon = { Icon(painterResource(R.drawable.ic_ui_auto), null, Modifier.size(16.dp)) },
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Aura.tokens.accent.copy(alpha = 0.25f)),
+                )
+                FilterChip(
+                    selected = tool == MaskTool.BRUSH, enabled = busy == null,
+                    onClick = { tool = MaskTool.BRUSH }, label = { Text("Pincel") },
                     leadingIcon = { Icon(painterResource(R.drawable.ic_ui_brush), null, Modifier.size(16.dp)) },
-                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Aura.tokens.accent.copy(alpha = 0.25f)),
                 )
                 FilterChip(
-                    selected = erase, onClick = { erase = true }, label = { Text("Borrador") },
-                    leadingIcon = { Icon(painterResource(R.drawable.ic_ui_eraser), null, Modifier.size(16.dp)) },
-                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Aura.tokens.accent.copy(alpha = 0.25f)),
+                    selected = erase, enabled = busy == null,
+                    onClick = { tool = MaskTool.ERASE }, label = { Text("Borrador") },
+                )
+            }
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    "Tamaño del pincel", modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText,
                 )
                 FilterChip(
-                    selected = project?.mask?.inverted == true,
+                    selected = project?.mask?.inverted == true, enabled = busy == null,
                     onClick = { viewModel.edit { it.copy(mask = it.mask.copy(inverted = !it.mask.inverted)) } },
                     label = { Text("Invertir") },
                     leadingIcon = { Icon(painterResource(R.drawable.ic_ui_invert), null, Modifier.size(16.dp)) },
                 )
             }
-            Text("Tamaño del pincel", style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
             Slider(value = brushDp, onValueChange = { brushDp = it }, valueRange = 6f..80f)
             Text("Suavizado de bordes · ${project?.mask?.feather ?: 0}", style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
             Slider(
-                value = (project?.mask?.feather ?: 0).toFloat(), valueRange = 0f..30f,
+                value = (project?.mask?.feather ?: 0).toFloat(), valueRange = 0f..30f, enabled = busy == null,
                 onValueChange = { v -> viewModel.live { it.copy(mask = it.mask.copy(feather = v.roundToInt())) } },
                 onValueChangeFinished = viewModel::commit,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Button(onClick = { viewModel.detectSubject() }, colors = ButtonDefaults.buttonColors(containerColor = Aura.tokens.accent, contentColor = Aura.tokens.onAccent)) {
+                Button(onClick = { viewModel.detectSubject() }, enabled = busy == null, colors = ButtonDefaults.buttonColors(containerColor = Aura.tokens.accent, contentColor = Aura.tokens.onAccent)) {
                     Icon(painterResource(R.drawable.ic_ui_auto), null, Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text("Automático")
                 }
                 Button(onClick = { zoom = 1f; pan = Offset.Zero }) { Text("Ajustar vista") }
                 Spacer(Modifier.weight(1f))
-                Button(onClick = onDone) { Text("Listo") }
+                Button(onClick = onDone, enabled = busy == null) { Text("Listo") }
             }
-            Text("Rojo = queda delante del reloj. Un dedo pinta, dos dedos hacen zoom y mueven.", style = MaterialTheme.typography.labelSmall, color = Aura.tokens.mutedText)
+            val hint = if (tool == MaskTool.SMART) {
+                "Marcá por dentro del objeto. El rojo queda delante del reloj."
+            } else {
+                "El rojo queda delante del reloj. Usá dos dedos para acercar o mover la foto."
+            }
+            Text(hint, style = MaterialTheme.typography.labelSmall, color = Aura.tokens.mutedText)
         }
     }
 }
+
+private enum class MaskTool { SMART, BRUSH, ERASE }

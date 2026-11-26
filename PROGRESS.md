@@ -186,3 +186,18 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
 - **MET Norway** reemplaza a Open-Meteo (cuyo plan gratis es solo no comercial): pronóstico de 10 días (ECMWF),
   48 h horarias, probabilidad y milímetros de lluvia, UV de cielo despejado; sol calculado en el teléfono (NOAA).
   Búsqueda de ciudades con el geocodificador de Android y zona horaria deducida del país.
+
+## Aura Studio · materiales y selección de bordes (26/11/2026)
+
+- Rama de prueba `aura-studio-materials`, a partir de `c88aeb9`. Aqua usa una red irregular de
+  cáusticas translúcidas. Ignis combina lenguas ascendentes, una base incandescente y brasas dispersas.
+  Metal, Cristal y Piedra suman grano, reflejos y vetas según el acabado. El control Textura cambia
+  su escala. La vista previa, la exportación y el fondo animado usan el mismo pintor y caché.
+- Capas → Editar con mano abre en Inteligente. Una marca dentro del objeto se ajusta con bordes locales
+  de color y textura. Si la marca cae sobre una máscara automática disponible, sirve de referencia.
+  La operación es local y entra al historial como un solo trazo. Pincel y Borrador permiten ajustes
+  precisos. En una zona uniforme sin referencia se conserva el trazo original.
+- Pruebas agregadas para contornos con colores de luminosidad similar, referencia automática,
+  compatibilidad al guardar trazos anteriores, translucidez de Aqua y calor en la base de Ignis.
+  La instrumentación valida el refinado, deshacer, rehacer y persistencia sobre una foto de prueba.
+  APK y capturas pendientes de la CI Android de esta rama.

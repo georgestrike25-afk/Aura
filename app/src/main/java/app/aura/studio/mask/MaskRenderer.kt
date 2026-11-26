@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
+import android.graphics.Rect
 import app.aura.core.studio.MaskStroke
 
 /**
@@ -14,14 +15,6 @@ import app.aura.core.studio.MaskStroke
  * (no como píxeles), así deshacer/rehacer es exacto y el proyecto sigue editable.
  */
 object MaskRenderer {
-    private val brush = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        strokeCap = Paint.Cap.ROUND
-        strokeJoin = Paint.Join.ROUND
-        color = Color.BLACK
-    }
-    private val eraser = Paint(brush).apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
-
     /** Resolución de trabajo de la máscara para una foto: lado mayor ≤ 1600 px (memoria acotada). */
     fun workingSize(photoW: Int, photoH: Int): Pair<Int, Int> {
         val k = minOf(1f, 1600f / maxOf(photoW, photoH))
@@ -38,9 +31,33 @@ object MaskRenderer {
     }
 
     fun drawStroke(c: Canvas, s: MaskStroke, width: Int, height: Int) {
+        s.selection?.let { region ->
+            val alpha = Bitmap.createBitmap(region.width, region.height, Bitmap.Config.ALPHA_8)
+            try {
+                val selection = Canvas(alpha)
+                val fill = Paint()
+                for (i in region.runs.indices step 3) {
+                    val y = region.runs[i].toFloat()
+                    selection.drawRect(region.runs[i + 1].toFloat(), y, region.runs[i + 2].toFloat(), y + 1f, fill)
+                }
+                val filter = Paint(Paint.FILTER_BITMAP_FLAG).apply {
+                    if (s.erase) xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
+                }
+                c.drawBitmap(alpha, null, Rect(0, 0, width, height), filter)
+            } finally {
+                alpha.recycle()
+            }
+            return
+        }
         if (s.points.size < 2) return
-        val p = if (s.erase) eraser else brush
-        p.strokeWidth = s.radius * 2f * maxOf(width, height)
+        val p = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeCap = Paint.Cap.ROUND
+            strokeJoin = Paint.Join.ROUND
+            color = Color.BLACK
+            if (s.erase) xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+            strokeWidth = s.radius * 2f * maxOf(width, height)
+        }
         val path = Path()
         path.moveTo(s.points[0] * width, s.points[1] * height)
         var i = 2
