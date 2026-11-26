@@ -38,6 +38,9 @@ android {
 
     buildTypes {
         release {
+            if (providers.gradleProperty("aura.preview").orNull == "true") {
+                applicationIdSuffix = ".preview"
+            }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

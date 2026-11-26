@@ -59,13 +59,15 @@ jobs:
       - name: APK debug y release
         run: |
           set -o pipefail
-          ./gradlew :app:assembleDebug :app:assembleRelease 2>&1 | tee build.log || { echo "== Errores de compilación =="; grep -E "^e: |error:|FAILED" build.log | head -60; exit 1; }
+          preview=()
+          if [ "${GITHUB_REF_NAME}" = "aura-artistic-evolution-2" ]; then preview+=(-Paura.preview=true); fi
+          ./gradlew :app:assembleDebug :app:assembleRelease "${preview[@]}" 2>&1 | tee build.log || { echo "== Errores de compilación =="; grep -E "^e: |error:|FAILED" build.log | head -60; exit 1; }
 
       - name: Lint
         run: ./gradlew :app:lintDebug
 
       - name: Publicar APK en dist/
-        if: github.event_name == 'push' && steps.signing.outputs.signed == 'true'
+        if: github.event_name == 'push' && github.ref_name != 'aura-artistic-evolution-2' && steps.signing.outputs.signed == 'true'
         run: |
           mkdir -p dist
           rm -f dist/*.apk
@@ -79,7 +81,7 @@ jobs:
       # Publicación: la versión estable «aura-latest» solo sale de main; cualquier otra rama publica en
       # su propia versión de prueba («<rama>-test»), así una rama experimental nunca pisa la estable.
       - name: Publicar APK (estable desde main, de prueba desde otras ramas)
-        if: github.event_name == 'push' && steps.signing.outputs.signed == 'true'
+        if: github.event_name == 'push' && github.ref_name != 'aura-artistic-evolution-2' && steps.signing.outputs.signed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -193,3 +195,38 @@ jobs:
             find app/build/outputs/androidTest-results -name "*.xml" -exec grep -h -B1 -A4 "<failure" {} + | head -80 || true
             exit 1
           fi
+
+  publish-preview:
+    name: Publicar prueba de Aura 2
+    if: github.event_name == 'push' && github.ref_name == 'aura-artistic-evolution-2'
+    needs: [build, emulator]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: aura-apk
+          path: apk
+
+      - name: Verificar identidad, firma y publicar
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          apk="$(find apk -name app-release.apk -print -quit)"
+          tools="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+          "$tools/apksigner" verify --print-certs "$apk" | tee certificate.txt
+          grep -Eiq 'certificate SHA-256 digest: 1f6f0c68557969d4f[0-9a-f]{48}$' certificate.txt
+          "$tools/aapt" dump badging "$apk" > package.txt
+          grep -F "package: name='app.aura.preview'" package.txt
+          cp "$apk" Aura.apk
+          tag=aura-artistic-evolution-2-test
+          notes="APK firmado de Aura 2. Commit ${GITHUB_SHA::7}, instalable junto a Aura estable."
+          if ! gh release view "$tag" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release create "$tag" Aura.apk --repo "$GITHUB_REPOSITORY" --title "Aura Artistic Evolution 2 · Prueba" --notes "$notes" --prerelease --latest=false --target "$GITHUB_SHA"
+          else
+            gh release upload "$tag" Aura.apk --repo "$GITHUB_REPOSITORY" --clobber
+            gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --notes "$notes"
+          fi
+          echo "https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/Aura.apk" >> "$GITHUB_STEP_SUMMARY"
