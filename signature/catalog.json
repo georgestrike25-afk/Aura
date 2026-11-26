@@ -3,6 +3,48 @@
   "license": "",
   "collections": [
     {
+      "id": "mundos-imposibles",
+      "title": "Mundos imposibles",
+      "items": [
+        {
+          "id": "el-desierto-de-sombras-so-1764ba81c27d",
+          "title": "El desierto de sombras sólidas",
+          "image": "photos/cf0e05cf794c4f6d774620b2.webp",
+          "thumb": "photos/cf0e05cf794c4f6d774620b2-thumb.webp",
+          "dhash": "0d010f131531031f301e4633204b33204b321f4a3b2751402a57412b583f2a575747534e3f4b5947526b566068584e6d5c526c5b525c4f49",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-rio-hacia-arriba-41d46a72437f",
+          "title": "El río hacia arriba",
+          "image": "photos/85463ba303c74f254f798f87.webp",
+          "thumb": "photos/85463ba303c74f254f798f87-thumb.webp",
+          "dhash": "c84acc290b0f0d1f14342f12353011353013352f1c423b1f4840214b422149402f5848417061457767346051375648577a6c5378693a5d4d",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-costa-del-techo-a3809da291f4",
+          "title": "La costa del techo",
+          "image": "photos/1257e95e326e27d6a52a033d.webp",
+          "thumb": "photos/1257e95e326e27d6a52a033d-thumb.webp",
+          "dhash": "2904aa0c46071f0332090e3b0d12401014390d102e0c0d3611103b1411330d0d5f261970321d7f391f6929187136208842278e4427763620",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-nevada-al-reves-e3efe34c7640",
+          "title": "La nevada al revés",
+          "image": "photos/679451985e3f676ea96eaf10.webp",
+          "thumb": "photos/679451985e3f676ea96eaf10-thumb.webp",
+          "dhash": "932a0a0c35f6f63e3b424c3b444f39445038424e464b544c4c534b4c53484b546d605e6b5c5a685e5e6359588a6f678a7169796a67735e59",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "emociones-humanas",
       "title": "Emociones humanas",
       "items": [
