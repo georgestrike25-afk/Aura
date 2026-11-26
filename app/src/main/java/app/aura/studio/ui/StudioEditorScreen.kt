@@ -71,7 +71,6 @@ import app.aura.core.studio.ClockInformationStyle
 import app.aura.core.studio.fields
 import app.aura.core.studio.informationStyle
 import app.aura.core.studio.ClockMaterial
-import app.aura.core.studio.ElementTexture
 import app.aura.core.studio.StudioProject
 import app.aura.core.style.Brand
 import app.aura.core.style.FontChoice
@@ -326,14 +325,14 @@ internal fun <T> Chips(options: List<Pair<T, String>>, selected: T, onSelect: (T
 }
 
 private val ELEMENT_NOTES = mapOf(
-    ClockMaterial.AQUA to "Agua: ondas, cáusticas y refracción.",
-    ClockMaterial.IGNIS to "Fuego: lava, brasas y resplandor.",
-    ClockMaterial.VENTUS to "Aire: humo y niebla translúcidos.",
-    ClockMaterial.LUX to "Luz: núcleo blanco y resplandor cálido.",
-    ClockMaterial.TERRA to "Tierra: veta de madera y musgo al pie.",
-    ClockMaterial.AETHER to "Éter: nebulosa y estrellas.",
-    ClockMaterial.GLACIUS to "Hielo: escarcha y grietas.",
-    ClockMaterial.KINTSUGI to "Kintsugi: cerámica con fracturas doradas.",
+    ClockMaterial.AQUA to "Agua con reflejos ondulados y zonas translúcidas.",
+    ClockMaterial.IGNIS to "Llamas ascendentes, brasas y base incandescente.",
+    ClockMaterial.VENTUS to "Corrientes de aire y filamentos de niebla.",
+    ClockMaterial.LUX to "Haces dorados de luz difusa.",
+    ClockMaterial.TERRA to "Fibras de madera, poros y musgo entre las vetas.",
+    ClockMaterial.AETHER to "Nebulosa con capas de polvo y estrellas.",
+    ClockMaterial.GLACIUS to "Hielo facetado con escarcha y fisuras internas.",
+    ClockMaterial.KINTSUGI to "Cerámica esmaltada con uniones doradas.",
 )
 
 internal val INKS = listOf(Brand.WHITE, Brand.MIST, Brand.SOLAR, 0xFFFF7A59.toInt(), 0xFF7FD6FF.toInt(), Brand.PETROL, Brand.NIGHT)
@@ -485,11 +484,8 @@ private fun ColumnScope.EffectsPanel(vm: StudioViewModel, p: StudioProject) {
         Text(ELEMENT_NOTES[d.material].orEmpty(), style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
         StudioSlider("Intensidad del material", d.elementIntensity.toFloat(), 0f..100f, "${d.elementIntensity} %", { v -> vm.designLive { it.copy(elementIntensity = v.roundToInt()) } }, vm::commit)
         StudioSlider("Transparencia", (100 - d.opacity).toFloat(), 0f..90f, "${100 - d.opacity} %", { v -> vm.designLive { it.copy(opacity = 100 - v.roundToInt()) } }, vm::commit)
-        Text("En el fondo animado la textura se mueve un poco cada minuto (sin gasto extra de batería).", style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
     }
-    if (d.material.isElement || ElementTexture.hasSurface(d.material)) {
-        StudioSlider("Textura", d.textureScale.toFloat(), 0f..100f, if (d.textureScale < 34) "Fina" else if (d.textureScale < 67) "Media" else "Grande", { v -> vm.designLive { it.copy(textureScale = v.roundToInt()) } }, vm::commit)
-    }
+    StudioSlider("Textura", d.textureScale.toFloat(), 0f..100f, if (d.textureScale < 34) "Fina" else if (d.textureScale < 67) "Media" else "Grande", { v -> vm.designLive { it.copy(textureScale = v.roundToInt()) } }, vm::commit)
     LabeledRow("Camaleón", supporting = "Los números toman los colores de la foto que tienen detrás") {
         Switch(d.chameleon > 0, { v -> vm.design { it.copy(chameleon = if (v) 85 else 0) } })
     }

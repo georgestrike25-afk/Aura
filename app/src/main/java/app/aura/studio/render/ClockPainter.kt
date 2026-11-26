@@ -193,6 +193,7 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
         if (element) {
             // Textura Elements con la intensidad elegida; el resto es el color del reloj.
             paint.shader = surfaceShader(d, textSize, phase, top, bottom)
+            paint.isFilterBitmap = true
             canvas.drawText(r.text, px, baseline, paint)
             if (d.elementIntensity < 100) {
                 paint.reset(textSize, r.face, d.letterSpacing)
@@ -204,14 +205,16 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
             applyFace(paint, d, top, bottom)
             if (d.material == ClockMaterial.STONE) {
                 paint.shader = surfaceShader(d, textSize)
+                paint.isFilterBitmap = true
                 paint.colorFilter = android.graphics.PorterDuffColorFilter(
                     mix(Color.WHITE, d.color, 0.45f), android.graphics.PorterDuff.Mode.MULTIPLY,
                 )
             }
             canvas.drawText(r.text, px, baseline, paint)
-            if (d.material == ClockMaterial.METAL || d.material == ClockMaterial.GLASS) {
+            if (d.material != ClockMaterial.STONE) {
                 paint.reset(textSize, r.face, d.letterSpacing)
                 paint.shader = surfaceShader(d, textSize)
+                paint.isFilterBitmap = true
                 canvas.drawText(r.text, px, baseline, paint)
             }
         }
@@ -270,10 +273,13 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
                 setScale(scale, (bottom - top) / tile.height)
                 postTranslate(phase * tile.width * scale, top)
             } else {
-                val driftX = if (d.material == ClockMaterial.VENTUS) 1f else 0.4f
-                val driftY = if (d.material == ClockMaterial.AQUA) 0.3f else 0.15f
                 setScale(scale, scale)
-                postTranslate(driftX * phase * tile.width * scale, driftY * phase * tile.height * scale)
+                when (d.material) {
+                    ClockMaterial.VENTUS -> postTranslate(phase * tile.width * scale, 0f)
+                    ClockMaterial.AQUA -> postTranslate(phase * tile.width * scale, phase * tile.height * scale)
+                    ClockMaterial.LUX, ClockMaterial.AETHER -> postTranslate(0f, phase * tile.height * scale)
+                    else -> Unit
+                }
             }
         }
         return BitmapShader(tile, Shader.TileMode.REPEAT, if (fire) Shader.TileMode.CLAMP else Shader.TileMode.REPEAT)
@@ -293,7 +299,7 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
             )
             ClockMaterial.GLACIUS -> LinearGradient(
                 0f, top, 0f, bottom,
-                intArrayOf(withAlpha(Color.WHITE, (110 * k).roundToInt()), Color.TRANSPARENT, withAlpha(pal[1], (120 * k).roundToInt())),
+                intArrayOf(withAlpha(Color.WHITE, (63 * k).roundToInt()), Color.TRANSPARENT, withAlpha(pal[1], (78 * k).roundToInt())),
                 floatArrayOf(0f, 0.45f, 1f), Shader.TileMode.CLAMP,
             )
             // Fuego: base incandescente.
@@ -305,13 +311,13 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
             // Tierra: musgo que crece desde abajo.
             ClockMaterial.TERRA -> LinearGradient(
                 0f, top, 0f, bottom,
-                intArrayOf(Color.TRANSPARENT, Color.TRANSPARENT, withAlpha(pal[2], (170 * k).roundToInt())),
+                intArrayOf(Color.TRANSPARENT, Color.TRANSPARENT, withAlpha(pal[2], (52 * k).roundToInt())),
                 floatArrayOf(0f, 0.65f, 1f), Shader.TileMode.CLAMP,
             )
             // Luz: núcleo casi blanco.
             ClockMaterial.LUX -> LinearGradient(
                 0f, top, 0f, bottom,
-                intArrayOf(withAlpha(Color.WHITE, (160 * k).roundToInt()), withAlpha(pal[1], (60 * k).roundToInt())),
+                intArrayOf(withAlpha(Color.WHITE, (56 * k).roundToInt()), withAlpha(pal[1], (32 * k).roundToInt())),
                 null, Shader.TileMode.CLAMP,
             )
             else -> null
@@ -594,7 +600,13 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
                     null, Shader.TileMode.CLAMP,
                 )
             }
-            ClockMaterial.NEON -> p.color = mix(Color.WHITE, d.accentColor, 0.25f)
+            ClockMaterial.NEON -> {
+                p.shader = LinearGradient(
+                    0f, top, 0f, bottom,
+                    intArrayOf(lighten(d.accentColor, 0.64f), lighten(d.accentColor, 0.91f), lighten(d.accentColor, 0.39f)),
+                    floatArrayOf(0f, 0.36f, 1f), Shader.TileMode.CLAMP,
+                )
+            }
             else -> p.color = d.color
         }
     }

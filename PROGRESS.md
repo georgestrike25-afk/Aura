@@ -206,3 +206,15 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   conserva el paquete `app.aura` y la firma original. Capturas de Aqua, Ignis, Metal, Cristal, Piedra y
   selección inteligente en `docs/capturas/` (`8b297d6`), producidas con imágenes de prueba.
   La comprobación visual en un Galaxy S24+ físico queda pendiente.
+
+### Segunda pasada de acabados
+
+- Ventus usa filamentos curvos con densidad variable. Lux combina haces y luz difusa. Terra incorpora
+  fibras, poros y musgo irregular. Aether suma nubes de polvo y estrellas. Glacius tiene facetas,
+  fisuras y escarcha. Kintsugi modela la cerámica esmaltada y la sombra junto a la unión dorada.
+- Aqua tiene reflejos más curvos y suaves. Mínimo suma grano mate tenue. Neón tiene un núcleo claro
+  con grano y un borde teñido por el color de acento. Textura queda disponible para todos los acabados.
+- El pintor filtra el muestreo de texturas. Ventus, Aqua, Lux, Aether e Ignis repiten su desplazamiento
+  por ciclos completos, con el mismo intervalo de actualización del fondo.
+- Se validaron localmente las teselas de todos los materiales, incluidas sus uniones horizontales y
+  verticales. Compilación de prueba y capturas del emulador en curso.

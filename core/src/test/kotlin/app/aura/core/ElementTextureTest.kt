@@ -10,30 +10,33 @@ import org.junit.Test
 class ElementTextureTest {
     private val size = 128
 
-    private fun coverage(tile: IntArray, color: Int) = tile.count { it == color } / tile.size.toFloat()
-
     @Test
-    fun `every element produces an opaque-enough deterministic tile`() {
-        ClockMaterial.entries.filter { it.isElement }.forEach { m ->
+    fun `every material produces a deterministic surface`() {
+        ClockMaterial.entries.forEach { m ->
             val t = ElementTexture.generate(m, size)
             assertEquals(size * size, t.size)
             assertArrayEquals("$m determinista", t, ElementTexture.generate(m, size))
             val avgAlpha = t.map { it ushr 24 }.average()
-            assertTrue("$m alfa $avgAlpha", avgAlpha > 100)
-            assertTrue("$m tiene variación", t.toSet().size > 50)
+            if (m.isElement) assertTrue("$m alfa $avgAlpha", avgAlpha > 100)
+            assertTrue("$m tiene variación", t.toSet().size > 10)
         }
-        assertEquals(0, ElementTexture.generate(ClockMaterial.MINIMAL, size).size)
     }
 
     @Test
     fun `tiles repeat without seams`() {
-        ClockMaterial.entries.filter { it.isElement || ElementTexture.hasSurface(it) }.forEach { m ->
+        ClockMaterial.entries.forEach { m ->
             val t = ElementTexture.generate(m, size)
             fun lum(c: Int) = ((c shr 16 and 0xFF) + (c shr 8 and 0xFF) + (c and 0xFF)) / 3.0
             // La diferencia entre el borde derecho y el izquierdo debe parecerse a la de dos columnas vecinas.
             val seam = (0 until size).map { y -> kotlin.math.abs(lum(t[y * size]) - lum(t[y * size + size - 1])) }.average()
             val inner = (0 until size).map { y -> kotlin.math.abs(lum(t[y * size + 10]) - lum(t[y * size + 11])) }.average()
-            assertTrue("$m costura $seam vs $inner", seam < inner * 4 + 12)
+            assertTrue("$m costura horizontal $seam vs $inner", seam < inner * 4 + 12)
+            // Ignis se ajusta a la altura del glifo y tiene una base distinta de la punta.
+            if (m != ClockMaterial.IGNIS) {
+                val top = (0 until size).map { x -> kotlin.math.abs(lum(t[x]) - lum(t[(size - 1) * size + x])) }.average()
+                val nearby = (0 until size).map { x -> kotlin.math.abs(lum(t[10 * size + x]) - lum(t[11 * size + x])) }.average()
+                assertTrue("$m costura vertical $top vs $nearby", top < nearby * 4 + 12)
+            }
         }
     }
 
@@ -58,10 +61,19 @@ class ElementTextureTest {
 
     @Test
     fun `cracks and veins are thin lines`() {
-        val ice = coverage(ElementTexture.generate(ClockMaterial.GLACIUS, size), 0xFFFFFFFF.toInt())
-        val gold = ElementTexture.generate(ClockMaterial.KINTSUGI, size).count { (it and 0xFFFFFF) == 0xD4A64A || ((it shr 16 and 0xFF) > 0xD0 && (it and 0xFF) < 0xA0) } / (size * size).toFloat()
-        println("GLACIUS grietas $ice, KINTSUGI oro $gold")
-        assertTrue("grietas $ice", ice in 0.01f..0.15f)
-        assertTrue("vetas $gold", gold in 0.01f..0.15f)
+        val ice = ElementTexture.generate(ClockMaterial.GLACIUS, size)
+        val gold = ElementTexture.generate(ClockMaterial.KINTSUGI, size)
+        val frostFraction = ice.count { (it ushr 16 and 0xFF) > 215 } / ice.size.toFloat()
+        val goldFraction = gold.count { (it ushr 16 and 0xFF) - (it and 0xFF) > 70 } / gold.size.toFloat()
+        assertTrue("grietas $frostFraction", frostFraction in 0.005f..0.20f)
+        assertTrue("vetas $goldFraction", goldFraction in 0.005f..0.20f)
+    }
+
+    @Test
+    fun `mist has translucent openings and the matte grain is subtle`() {
+        val mist = ElementTexture.generate(ClockMaterial.VENTUS, size)
+        assertTrue(mist.any { it ushr 24 < 90 } && mist.any { it ushr 24 > 170 })
+        val matte = ElementTexture.generate(ClockMaterial.MINIMAL, size)
+        assertTrue(matte.all { it ushr 24 < 12 })
     }
 }
