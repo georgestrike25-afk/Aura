@@ -3,6 +3,39 @@
   "license": "",
   "collections": [
     {
+      "id": "espiritus-del-bosque",
+      "title": "Espíritus del bosque",
+      "items": [
+        {
+          "id": "el-huesped-del-tronco-19218472fc6e",
+          "title": "El huésped del tronco",
+          "image": "photos/e1d314ba8f356cd468829a97.webp",
+          "thumb": "photos/e1d314ba8f356cd468829a97-thumb.webp",
+          "dhash": "83a50d4d0c4d8e3e1e100821110927150b2313091e10082f190c2f190c2012093a1e0f4c220e4a220e3d22125b28145f291147200d39190c",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-oido-de-la-corteza-c36820450ebc",
+          "title": "El oído de la corteza",
+          "image": "photos/426a1a954604c7271c62e56f.webp",
+          "thumb": "photos/426a1a954604c7271c62e56f-thumb.webp",
+          "dhash": "acd10c4d4c4d0f0f211c29201c291f1b291f1c2a1f1b282b26332c27341f1c2a282231443c4a463f4d2823324237495a4d5d5d506144394d",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-tejedora-de-niebla-a31b7d100127",
+          "title": "La tejedora de niebla",
+          "image": "photos/66bdc39d60aad649a4ab7f30.webp",
+          "thumb": "photos/66bdc39d60aad649a4ab7f30-thumb.webp",
+          "dhash": "07070f06072727866d6d62948f81b3aa9b989589545b506e706474766a5f655a7475687f7e718584787e7e7262625573726686827879776b",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "realismo-magico",
       "title": "Realismo mágico",
       "items": [
