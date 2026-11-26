@@ -111,6 +111,39 @@ def set_autostart(enabled: bool):
                 pass
 
 
+def desktop_dir() -> Path:
+    """El Escritorio real (puede estar en OneDrive)."""
+    if IS_WINDOWS:
+        try:
+            import ctypes.wintypes
+            buf = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
+            ctypes.windll.shell32.SHGetFolderPathW(None, 0x10, None, 0, buf)  # CSIDL_DESKTOPDIRECTORY
+            if buf.value:
+                return Path(buf.value)
+        except Exception:
+            pass
+    return Path.home() / "Desktop"
+
+
+def create_desktop_shortcut() -> Path:
+    """Crea «Aura Signature.lnk» en el Escritorio apuntando a este .exe (con PowerShell, sin dependencias)."""
+    if not IS_WINDOWS or not getattr(sys, "frozen", False):
+        raise RuntimeError("El acceso directo se crea desde AuraSignature.exe en Windows")
+    exe = Path(sys.executable)
+    link = desktop_dir() / "Aura Signature.lnk"
+
+    def q(text) -> str:
+        return "'" + str(text).replace("'", "''") + "'"
+    script = (
+        "$s = (New-Object -ComObject WScript.Shell).CreateShortcut(" + q(link) + "); "
+        "$s.TargetPath = " + q(exe) + "; $s.WorkingDirectory = " + q(exe.parent) + "; "
+        "$s.IconLocation = " + q(f"{exe},0") + "; $s.Description = 'Gestor de fondos de Aura Signature'; $s.Save()"
+    )
+    subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", script],
+                   check=True, capture_output=True, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0), timeout=30)
+    return link
+
+
 def open_path(path: Path):
     path.mkdir(parents=True, exist_ok=True)
     if IS_WINDOWS:
@@ -149,6 +182,7 @@ class ManagerApp:
         self._connect()
         threading.Thread(target=self._worker, daemon=True).start()
         root.after(150, self._drain)
+        root.after(1500, self._first_run_shortcut)
         root.after(4000, self._tick)
         if start_minimized:
             root.iconify()
@@ -229,6 +263,18 @@ class ManagerApp:
         if TkinterDnD is not None and hasattr(self.root, "drop_target_register"):
             self.root.drop_target_register(DND_FILES)
             self.root.dnd_bind("<<Drop>>", self._on_drop)
+
+    def _first_run_shortcut(self):
+        """La primera vez deja el acceso directo en el escritorio."""
+        if self.cfg.values.get("shortcut_done") or not (IS_WINDOWS and getattr(sys, "frozen", False)):
+            return
+        try:
+            link = create_desktop_shortcut()
+            self.log(f"Dejé un acceso directo en el escritorio: {link.name}")
+        except Exception as e:  # noqa: BLE001
+            self.log(f"⚠ No se pudo crear el acceso directo: {e}")
+        self.cfg.values["shortcut_done"] = True
+        self.cfg.save()
 
     # ---------- conexión
 
@@ -579,6 +625,14 @@ class ManagerApp:
         if IS_WINDOWS:
             ttk.Checkbutton(frame, text="Abrir con Windows (minimizada) para que la carpeta se sincronice siempre",
                             variable=auto).grid(row=7, column=0, columnspan=2, sticky="w", pady=(14, 0))
+        if IS_WINDOWS:
+            def shortcut():
+                try:
+                    link = create_desktop_shortcut()
+                    result.configure(text=f"Listo: «{link.name}» en el escritorio.")
+                except Exception as e:  # noqa: BLE001
+                    result.configure(text=f"No se pudo crear: {e}")
+            ttk.Button(frame, text="Crear acceso directo en el escritorio", command=shortcut).grid(row=10, column=0, sticky="w", pady=(12, 0))
         result = ttk.Label(frame, text="", style="Muted.TLabel", wraplength=460)
         result.grid(row=8, column=0, columnspan=2, sticky="w", pady=(10, 0))
 

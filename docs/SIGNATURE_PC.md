@@ -15,6 +15,8 @@ teléfono, para todos los usuarios.
    - **Generate token**, copiá el código y pegalo en el gestor → **Guardar y conectar**.
    El token queda en el administrador de credenciales de Windows. Solo sirve para el repositorio Aura.
 3. Marcá **Abrir con Windows** para que la carpeta se sincronice siempre (arranca minimizado).
+   La primera vez deja un acceso directo «Aura Signature» en el escritorio (si lo borrás, se vuelve a crear
+   desde Configuración).
 
 ## Uso diario
 
