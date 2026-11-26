@@ -4,6 +4,9 @@ import android.graphics.Bitmap
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.segmentation.subject.SubjectSegmentation
 import com.google.mlkit.vision.segmentation.subject.SubjectSegmenterOptions
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.math.roundToInt
@@ -27,7 +30,7 @@ class SubjectSegmenter {
         // Se procesa reducido (lado mayor 1024) para limitar memoria y tiempo.
         val scale = minOf(1f, MAX_SIDE / maxOf(photo.width, photo.height).toFloat())
         val input = if (scale < 1f) {
-            Bitmap.createScaledBitmap(photo, (photo.width * scale).roundToInt(), (photo.height * scale).roundToInt(), true)
+            Bitmap.createScaledBitmap(photo, (photo.width * scale).roundToInt().coerceAtLeast(1), (photo.height * scale).roundToInt().coerceAtLeast(1), true)
         } else {
             photo
         }
@@ -37,7 +40,8 @@ class SubjectSegmenter {
         return try {
             suspendCancellableCoroutine { cont ->
                 client.process(InputImage.fromBitmap(input, 0))
-                    .addOnSuccessListener { result ->
+                    .addOnSuccessListener(Dispatchers.Default.asExecutor()) { result ->
+                        if (!cont.isActive) return@addOnSuccessListener
                         val buffer = result.foregroundConfidenceMask
                         if (buffer == null) {
                             cont.resume(Result.Unavailable("Sin sujeto detectado"))
@@ -55,17 +59,21 @@ class SubjectSegmenter {
                             if (a > 0.5f) covered++
                             pixels[i] = (a * 255).roundToInt() shl 24
                         }
+                        if (covered == 0) {
+                            cont.resume(Result.Unavailable("Sin sujeto detectado"))
+                            return@addOnSuccessListener
+                        }
                         val argb = Bitmap.createBitmap(pixels, w, h, Bitmap.Config.ARGB_8888)
                         val alpha = argb.extractAlpha()
                         argb.recycle()
-                        cont.resume(
-                            if (covered == 0) Result.Unavailable("Sin sujeto detectado")
-                            else Result.Mask(alpha, covered / (w * h).toFloat()),
-                        )
+                        if (cont.isActive) cont.resume(Result.Mask(alpha, covered / (w * h).toFloat()))
+                        else alpha.recycle()
                     }
                     .addOnFailureListener { e -> cont.resume(Result.Unavailable(e.message ?: "Segmentación no disponible")) }
             }
-        } catch (e: Throwable) {
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
             Result.Unavailable(e.message ?: "Segmentación no disponible")
         } finally {
             client.close()

@@ -23,6 +23,7 @@ import app.aura.ui.MainActivity
 import app.aura.widget.WidgetActionReceiver
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -71,6 +72,15 @@ class LauncherWidgetTest {
             device.pressBack()
         }
         return false
+    }
+
+    @Test
+    fun launcherListsOnlyWeatherWidgets() {
+        val providers = AppWidgetManager.getInstance(context).installedProviders
+            .filter { it.provider.packageName == context.packageName }
+            .map { it.provider }.toSet()
+        val expected = WidgetType.entries.filterNot { it.classic }.map { context.aura.widgets.component(it) }.toSet()
+        assertEquals(expected, providers)
     }
 
     @Test

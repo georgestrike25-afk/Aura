@@ -64,7 +64,7 @@ class AuraWallpaperService : WallpaperService() {
         private var pendingMinute = -1L
         private var width = 0
         private var height = 0
-        private var visible = false
+        @Volatile private var visible = false
         private var registered = false
 
         private val app: AppContainer get() = applicationContext.aura
@@ -121,8 +121,6 @@ class AuraWallpaperService : WallpaperService() {
                     if (loadLayers()) { frameMinute = -1; pendingMinute = -1 }
                     showCurrent()
                     scheduleNext()
-                    handler.removeCallbacks(animate)
-                    if (animating()) handler.post(animate)
                 }
             } else {
                 handler.removeCallbacks(tick)

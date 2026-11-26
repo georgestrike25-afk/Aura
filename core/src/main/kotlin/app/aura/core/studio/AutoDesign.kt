@@ -24,33 +24,42 @@ object AutoDesign {
 
     private fun candidates(
         pixels: IntArray, width: Int, height: Int, subject: IntArray?, separate: Boolean,
-    ): List<Candidate> = (0..16).map { index ->
-            val y = 0.18f + index * 0.04f
-            val region = floatArrayOf(0.10f, y - 0.08f, 0.90f, y + 0.08f)
-            var occupied = 0f
-            var detail = 0f
-            var count = 0
-            var center = 0f
-            var centerCount = 0
-            for (row in (region[1] * height).toInt() until (region[3] * height).toInt()) {
-                for (col in (region[0] * width).toInt().coerceAtLeast(1) until (region[2] * width).toInt()) {
-                    val i = row * width + col
-                    val alpha = ((subject?.get(i) ?: 0) ushr 24) / 255f
-                    if (separate && col.toFloat() / width in 0.37f..0.63f) {
-                        center += alpha
-                        centerCount++
-                        continue
+    ): List<Candidate> {
+        val light = FloatArray(pixels.size) { Fusion.luminance(pixels[it]) }
+        val columns = if (separate) listOf(0.5f) else listOf(0.5f, 0.42f, 0.58f)
+        return columns.flatMap { x ->
+            (0..16).map { index ->
+                val y = 0.18f + index * 0.04f
+                val halfWidth = if (separate) 0.40f else 0.31f
+                val region = floatArrayOf(x - halfWidth, y - 0.08f, x + halfWidth, y + 0.08f)
+                var occupied = 0f
+                var detail = 0f
+                var count = 0
+                var center = 0f
+                var centerCount = 0
+                for (row in (region[1] * height).toInt() until (region[3] * height).toInt()) {
+                    for (col in (region[0] * width).toInt().coerceAtLeast(1) until (region[2] * width).toInt()) {
+                        val i = row * width + col
+                        val alpha = ((subject?.get(i) ?: 0) ushr 24) / 255f
+                        if (separate && abs(col.toFloat() / width - x) <= 0.13f) {
+                            center += alpha
+                            centerCount++
+                        } else {
+                            occupied += alpha
+                            detail += abs(light[i] - light[i - 1])
+                            count++
+                        }
                     }
-                    occupied += alpha
-                    detail += abs(Fusion.luminance(pixels[i]) - Fusion.luminance(pixels[i - 1]))
-                    count++
                 }
+                val score = (occupied * 3f + detail) / count.coerceAtLeast(1) +
+                    abs(y - 0.36f) * 0.12f + abs(x - 0.5f) * 0.24f -
+                    center / centerCount.coerceAtLeast(1) * 0.40f
+                Candidate(x, y, region, score)
             }
-            Candidate(y, region, (occupied * 3f + detail) / count.coerceAtLeast(1) +
-                abs(y - 0.36f) * 0.12f - center / centerCount.coerceAtLeast(1) * 0.40f)
         }.sortedBy { it.score }
+    }
 
-    private data class Candidate(val y: Float, val region: FloatArray, val score: Float)
+    private data class Candidate(val x: Float, val y: Float, val region: FloatArray, val score: Float)
 
     private fun build(
         title: String, candidate: Candidate, pixels: IntArray, width: Int, height: Int,
@@ -67,6 +76,7 @@ object AutoDesign {
             color = harmony.color,
             accentColor = harmony.accentColor,
             lightAngle = harmony.lightAngle,
+            centerX = candidate.x,
             centerY = candidate.y,
             size = if (split) 0.23f else 0.29f,
             stretchX = 0.82f,

@@ -130,6 +130,9 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, autoDesign
             if (proposals.isEmpty() && busy == null && project != null) {
                 OutlinedButton(onClick = viewModel::generateProposals) { Text("Crear propuestas") }
             }
+            if (proposals.isNotEmpty() && project?.hasMask == false) {
+                Text("Podés crear una máscara de profundidad desde Capas.", style = MaterialTheme.typography.bodySmall)
+            }
             proposals.forEach { choice ->
                 Text(choice.proposal.title, style = MaterialTheme.typography.titleLarge)
                 Image(
