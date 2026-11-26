@@ -54,7 +54,9 @@ jobs:
           $p = Start-Process -FilePath dist/AuraSignature.exe -PassThru
           Start-Sleep -Seconds 12
           if ($p.HasExited) { Write-Error "El gestor se cerró al arrancar (código $($p.ExitCode))"; exit 1 }
-          Stop-Process -Id $p.Id -Force
+          # El .exe de un solo archivo abre un segundo proceso: se cierran los dos para liberar el archivo.
+          Get-Process AuraSignature -ErrorAction SilentlyContinue | Stop-Process -Force
+          Start-Sleep -Seconds 3
       - uses: actions/upload-artifact@v4
         with:
           name: AuraSignature
@@ -65,7 +67,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p out && cp dist/AuraSignature.exe out/
+          mkdir -p out && mv dist/AuraSignature.exe out/
           git fetch origin "$GITHUB_REF_NAME"
           git checkout -B publish "origin/$GITHUB_REF_NAME"
           mkdir -p dist && cp out/AuraSignature.exe dist/AuraSignature.exe
