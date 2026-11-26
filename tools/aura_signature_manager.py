@@ -198,7 +198,9 @@ class ManagerApp:
         root.after(150, self._drain)
         root.after(1500, self._first_run_shortcut)
         root.after(4000, self._tick)
-        self.tray = Tray(self) if pystray is not None else None
+        # Sin bandeja en las pruebas automáticas (su hilo no dejaría terminar el proceso).
+        use_tray = pystray is not None and not os.environ.get("AURA_NO_TRAY")
+        self.tray = Tray(self) if use_tray else None
         root.protocol("WM_DELETE_WINDOW", self.close_window)
         if start_minimized:
             if self.tray:

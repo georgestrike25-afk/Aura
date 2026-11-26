@@ -1,4 +1,6 @@
 """Prueba de interacción de la galería y el visor con Tk, sin conexión."""
+import os
+os.environ["AURA_NO_TRAY"] = "1"  # la bandeja del sistema no se prueba acá
 import tempfile
 import tkinter as tk
 import unittest
