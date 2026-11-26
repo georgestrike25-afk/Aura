@@ -3,6 +3,21 @@
   "license": "",
   "collections": [
     {
+      "id": "mundos-submarinos",
+      "title": "Mundos submarinos",
+      "items": [
+        {
+          "id": "el-jardin-de-las-corrient-5967586915d8",
+          "title": "El jardín de las corrientes",
+          "image": "photos/d9f1505e99732429d266c283.webp",
+          "thumb": "photos/d9f1505e99732429d266c283-thumb.webp",
+          "dhash": "06070f4d0d4c6811001d1f022d2f03333700262a00171a102b2c0e2a2c001a1f0a2021304138283932051c1f333b2d4246333b4434434b3d",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "espiritus-del-bosque",
       "title": "Espíritus del bosque",
       "items": [
