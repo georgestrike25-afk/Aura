@@ -3,48 +3,6 @@
   "license": "",
   "collections": [
     {
-      "id": "la-ciudad-en-pausa",
-      "title": "La ciudad en pausa",
-      "items": [
-        {
-          "id": "faro-de-neon-bbaadf550be3",
-          "title": "Faro de neón",
-          "image": "photos/d824145761abaa2aa6b0b90d.webp",
-          "thumb": "photos/d824145761abaa2aa6b0b90d-thumb.webp",
-          "dhash": "66263966564e66673a2b403b2b3f3a2a3e39283d3d2d403f2a3a4129353d2435452d3845262d492528461b2a432731402126412323351621",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "gato-de-azotea-e64dc6036a9a",
-          "title": "Gato de azotea",
-          "image": "photos/f78825d74a662f3e0cfb35d5.webp",
-          "thumb": "photos/f78825d74a662f3e0cfb35d5-thumb.webp",
-          "dhash": "00000563e284e56c3e304340314644354b45364c52405646354759455e614b6935262c221a1f4f3d4d5c44573a2324231a1e3a2b34443138",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "paraguas-rojo-96f4d5feb8c0",
-          "title": "Paraguas rojo",
-          "image": "photos/f5817a6bc7dec8bc9d52d8d6.webp",
-          "thumb": "photos/f5817a6bc7dec8bc9d52d8d6-thumb.webp",
-          "dhash": "03030771313311b13f2a47412b49422b493f2a47452c4648294246273c472b3c4f2c3d4828363520244c2d2a4327345529343821244b2c26",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "ultimo-tranvia-f0da9685d61e",
-          "title": "Último tranvía",
-          "image": "photos/3e8a37a5485f511e3cb2c8e2.webp",
-          "thumb": "photos/3e8a37a5485f511e3cb2c8e2-thumb.webp",
-          "dhash": "020011e965b4945427182c2a1a2f2b1b312c1b32422735402836452c3a4a3046512e35452a25482c275a3945532d34482c274e302a492d36",
-          "width": 1440,
-          "height": 3120
-        }
-      ]
-    },
-    {
       "id": "retratos-del-mar",
       "title": "Retratos del mar",
       "items": [
