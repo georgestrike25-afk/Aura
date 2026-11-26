@@ -10,6 +10,8 @@ Rama de trabajo `aura-artistic-evolution-2`, derivada de `72313ef` en `aura-arti
 - Se conservan dimensiones mínimas válidas al abrir fotos muy estrechas. Studio muestra los errores de importación y permite reintentar la apertura.
 - Con una referencia guardada, «Generar alternativas» cambia las tres propuestas de cada tanda. Las variantes adaptan el encuadre y el contraste a la foto con la tipografía y el material de referencia, en modo Puro.
 
+- Revisión `7260fe4` publicada. Pasaron 83 pruebas del núcleo, las pruebas instrumentadas en Android 14 y `lint`. El APK público coincide con el artefacto firmado y tiene SHA-256 `e1efcf6c39130c32d967b5e64b974dc7f663178e26e5476e5bda174493ea2c92`. [Resultados de CI](https://github.com/georgestrike25-afk/Aura/actions/runs/45790450262) · [APK actualizado](https://github.com/georgestrike25-afk/Aura/releases/download/aura-artistic-evolution-2-test/Aura.apk?rev=7260fe4)
+
 ## Ajuste de AutoDesign y vistas de widgets
 
 - AutoDesign aplica el modo Puro a todas las propuestas. Las propuestas nuevas usan cifras altas, acabados de metal o vidrio y separación con el sujeto cuando hay máscara. Si Studio tiene un diseño de referencia, usa el estilo del proyecto abierto, el activo o el último personalizado, en ese orden.
