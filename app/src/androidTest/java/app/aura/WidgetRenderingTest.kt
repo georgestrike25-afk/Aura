@@ -3,6 +3,7 @@ package app.aura
 import android.app.WallpaperManager
 import android.appwidget.AppWidgetManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -309,8 +310,13 @@ class WidgetRenderingTest {
     @Test
     fun providersAreRegistered() {
         val providers = AppWidgetManager.getInstance(context).installedProviders.filter { it.provider.packageName == context.packageName }
-        assertEquals(WidgetType.entries.size, providers.size)
+        assertEquals(WidgetType.entries.count { !it.classic }, providers.size)
         assertTrue(providers.all { it.configure != null })
+        for (type in WidgetType.entries.filter { it.classic }) {
+            val component = context.aura.widgets.component(type)
+            val receiver = context.packageManager.getReceiverInfo(component, PackageManager.GET_META_DATA)
+            assertTrue(receiver.metaData.containsKey(AppWidgetManager.META_DATA_APPWIDGET_PROVIDER))
+        }
     }
 
     @Test
