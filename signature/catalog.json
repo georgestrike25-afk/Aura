@@ -3,6 +3,48 @@
   "license": "",
   "collections": [
     {
+      "id": "la-gravedad-de-las-cosas",
+      "title": "La gravedad de las cosas",
+      "items": [
+        {
+          "id": "el-hilo-de-plomo-ce9e95fd74de",
+          "title": "El hilo de plomo",
+          "image": "photos/0bb7e1e5848d3689aa9f66d7.webp",
+          "thumb": "photos/0bb7e1e5848d3689aa9f66d7-thumb.webp",
+          "dhash": "0f0f070b0f0e171347593a64765160734f485a3a3d4e31495a3a495b3a4152344756365d6c475e6c4755623e65734d7a885d7b885d737e53",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-paraguas-de-piedra-36fc94bfe624",
+          "title": "El paraguas de piedra",
+          "image": "photos/bc58ad1f2872a07ddda32538.webp",
+          "thumb": "photos/bc58ad1f2872a07ddda32538-thumb.webp",
+          "dhash": "0f0f0f1312120f0f2930384048524b535d353d46262e37353d46363f482c343d2f373f3c444d3a434c3a434c303840444b52434a51353d44",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-silla-del-techo-54b86579aba3",
+          "title": "La silla del techo",
+          "image": "photos/b0111c2eee4a75bba732e604.webp",
+          "thumb": "photos/b0111c2eee4a75bba732e604-thumb.webp",
+          "dhash": "0e17172e26723e074b300f5034114f33124a3010513511563913573a145136136c471a6c471a6b4619644217794d1d7c501f774c1c6d4518",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-taza-ingravida-af93a63af6d9",
+          "title": "La taza ingrávida",
+          "image": "photos/bdebe177d9788e72e181278d.webp",
+          "thumb": "photos/bdebe177d9788e72e181278d-thumb.webp",
+          "dhash": "07070f0f07070315411a2165343e874c596435423d1a2260323d63333e4520293b1b235c2f356d3c424c252e3e1c225329305e3037552932",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "animales-mitologicos",
       "title": "Animales mitológicos",
       "items": [
