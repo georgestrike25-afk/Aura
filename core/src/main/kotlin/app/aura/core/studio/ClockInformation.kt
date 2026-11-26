@@ -12,13 +12,14 @@ enum class ClockInformationField(val label: String) {
     DATE("Fecha"), TEMPERATURE("Temperatura"), CONDITION("Condición"), LOCATION("Ubicación"), RANGE("Máxima y mínima")
 }
 
-fun ClockInformationMode.fields(): List<ClockInformationField> = with(ClockInformationField) {
-    when (this@fields) {
-        ClockInformationMode.PURE -> emptyList()
-        ClockInformationMode.ESSENTIAL -> listOf(DATE, TEMPERATURE)
-        ClockInformationMode.AMBIENT -> listOf(TEMPERATURE, CONDITION)
-        ClockInformationMode.FULL -> listOf(DATE, LOCATION, TEMPERATURE, RANGE)
-    }
+fun ClockInformationMode.fields(): List<ClockInformationField> = when (this) {
+    ClockInformationMode.PURE -> emptyList()
+    ClockInformationMode.ESSENTIAL -> listOf(ClockInformationField.DATE, ClockInformationField.TEMPERATURE)
+    ClockInformationMode.AMBIENT -> listOf(ClockInformationField.TEMPERATURE, ClockInformationField.CONDITION)
+    ClockInformationMode.FULL -> listOf(
+        ClockInformationField.DATE, ClockInformationField.LOCATION,
+        ClockInformationField.TEMPERATURE, ClockInformationField.RANGE,
+    )
 }
 
 @Serializable
