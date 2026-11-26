@@ -263,7 +263,6 @@ internal fun WeatherDetail(snap: WeatherSnapshot, settings: AppSettings, refresh
             Spacer(Modifier.height(12.dp))
             SunCard(todayPoint, nowSec, ::clock)
 
-            val age = System.currentTimeMillis() - snap.fetchedAtMillis
             Text(
                 "Actualizado hace ${WeatherText.age(context, age)} · Pronóstico: Open-Meteo.com (CC BY 4.0)" +
                     if (current.observedBy != null) " · Observación: aviationweather.gov (NOAA)" else "",
