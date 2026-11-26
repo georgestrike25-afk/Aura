@@ -238,6 +238,60 @@ class SignatureRepository(context: Context) {
         return ContentNames.fingerprint(gray, colors)
     }
 
+    /**
+     * Copia todas las fotos propias a la galería del teléfono, en «Imágenes/Aura Signature/<grupo>/<título>.jpg»,
+     * para pasarlas a la PC y gestionarlas con el gestor de Signature. Devuelve cuántas se guardaron.
+     */
+    suspend fun exportMine(): Int = withContext(Dispatchers.IO) {
+        var n = 0
+        for (col in mineCatalog().collections) {
+            val folder = safeName(col.title).ifBlank { "Mis fotos" }
+            val used = mutableSetOf<String>()
+            for (item in col.items) {
+                val file = local(item.image) ?: continue
+                val bmp = BitmapFactory.decodeFile(file.path) ?: continue
+                var name = safeName(item.title).ifBlank { "Foto" }
+                var k = 2
+                val base = name
+                while (!used.add(name.lowercase())) name = "$base ${k++}"
+                try {
+                    if (saveToGallery(folder, "$name.jpg", bmp)) n++
+                } finally {
+                    bmp.recycle()
+                }
+            }
+        }
+        n
+    }
+
+    private fun safeName(text: String) = text.replace(Regex("[\\\\/:*?\"<>|]"), "").trim().trimEnd('.')
+
+    private fun saveToGallery(folder: String, name: String, bmp: Bitmap): Boolean = runCatching {
+        if (Build.VERSION.SDK_INT >= 29) {
+            val values = android.content.ContentValues().apply {
+                put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, name)
+                put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                put(android.provider.MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Aura Signature/$folder")
+                put(android.provider.MediaStore.Images.Media.IS_PENDING, 1)
+            }
+            val resolver = app.contentResolver
+            val uri = resolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values) ?: return@runCatching false
+            resolver.openOutputStream(uri)?.use { bmp.compress(Bitmap.CompressFormat.JPEG, 95, it) }
+            values.clear()
+            values.put(android.provider.MediaStore.Images.Media.IS_PENDING, 0)
+            resolver.update(uri, values, null, null)
+            true
+        } else {
+            @Suppress("DEPRECATION")
+            val dir = File(android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_PICTURES), "Aura Signature/$folder")
+            dir.mkdirs()
+            val out = File(dir, name)
+            out.outputStream().use { bmp.compress(Bitmap.CompressFormat.JPEG, 95, it) }
+            android.media.MediaScannerConnection.scanFile(app, arrayOf(out.path), arrayOf("image/jpeg"), null)
+            true
+        }
+    }.getOrDefault(false)
+
     /** Borra todas las fotos subidas desde el teléfono. */
     fun deleteAllMine() {
         mineDir.listFiles()?.forEach { it.delete() }

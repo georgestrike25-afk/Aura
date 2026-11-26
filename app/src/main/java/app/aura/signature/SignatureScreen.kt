@@ -132,6 +132,20 @@ class SignatureViewModel(app: Application) : AndroidViewModel(app) {
         _catalog.value = repo.cached()
     }
 
+    fun exportMine() = viewModelScope.launch {
+        if (_importing.value) return@launch
+        _importing.value = true
+        _message.value = "Guardando tus fotos en la galería…"
+        try {
+            val n = repo.exportMine()
+            _message.value = if (n == 0) "No se pudo guardar ninguna foto." else
+                "Se guardaron $n fotos en Imágenes › Aura Signature (una carpeta por grupo). Pasá esa carpeta a la PC, " +
+                    "adentro de la carpeta del gestor, y se publican solas."
+        } finally {
+            _importing.value = false
+        }
+    }
+
     fun deleteAllMine() {
         repo.deleteAllMine()
         _catalog.value = repo.cached()
@@ -287,8 +301,11 @@ fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: Sign
                     }
                 }
                 if (hasMine) {
-                    TextButton(onClick = { confirmDeleteAll = true }) {
-                        Text("Borrar todas mis fotos", color = MaterialTheme.colorScheme.error)
+                    Row {
+                        TextButton(enabled = !importing, onClick = { vm.exportMine() }) { Text("Exportar mis fotos") }
+                        TextButton(onClick = { confirmDeleteAll = true }) {
+                            Text("Borrar todas mis fotos", color = MaterialTheme.colorScheme.error)
+                        }
                     }
                 }
             }

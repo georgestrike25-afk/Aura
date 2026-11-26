@@ -94,6 +94,7 @@ class AppScreensTest {
         org.junit.Assert.assertEquals(2, first.added)
         org.junit.Assert.assertEquals(1, again.repeated)
         org.junit.Assert.assertEquals(0, again.added)
+        org.junit.Assert.assertEquals("exporta las fotos propias a la galería", 2, repo.exportMine())
         val titles = repo.cached().flatMap { it.items }.map { it.work.title }
         org.junit.Assert.assertEquals(titles.size, titles.distinct().size)
 
