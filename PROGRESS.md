@@ -2,26 +2,39 @@
 
 Rama de trabajo `aura-artistic-evolution-2`, derivada de `72313ef` en `aura-artistic-evolution`.
 
+**El clima se siente. El tiempo se convierte en arte.**
+
+## Validación y distribución
+
+[Descargar APK firmado](https://raw.githubusercontent.com/georgestrike25-afk/Aura/f88f5299413c5f134482a8d60aea1ff8c5a4665b/dist/Aura-2-Prueba.apk) · [Versión preliminar en GitHub](https://github.com/georgestrike25-afk/Aura/releases/tag/aura-artistic-evolution-2-test)
+
+- Gradle local con JDK 17 y SDK 35: 80 pruebas de núcleo aprobadas, APK debug y APK de instrumentación compilados. El módulo Android no tiene pruebas JVM propias.
+- `:app:lintDebug` finalizó sin errores. El informe incluye advertencias de los layouts de widgets generados y de atributos introducidos después del SDK mínimo.
+- El catálogo remoto responde con la versión 2 y cero colecciones. La primera publicación requiere las fotos del propietario.
+- [GitHub Actions, ejecución 45741807846](https://github.com/georgestrike25-afk/Aura/actions/runs/45741807846) compiló el APK de distribución con la configuración de firma del repositorio y aprobó `:app:lintDebug`. En el emulador API 34 pasaron 30 de 31 pruebas. La única falla fue la expectativa anterior de diez widgets en el selector, que mostró los seis meteorológicos.
+- La revisión `2cc3a0c` actualiza esa prueba para validar el nuevo selector y verificar también que los cuatro receptores heredados conservan sus metadatos. Pasaron las 31 pruebas instrumentadas en Android 14, además de las 80 pruebas del núcleo y el análisis estático. [Segunda ejecución de GitHub Actions](https://github.com/georgestrike25-afk/Aura/actions/runs/45743377212).
+- APK de la revisión `2cc3a0c` verificado con `apksigner` y `aapt`: `app.aura.preview`, `1.0.0-evolution2`, «Aura 2 · Prueba». SHA-256 del APK `8d24f018b446064109be7fc277efb7689f2039fc485a465c44418651b3b8cf1d`. Certificado de Aura `1f6f0c68557969d4f59cc8281f86c09437ce3f94511c10471867908c92867c2c`.
+- El APK exacto de CI se descargó desde la rama de prueba y coincidió byte por byte con el artefacto firmado. GitHub rechazó adjuntar el binario con la integración de Actions, por lo que la versión preliminar enlaza al archivo del commit de distribución. El workflow conserva esa vía de distribución para las próximas compilaciones.
+
 ## Estado de las etapas
 
 | Etapa | Avance | Verificación |
 |---|---|---|
 | Auditoría | Se revisaron documentación, navegación, clima, widgets, Studio, Signature, fondo animado y CI. La base ya incluye capas, cuatro dígitos editables, importación TTF/OTF, materiales, Open-Meteo y el reloj del sistema. | Rama base verificada. |
-| AutoDesign | Importar una foto abre tres propuestas generadas localmente a partir del encuadre, paleta, contraste, detalle y máscara del sujeto cuando está disponible. Cada diseño ofrece aplicar, editar y generar alternativas. | Pruebas JVM en verde. Flujo Android pendiente de verificación. |
-| Información del reloj | Puro, Esencial, Ambiental y Completo, con posición, tamaño, fuente, color, opacidad y visibilidad por campo. Los proyectos anteriores conservan el modo Original. | Pendiente de verificación Android. |
+| AutoDesign | Importar una foto abre tres propuestas generadas localmente a partir del encuadre, paleta, contraste, detalle y máscara del sujeto cuando está disponible. Cada diseño ofrece aplicar, editar y generar alternativas. | Pruebas JVM en verde. La comprobación geométrica de los 1.440 minutos por formato pasó en `StudioFlowTest`. |
+| Información del reloj | Puro, Esencial, Ambiental y Completo, con posición, tamaño, fuente, color, opacidad y visibilidad por campo. Los proyectos anteriores conservan el modo Original. | Compila en Android. Queda la revisión visual de cada modo con fotos reales. |
 | Signature | Catálogo 2.0 remoto dedicado a fotografía, favoritos persistentes, colecciones, miniaturas, descarga bajo demanda, caché local, máscara y reloj recomendado opcionales. | El catálogo está vacío a la espera de las fotografías del propietario. |
-| Atmosphere | Puede seguir las condiciones meteorológicas guardadas, incluidos viento y nubosidad, con intensidad y apagado. El fondo limita el movimiento a periodos visibles. | Pendiente de verificación Android y Galaxy S24+. |
-| Clima y Widgets | Clima abre la app, muestra el estado de carga o antigüedad de los datos y conserva el pronóstico. El catálogo de widgets ofrece los meteorológicos. Los receptores e identificadores heredados siguen declarados para conservar widgets existentes. | Pendiente de pruebas del selector de One UI Home y de migración real. |
-| Compilación y distribución | CI prepara un APK firmado con el identificador `app.aura.preview`, instalable junto a la estable, y verifica las pruebas y la huella SHA-256 de firma, comprobada con el APK de la rama base antes de publicar. | Pendiente de ejecución y comprobación del artefacto. |
+| Atmosphere | Puede seguir las condiciones meteorológicas guardadas, incluidos viento y nubosidad, con intensidad y apagado. El fondo limita el movimiento a periodos visibles. | Resolución de efectos probada en JVM y lluvia renderizada en emulador. Pendiente el Galaxy S24+. |
+| Clima y Widgets | Clima abre la app, muestra el estado de carga o antigüedad de los datos y conserva el pronóstico. El catálogo de widgets ofrece los meteorológicos. Los receptores e identificadores heredados siguen declarados para conservar widgets existentes. | Navegación y catálogo de seis widgets verificados en emulador. Pendiente One UI Home y una actualización real desde la versión anterior. |
+| Compilación y distribución | CI prepara un APK firmado con el identificador `app.aura.preview`, instalable junto a la estable, y verifica las pruebas y la huella SHA-256 de firma, comprobada con el APK de la rama base antes de publicar. | Distribución pública y descarga verificadas. |
 
 ## Límites y siguientes pasos
 
 - La segmentación de ML Kit se ejecuta localmente. La entrega inicial del modelo depende de Play Services. Si no hay modelo o sujeto, se presentan propuestas sin profundidad y se conserva el pincel manual.
-- El contraste y la ocupación estimados por AutoDesign son heurísticos. Queda por medir la legibilidad y la oclusión minuto a minuto sobre fotografías reales, también con máscaras imperfectas.
+- El contraste y la ocupación estimados por AutoDesign son heurísticos. La prueba instrumentada recorre los 1.440 minutos en 12 y 24 horas con una escena sintética, comprueba límites del lienzo y solapamiento entre dígitos. Queda por contrastar el resultado con fotografías reales y máscaras imperfectas.
 - El proveedor de clima actual no expone alertas oficiales en el modelo de Aura. Se mantienen las condiciones y avisos de precipitación derivados del pronóstico.
 - Para publicar una colección, editar `signature/catalog-v2.json` en esta rama. Cada obra necesita un ID único estable, título, archivo de 1440 × 3120 y miniatura. La máscara opcional debe ser PNG de 1440 × 3120 con silueta opaca y fondo transparente. `recommendedDesign` admite el esquema de `ClockDesign`. Usar rutas nuevas cuando se actualicen imágenes y registrar la licencia suministrada. Verificar la fotografía con el estándar de composición del propietario.
-- Ejecutar `:core:test :app:testDebugUnitTest :app:lintDebug` y `:app:connectedDebugAndroidTest`. Verificar también la instalación paralela, el reloj del sistema y el fondo en un Galaxy S24+.
-- La etiqueta para la prueba es `aura-artistic-evolution-2-test`. El enlace de descarga se debe comunicar tras verificar que el APK está publicado.
+- La validación en hardware incluye instalación paralela, reloj del sistema, fondo animado, rendimiento y migración de widgets en Galaxy S24+.
 
 ## Historial de Artistic Evolution 1
 
