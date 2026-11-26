@@ -10,6 +10,8 @@ Rama de trabajo `aura-artistic-evolution-2`, derivada de `72313ef` en `aura-arti
 - Signature consulta el catálogo al volver a la pestaña y cada minuto mientras se ve. También ofrece «Actualizar galería». La caché conserva las obras sin conexión.
 - Para publicar desde el chat, preparar los originales autorizados con `python3 tools/aura_signature_publish.py "Título de la colección" /ruta/originales/*.jpg`. El script prepara el archivo a 1440 × 3120, la miniatura y el catálogo. Se publican juntos en GitHub, en esta rama. Los archivos usan rutas ligadas a su contenido para invalidar la caché al reemplazar una obra. Las capturas de AutoDesign sirven de referencia visual y la colección espera las imágenes originales.
 
+- La revisión `51a5f61` pasó las pruebas del núcleo y del emulador y `lint`. El APK público coincide con el artefacto firmado de CI. [Resultados](https://github.com/georgestrike25-afk/Aura/actions/runs/45795202590) · [Descargar APK](https://github.com/georgestrike25-afk/Aura/releases/download/aura-artistic-evolution-2-test/Aura.apk?rev=51a5f61)
+
 ## Corrección de AutoDesign
 
 - La detección del sujeto tiene un límite de seis segundos. Si el modelo tarda, se generan propuestas sin máscara y queda disponible la edición manual.
