@@ -200,4 +200,9 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
 - Pruebas agregadas para contornos con colores de luminosidad similar, referencia automática,
   compatibilidad al guardar trazos anteriores, translucidez de Aqua y calor en la base de Ignis.
   La instrumentación valida el refinado, deshacer, rehacer y persistencia sobre una foto de prueba.
-  APK y capturas pendientes de la CI Android de esta rama.
+- Verificado en `ef2616c` con la [CI Android](https://github.com/georgestrike25-afk/Aura/actions/runs/45909278947):
+  101 pruebas unitarias, lint y 35 pruebas en emulador API 34. El
+  [APK de prueba](https://github.com/georgestrike25-afk/Aura/releases/download/aura-studio-materials-test/Aura.apk)
+  conserva el paquete `app.aura` y la firma original. Capturas de Aqua, Ignis, Metal, Cristal, Piedra y
+  selección inteligente en `docs/capturas/` (`8b297d6`), producidas con imágenes de prueba.
+  La comprobación visual en un Galaxy S24+ físico queda pendiente.
