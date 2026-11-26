@@ -1,5 +1,21 @@
 {
   "version": 2,
   "license": "",
-  "collections": []
+  "collections": [
+    {
+      "id": "aura-signature",
+      "title": "Aura Signature",
+      "items": [
+        {
+          "id": "fondo-023e6acdefa1",
+          "title": "Fondo",
+          "image": "photos/d52af17d48aa598cca63e4c2.webp",
+          "thumb": "photos/d52af17d48aa598cca63e4c2-thumb.webp",
+          "dhash": "686870090f0f1f0d1215181112141011131212142324242724222a231e28221e4131246344295e422a3c322933271e4b35223f3023292622",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    }
+  ]
 }
