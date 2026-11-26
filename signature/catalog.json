@@ -3,6 +3,48 @@
   "license": "",
   "collections": [
     {
+      "id": "naturaleza-y-humanidad",
+      "title": "Naturaleza y humanidad",
+      "items": [
+        {
+          "id": "el-guardian-del-deshielo-5918e5db1b83",
+          "title": "El guardián del deshielo",
+          "image": "photos/2956ce7c1e559dda4232e311.webp",
+          "thumb": "photos/2956ce7c1e559dda4232e311-thumb.webp",
+          "dhash": "0f030563d181072b1828531b2e5c1c305f192a57192b501d2a472733532336611528441d25332c394e34528020324e2441642d5178274a73",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-musico-del-bosque-fc987283a6c6",
+          "title": "El músico del bosque",
+          "image": "photos/1429966c07888c849f3c7473.webp",
+          "thumb": "photos/1429966c07888c849f3c7473-thumb.webp",
+          "dhash": "4111084e0f4c078722172022161f2317202217202418222b1d242b1d242519212e20253c29293d28262e2124392826402d28442f28382724",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-jardinera-del-asfalto-0616d9760d03",
+          "title": "La jardinera del asfalto",
+          "image": "photos/29abb45157449488292dfd49.webp",
+          "thumb": "photos/29abb45157449488292dfd49-thumb.webp",
+          "dhash": "08508e2b33616817252d2b252e2c242d2b252d2b3b3e3d3f3f3b3e3f3a3a3d3c484744403f374040384847443e3e383c3d343c3c343e3e38",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-mujer-que-siembra-nube-6ecc8a781057",
+          "title": "La mujer que siembra nubes",
+          "image": "photos/8604c972b9e6f8ba27d3eca8.webp",
+          "thumb": "photos/8604c972b9e6f8ba27d3eca8-thumb.webp",
+          "dhash": "450b53b3f1e6a3016639336638326639336439327f4d427545376c3f336f423a935a4279452e794834804e3d663926663a277b4b3782503c",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "la-gravedad-de-las-cosas",
       "title": "La gravedad de las cosas",
       "items": [
