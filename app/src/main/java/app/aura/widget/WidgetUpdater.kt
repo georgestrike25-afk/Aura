@@ -23,6 +23,14 @@ class WidgetUpdater(
 
     fun placed(): Map<Int, WidgetType> = WidgetType.entries.flatMap { t -> ids(t).map { it to t } }.toMap()
 
+    /**
+     * Los que de verdad están en la pantalla de inicio. Algunos launchers (One UI) dejan registrados widgets
+     * que se quitaron o que no se terminaron de poner; esos nunca recibieron un tamaño del launcher.
+     */
+    fun onHomeScreen(): Map<Int, WidgetType> = placed().filterKeys { id ->
+        manager.getAppWidgetOptions(id).getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH) > 0
+    }
+
     fun typeOf(appWidgetId: Int): WidgetType? {
         val className = manager.getAppWidgetInfo(appWidgetId)?.provider?.className ?: return null
         return WidgetType.entries.firstOrNull { providerClass(it).name == className }

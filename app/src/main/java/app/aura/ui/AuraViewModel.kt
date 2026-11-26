@@ -170,7 +170,7 @@ class AuraViewModel(application: Application) : AndroidViewModel(application) {
     suspend fun widgetConfig(appWidgetId: Int, type: WidgetType): WidgetConfig = app.settings.widgetConfig(appWidgetId, type)
 
     fun refreshPlaced() {
-        _placed.value = app.widgets.placed()
+        _placed.value = app.widgets.onHomeScreen()
     }
 
     val canPinWidgets: Boolean
