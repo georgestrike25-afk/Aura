@@ -202,6 +202,7 @@ class ManagerApp:
         ttk.Button(bar, text="Borrar", command=self.delete_works).pack(side="right", padx=2)
         ttk.Button(bar, text="Mover a…", command=self.move_works).pack(side="right", padx=2)
         ttk.Button(bar, text="Renombrar", command=self.rename_work).pack(side="right", padx=2)
+        ttk.Button(bar, text="Ver en grande", command=self.view_selected).pack(side="right", padx=2)
 
         holder = ttk.Frame(right)
         holder.pack(fill="both", expand=True, pady=8)
@@ -419,26 +420,24 @@ class ManagerApp:
         self._render_works()
 
     def preview(self, item: dict):
-        win = tk.Toplevel(self.root)
-        win.title(item["title"])
-        win.configure(bg="#000")
-        label = tk.Label(win, text="Cargando…", bg="#000", fg="#fff")
-        label.pack(padx=8, pady=8)
+        col = self._current()
+        items = list(col["items"]) if col else [item]
+        start = next((i for i, it in enumerate(items) if it["id"] == item["id"]), 0)
+        Viewer(self, items, start)
 
-        def load():
+    def full_image(self, item: dict) -> Image.Image | None:
+        """Obra completa (en caché en la PC después de la primera vez)."""
+        path = self.cache / "full" / item["image"]
+        if not path.exists():
             data = self.gallery.repo.read("signature/" + item["image"], self.cfg.values["branch"])
             if not data:
-                return
-            im = Image.open(io.BytesIO(data)).convert("RGB")
-            h = int(self.root.winfo_screenheight() * 0.8)
-            im = im.resize((int(im.width * h / im.height), h), Image.LANCZOS)
-            self.root.after(0, lambda: self._show(label, im))
-        threading.Thread(target=load, daemon=True).start()
-
-    def _show(self, label, im):
-        photo = ImageTk.PhotoImage(im)
-        label.configure(image=photo, text="")
-        label.image = photo
+                return None
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        try:
+            return Image.open(path).convert("RGB")
+        except Exception:
+            return None
 
     # ---------- acciones
 
@@ -505,6 +504,13 @@ class ManagerApp:
         if col and messagebox.askyesno(APP, f"¿Borrar la colección «{col['title']}» y sus {len(col['items'])} fondos de Signature?\n"
                                             "Las imágenes de tu carpeta no se tocan."):
             self.run(lambda: (self.gallery.delete_collection(col["id"]), self.events.put(("catalog", None))), f"Borrando «{col['title']}»…")
+
+    def view_selected(self):
+        col = self._current()
+        if not col or not col["items"]:
+            return
+        first = next((i for i in col["items"] if i["id"] in self.selected_works), col["items"][0])
+        self.preview(first)
 
     def rename_work(self):
         if len(self.selected_works) != 1:
@@ -601,6 +607,215 @@ class ManagerApp:
         buttons.grid(row=9, column=0, columnspan=2, sticky="e", pady=(16, 0))
         ttk.Button(buttons, text="Cancelar", command=win.destroy).pack(side="right", padx=4)
         ttk.Button(buttons, text="Guardar y conectar", style="Accent.TButton", command=save).pack(side="right", padx=4)
+
+
+class Viewer:
+    """Visor grande, con los atajos de Mirador: ← → pasar, rueda para el zoom, arrastrar para moverse,
+    0 ajustar, 1 al 100 %, F11 o doble clic pantalla completa. Además, para decidir rápido:
+    Supr borrar de Signature, F2 renombrar, M mover a otra colección."""
+
+    BG = "#111114"
+    BAR = "#212125"
+    TEXT = "#F7F0E5"
+    SOFT = "#C2BAB0"
+    AMBER = "#FFAD32"
+
+    def __init__(self, app: "ManagerApp", items: list[dict], index: int):
+        self.app, self.items, self.index = app, items, index
+        self.zoom = None  # None = ajustar a la ventana
+        self.offset = [0.0, 0.0]
+        self.images: dict[str, Image.Image] = {}
+        self.photo = None
+        self.win = w = tk.Toplevel(app.root)
+        w.title("Visor · Aura Signature")
+        w.configure(bg=self.BG)
+        sh = app.root.winfo_screenheight()
+        w.geometry(f"{max(820, int(sh * 0.62))}x{int(sh * 0.9)}")
+        w.minsize(720, 520)
+        self.canvas = tk.Canvas(w, bg=self.BG, highlightthickness=0)
+        self.canvas.pack(fill="both", expand=True)
+        bar = tk.Frame(w, bg=self.BAR, padx=14, pady=10)
+        bar.pack(fill="x")
+        self.title = tk.Label(bar, text="", bg=self.BAR, fg=self.TEXT, font=("Segoe UI Semibold", 13), anchor="w")
+        self.title.pack(fill="x")
+        self.info = tk.Label(bar, text="", bg=self.BAR, fg=self.SOFT, font=("Segoe UI", 9), anchor="w", justify="left", wraplength=780)
+        self.info.pack(fill="x")
+        row = tk.Frame(bar, bg=self.BAR)
+        row.pack(fill="x", pady=(8, 0))
+        for text, cmd in (("←", lambda: self.go(-1)), ("→", lambda: self.go(1)), ("Renombrar (F2)", self.rename),
+                          ("Mover (M)", self.move), ("Pantalla completa", self.fullscreen)):
+            ttk.Button(row, text=text, command=cmd).pack(side="left", padx=(0, 6))
+        ttk.Button(row, text="Borrar (Supr)", command=self.delete).pack(side="right")
+
+        w.bind("<Right>", lambda e: self.go(1))
+        w.bind("<space>", lambda e: self.go(1))
+        w.bind("<Next>", lambda e: self.go(1))
+        w.bind("<Left>", lambda e: self.go(-1))
+        w.bind("<BackSpace>", lambda e: self.go(-1))
+        w.bind("<Prior>", lambda e: self.go(-1))
+        w.bind("<Home>", lambda e: self.go(-len(self.items)))
+        w.bind("<End>", lambda e: self.go(len(self.items)))
+        w.bind("<Delete>", lambda e: self.delete())
+        w.bind("<F2>", lambda e: self.rename())
+        w.bind("<m>", lambda e: self.move())
+        w.bind("<F11>", lambda e: self.fullscreen())
+        w.bind("<Escape>", lambda e: self.fullscreen(False) if w.attributes("-fullscreen") else w.destroy())
+        w.bind("<Key-0>", lambda e: self.set_zoom(None))
+        w.bind("<Key-1>", lambda e: self.set_zoom(1.0))
+        w.bind("<plus>", lambda e: self.zoom_by(1.25))
+        w.bind("<minus>", lambda e: self.zoom_by(0.8))
+        self.canvas.bind("<Configure>", lambda e: self.draw())
+        self.canvas.bind("<Double-Button-1>", lambda e: self.fullscreen())
+        self.canvas.bind("<MouseWheel>", lambda e: self.zoom_by(1.2 if e.delta > 0 else 1 / 1.2))
+        self.canvas.bind("<Button-4>", lambda e: self.zoom_by(1.2))
+        self.canvas.bind("<Button-5>", lambda e: self.zoom_by(1 / 1.2))
+        self.canvas.bind("<ButtonPress-1>", self._drag_start)
+        self.canvas.bind("<B1-Motion>", self._drag)
+        w.focus_force()
+        self.show()
+
+    # ---------- carga
+
+    def current(self) -> dict | None:
+        return self.items[self.index] if 0 <= self.index < len(self.items) else None
+
+    def _load(self, item: dict):
+        def job():
+            im = self.app.full_image(item)
+            if im is not None:
+                self.images[item["id"]] = im
+                try:
+                    self.win.after(0, self.draw)
+                except tk.TclError:
+                    pass
+        threading.Thread(target=job, daemon=True).start()
+
+    def show(self):
+        item = self.current()
+        if item is None:
+            self.win.destroy()
+            return
+        self.zoom = None
+        self.offset = [0.0, 0.0]
+        col = self.app._current()
+        self.title.configure(text=item["title"])
+        self.info.configure(text=f"{self.index + 1} de {len(self.items)}" + (f" · {col['title']}" if col else "") +
+                            "   ·   ← → pasar · rueda zoom · Supr borrar · F2 renombrar · M mover")
+        for k in (self.index, self.index + 1, self.index - 1):  # la actual y las vecinas, por adelantado
+            if 0 <= k < len(self.items) and self.items[k]["id"] not in self.images:
+                self._load(self.items[k])
+        # Fuera de la vista no se guardan más de 5 imágenes grandes.
+        keep = {self.items[k]["id"] for k in range(max(0, self.index - 2), min(len(self.items), self.index + 3))}
+        for key in list(self.images):
+            if key not in keep:
+                self.images.pop(key)
+        self.draw()
+
+    def draw(self):
+        c = self.canvas
+        c.delete("all")
+        item = self.current()
+        cw, ch = max(1, c.winfo_width()), max(1, c.winfo_height())
+        im = self.images.get(item["id"]) if item else None
+        if im is None:
+            thumb = self.app.cache / item["thumb"] if item else None
+            if thumb is not None and thumb.exists():
+                im = Image.open(thumb).convert("RGB")  # mientras baja la grande
+            else:
+                c.create_text(cw / 2, ch / 2, text="Cargando…", fill=self.SOFT, font=("Segoe UI", 12))
+                return
+        fit = min(cw / im.width, ch / im.height)
+        scale = fit if self.zoom is None else self.zoom
+        w, h = max(1, int(im.width * scale)), max(1, int(im.height * scale))
+        shown = im.resize((w, h), Image.LANCZOS if scale < 1 else Image.BILINEAR) if (w, h) != im.size else im
+        self.photo = ImageTk.PhotoImage(shown)
+        c.create_image(cw / 2 + self.offset[0], ch / 2 + self.offset[1], image=self.photo)
+        if self.zoom is not None:
+            c.create_text(12, 12, anchor="nw", text=f"{int(scale * 100)} %", fill=self.AMBER, font=("Segoe UI", 10))
+
+    # ---------- navegación y zoom
+
+    def go(self, delta: int):
+        if not self.items:
+            return
+        self.index = max(0, min(len(self.items) - 1, self.index + delta))
+        self.show()
+
+    def set_zoom(self, z):
+        self.zoom = z
+        self.offset = [0.0, 0.0]
+        self.draw()
+
+    def zoom_by(self, k: float):
+        item = self.current()
+        im = self.images.get(item["id"]) if item else None
+        if im is None:
+            return
+        fit = min(self.canvas.winfo_width() / im.width, self.canvas.winfo_height() / im.height)
+        self.zoom = max(fit, min(4.0, (self.zoom or fit) * k))
+        if abs(self.zoom - fit) < 1e-3:
+            self.zoom, self.offset = None, [0.0, 0.0]
+        self.draw()
+
+    def _drag_start(self, e):
+        self._last = (e.x, e.y)
+
+    def _drag(self, e):
+        if self.zoom is None:
+            return
+        self.offset[0] += e.x - self._last[0]
+        self.offset[1] += e.y - self._last[1]
+        self._last = (e.x, e.y)
+        self.draw()
+
+    def fullscreen(self, on: bool | None = None):
+        on = not self.win.attributes("-fullscreen") if on is None else on
+        self.win.attributes("-fullscreen", on)
+
+    # ---------- decidir
+
+    def delete(self):
+        item = self.current()
+        if item is None:
+            return
+        if not messagebox.askyesno(APP, f"¿Borrar «{item['title']}» de Signature?\nLa imagen de tu carpeta no se toca.", parent=self.win):
+            return
+        app = self.app
+        app.run(lambda: (app.gallery.delete_works([item["id"]]), app.events.put(("catalog", None))), f"Borrando «{item['title']}»…")
+        self.items.pop(self.index)
+        self.images.pop(item["id"], None)
+        if not self.items:
+            self.win.destroy()
+            return
+        self.index = min(self.index, len(self.items) - 1)
+        self.show()
+
+    def rename(self):
+        item = self.current()
+        if item is None:
+            return
+        title = simpledialog.askstring(APP, "Nombre del fondo:", initialvalue=item["title"], parent=self.win)
+        if title and title.strip():
+            item["title"] = " ".join(title.split())
+            app = self.app
+            app.run(lambda: (app.gallery.rename_work(item["id"], item["title"]), app.events.put(("catalog", None))), f"Renombrando a «{item['title']}»…")
+            self.show()
+
+    def move(self):
+        item = self.current()
+        if item is None:
+            return
+        names = ", ".join(c["title"] for c in self.app._collections())
+        title = simpledialog.askstring(APP, f"¿A qué colección? (existentes: {names})", parent=self.win)
+        if title and title.strip():
+            app = self.app
+            app.run(lambda: (app.gallery.move_work(item["id"], title.strip()), app.events.put(("catalog", None))), f"Moviendo a «{title.strip()}»…")
+            self.items.pop(self.index)
+            if not self.items:
+                self.win.destroy()
+                return
+            self.index = min(self.index, len(self.items) - 1)
+            self.show()
 
 
 def main():

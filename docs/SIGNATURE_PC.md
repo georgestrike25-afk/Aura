@@ -29,6 +29,12 @@ teléfono, para todos los usuarios.
   y en las colecciones **Nueva**, **Editar** (nombre y descripción), **↑ ↓** (orden en la app) y **Borrar**.
   Borrar en el gestor quita el fondo de Signature; **las imágenes de tu carpeta no se tocan**.
 
+## Visor
+
+Doble clic en un fondo (o **Ver en grande**) abre el visor, con los atajos de Mirador: **← →** pasar,
+**rueda** zoom, **arrastrar** para moverse, **0** ajustar, **1** al 100 %, **F11** o doble clic pantalla completa.
+Para decidir rápido: **Supr** borrar de Signature (pasa a la siguiente), **F2** renombrar, **M** mover a otra colección.
+
 ## Cómo funciona
 
 El gestor prepara cada imagen en la PC (1440×3120 WEBP, miniatura 360×780 y huella para no repetir) con
