@@ -18,6 +18,9 @@ android {
         versionCode = 1
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Aura está en español: no se empaquetan las traducciones a otros idiomas que traen las librerías.
+        @Suppress("DEPRECATION")
+        resourceConfigurations += listOf("es")
     }
 
     // Clave fija de Aura, provista por CI desde secretos de GitHub (nunca se guarda en el repositorio).
