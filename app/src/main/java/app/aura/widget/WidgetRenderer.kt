@@ -291,7 +291,8 @@ class WidgetRenderer(private val context: Context) {
             else hourFormatter.format(Instant.ofEpochSecond(point.time).atZone(zone))
             v.setTextViewText(HOUR_TIME[i], label)
             v.setTextViewText(HOUR_TEMP[i], TemperatureFormatter.short(point.temperatureC, unit))
-            v.setTextViewText(HOUR_POP[i], point.precipitationProbability?.let { "$it %" } ?: "")
+            v.setTextViewText(HOUR_POP[i], point.precipitationProbability?.let { "$it %" }
+                ?: point.precipitationMm?.takeIf { it >= 0.1 }?.let { "%.1f mm".format(it) } ?: "")
             setIcon(v, HOUR_ICON[i], HOUR_BASE[i], HOUR_ACCENT[i], HOUR_3D[i], point.condition, style)
             v.setContentDescription(HOUR_ICON[i], WeatherText.condition(context, point.condition))
         }
@@ -311,7 +312,8 @@ class WidgetRenderer(private val context: Context) {
             else dayFormatter.format(date).replaceFirstChar { it.titlecase(Locale.getDefault()) }
             v.setTextViewText(DAY_NAME[i], name)
             v.setTextViewText(DAY_RANGE[i], TemperatureFormatter.range(day.maxC, day.minC, unit))
-            v.setTextViewText(DAY_POP[i], day.precipitationProbabilityMax?.takeIf { it >= 10 }?.let { "$it %" } ?: "")
+            v.setTextViewText(DAY_POP[i], day.precipitationProbabilityMax?.takeIf { it >= 10 }?.let { "$it %" }
+                ?: day.precipitationSumMm?.takeIf { day.precipitationProbabilityMax == null && it >= 0.5 }?.let { "%.0f mm".format(it) } ?: "")
             setIcon(v, DAY_ICON[i], DAY_BASE[i], DAY_ACCENT[i], DAY_3D[i], day.condition, style)
             v.setContentDescription(DAY_ICON[i], WeatherText.condition(context, day.condition))
         }
@@ -330,7 +332,7 @@ class WidgetRenderer(private val context: Context) {
             R.id.w_ind_feels to (R.id.w_ind_feels_value to c.apparentTemperatureC?.let { TemperatureFormatter.short(it, r.settings.temperatureUnit) }),
             R.id.w_ind_humidity to (R.id.w_ind_humidity_value to c.humidityPercent?.let { "$it %" }),
             R.id.w_ind_wind to (R.id.w_ind_wind_value to c.windSpeedKmh?.let { "${it.roundToInt()} km/h" }),
-            R.id.w_ind_rain to (R.id.w_ind_rain_value to c.precipitationProbability?.let { "$it %" }),
+            R.id.w_ind_rain to (R.id.w_ind_rain_value to (c.precipitationProbability?.let { "$it %" } ?: c.precipitationMm?.let { "%.1f mm".format(it) })),
             R.id.w_ind_uv to (R.id.w_ind_uv_value to today?.uvIndexMax?.let { "${it.roundToInt()}" }),
         )
         values.forEach { (box, pair) ->

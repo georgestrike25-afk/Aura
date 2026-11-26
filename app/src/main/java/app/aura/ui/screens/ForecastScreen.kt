@@ -289,7 +289,7 @@ private fun summary(label: String, today: DailyPoint?, rainFrom: String?, unit: 
 
 // ------------------------------------------------------------------ próximas horas
 
-private class Slot(val time: Long, val label: String, val temp: Double, val condition: WeatherCondition, val pop: Int?, val sunEvent: Boolean? = null)
+private class Slot(val time: Long, val label: String, val temp: Double, val condition: WeatherCondition, val pop: Int?, val sunEvent: Boolean? = null, val mm: Double? = null)
 
 private val SLOT_WIDTH = 58.dp
 
@@ -301,7 +301,7 @@ private fun HourlyStrip(snap: WeatherSnapshot, nowSec: Long, unit: app.aura.core
     val hourOnly = DateTimeFormatter.ofPattern(if (is24) "HH:mm" else "h a", Locale.getDefault())
     val slots = remember(hours, snap.data.daily) {
         val base = hours.mapIndexed { i, h ->
-            Slot(h.time, if (i == 0) "Ahora" else hourOnly.format(Instant.ofEpochSecond(h.time).atZone(zone)), h.temperatureC, h.condition, h.precipitationProbability)
+            Slot(h.time, if (i == 0) "Ahora" else hourOnly.format(Instant.ofEpochSecond(h.time).atZone(zone)), h.temperatureC, h.condition, h.precipitationProbability, mm = h.precipitationMm)
         }
         val events = WeatherInsights.sunEvents(snap.data.daily, hours.first().time + 1, hours.last().time).map { (t, rise) ->
             val before = hours.lastOrNull { it.time <= t } ?: hours.first()
@@ -331,7 +331,7 @@ private fun HourlyStrip(snap: WeatherSnapshot, nowSec: Long, unit: app.aura.core
                         if (s.sunEvent != null) {
                             Text(if (s.sunEvent) "Amanecer" else "Atardecer", color = Color(0xFFFFC857), style = MaterialTheme.typography.labelSmall, maxLines = 1)
                         } else {
-                            RainChip(s.pop)
+                            RainChip(s.pop, s.mm)
                         }
                     }
                 }
@@ -368,12 +368,19 @@ private fun HourlyStrip(snap: WeatherSnapshot, nowSec: Long, unit: app.aura.core
     }
 }
 
+/** Probabilidad de lluvia; si el pronóstico no la trae (MET Norway fuera de Escandinavia), los milímetros. */
 @Composable
-private fun RainChip(pop: Int?) {
+private fun RainChip(pop: Int?, mm: Double? = null) {
+    val wet = (pop ?: 0) >= WeatherInsights.RAIN_THRESHOLD || (pop == null && (mm ?: 0.0) >= 0.2)
+    val text = when {
+        pop != null -> "$pop %"
+        mm != null -> if (mm >= 0.1) "%.1f mm".format(mm) else "0 mm"
+        else -> "–"
+    }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Drop(10.dp, if ((pop ?: 0) >= WeatherInsights.RAIN_THRESHOLD) RainBlue else Soft)
+        Drop(10.dp, if (wet) RainBlue else Soft)
         Spacer(Modifier.width(3.dp))
-        Text(pop?.let { "$it %" } ?: "–", color = if ((pop ?: 0) >= WeatherInsights.RAIN_THRESHOLD) RainBlue else Soft, style = MaterialTheme.typography.labelSmall, maxLines = 1)
+        Text(text, color = if (wet) RainBlue else Soft, style = MaterialTheme.typography.labelSmall, maxLines = 1)
     }
 }
 
@@ -427,7 +434,11 @@ private fun RainCard(snap: WeatherSnapshot, nowSec: Long, rain: app.aura.core.we
         Spacer(Modifier.height(8.dp))
         if (rain == null) {
             Text("Sin lluvia prevista", color = Color.White, style = MaterialTheme.typography.titleLarge)
-            Text("Ninguna hora supera el ${WeatherInsights.RAIN_THRESHOLD} % de probabilidad.", color = Soft, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                if (hours.any { it.precipitationProbability != null }) "Ninguna hora supera el ${WeatherInsights.RAIN_THRESHOLD} % de probabilidad."
+                else "Ninguna hora prevé lluvia.",
+                color = Soft, style = MaterialTheme.typography.bodyMedium,
+            )
         } else {
             // Es un pronóstico, no una observación: «prevista» si el modelo da mm ahora, «probable» si no.
             val wetNow = (snap.data.current.precipitationMm ?: 0.0) >= app.aura.core.weather.WmoCodes.WET_MM
@@ -438,15 +449,23 @@ private fun RainCard(snap: WeatherSnapshot, nowSec: Long, rain: app.aura.core.we
             }
             Text("$starts hasta las ${clock(rain.end)}", color = Color.White, style = MaterialTheme.typography.titleLarge, modifier = Modifier.testTag("rain_window"))
             Text(
-                "Hasta ${rain.peakProbability} % de probabilidad" + if (rain.totalMm >= 0.1) " · ${"%.1f".format(rain.totalMm)} mm" else "",
+                listOfNotNull(
+                    rain.peakProbability.takeIf { it > 0 }?.let { "Hasta $it % de probabilidad" },
+                    rain.totalMm.takeIf { it >= 0.1 }?.let { "%.1f mm".format(it) },
+                ).joinToString(" · "),
                 color = RainBlue, style = MaterialTheme.typography.bodyMedium,
             )
         }
         Spacer(Modifier.height(14.dp))
-        // Barras: probabilidad de lluvia de cada hora.
+        // Barras: probabilidad de lluvia de cada hora (o milímetros, 4 mm = barra llena, si no hay probabilidad).
+        val byMm = hours.none { it.precipitationProbability != null }
         Row(Modifier.fillMaxWidth().height(64.dp), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
             hours.forEach { h ->
-                val p = (h.precipitationProbability ?: 0) / 100f
+                val p = if (byMm) {
+                    ((h.precipitationMm ?: 0.0) / 4.0).toFloat().coerceIn(0f, 1f).let { if ((h.precipitationMm ?: 0.0) >= 0.2) maxOf(it, WeatherInsights.RAIN_THRESHOLD / 100f) else it }
+                } else {
+                    (h.precipitationProbability ?: 0) / 100f
+                }
                 Box(
                     Modifier
                         .weight(1f)
@@ -492,7 +511,10 @@ private fun DailyCard(snap: WeatherSnapshot, today: LocalDate, unit: app.aura.co
                     },
                     color = Color.White, style = MaterialTheme.typography.bodyLarge, maxLines = 1, modifier = Modifier.width(78.dp),
                 )
-                Box(Modifier.width(52.dp)) { if ((d.precipitationProbabilityMax ?: 0) >= 10) RainChip(d.precipitationProbabilityMax) }
+                Box(Modifier.width(52.dp)) {
+                    if ((d.precipitationProbabilityMax ?: 0) >= 10) RainChip(d.precipitationProbabilityMax)
+                    else if (d.precipitationProbabilityMax == null && (d.precipitationSumMm ?: 0.0) >= 0.5) RainChip(null, d.precipitationSumMm)
+                }
                 WeatherIcon(d.condition, 30.dp, Color.White, realistic = true, contentDescription = WeatherText.condition(context, d.condition))
                 Spacer(Modifier.width(10.dp))
                 Text(TemperatureFormatter.short(d.minC, unit), color = Soft, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.width(34.dp), textAlign = TextAlign.End)
