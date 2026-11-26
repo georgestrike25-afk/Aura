@@ -3,6 +3,39 @@
   "license": "",
   "collections": [
     {
+      "id": "almas-de-cristal",
+      "title": "Almas de cristal",
+      "items": [
+        {
+          "id": "el-aliento-cautivo-8406e9189ce1",
+          "title": "El aliento cautivo",
+          "image": "photos/9a88fcc0b55123dc3baee473.webp",
+          "thumb": "photos/9a88fcc0b55123dc3baee473-thumb.webp",
+          "dhash": "3f1f0f0d1d176b691c293629394d1b2835111a23131c2418253115212d111a221e2c3b2a3d5a2335501a26322c384a202d471826401a2532",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-corazon-de-la-lucierna-af9f2fc93139",
+          "title": "El corazón de la luciérnaga",
+          "image": "photos/2a0b36c6063b26b89b516f1c.webp",
+          "thumb": "photos/2a0b36c6063b26b89b516f1c-thumb.webp",
+          "dhash": "213133294d392363173025163024163024173327213c2d233d2e213b2d1d392b3f5839465e3f3f593c38553a415a354a6239526b414f663d",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-mano-que-recuerda-1d9e0d09f748",
+          "title": "La mano que recuerda",
+          "image": "photos/e434133552feb97652461e17.webp",
+          "thumb": "photos/e434133552feb97652461e17-thumb.webp",
+          "dhash": "3a3f8b4dcc0f0fa23017073118062b15072613072f19093c1f0a381d092b1708522f136b3c166b3d184d2c12482810603819724520653a18",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "la-ciudad-en-pausa-ii",
       "title": "La ciudad en pausa II",
       "items": [
