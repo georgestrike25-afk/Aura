@@ -3,6 +3,48 @@
   "license": "",
   "collections": [
     {
+      "id": "retratos-surrealistas",
+      "title": "Retratos surrealistas",
+      "items": [
+        {
+          "id": "el-rostro-prestado-b9e20774ec37",
+          "title": "El rostro prestado",
+          "image": "photos/550b5caaee404cd3266530e8.webp",
+          "thumb": "photos/550b5caaee404cd3266530e8-thumb.webp",
+          "dhash": "173f3769594d8d1f242e3a242f3b202c381d28352b36422e394524303c222e3b27323e37414d26313d1d28351b2633343f4b212c38101c29",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-luz-de-espaldas-14d56c80c044",
+          "title": "La luz de espaldas",
+          "image": "photos/4cbf8b90eb72470cde065bb5.webp",
+          "thumb": "photos/4cbf8b90eb72470cde065bb5-thumb.webp",
+          "dhash": "3111336466f2e84026291b282b1c2a2d1e2d30212e32223131213b3825323525292c1e2828183f371f3233221b1e14181c111b1d1223251a",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-piel-del-silencio-556b2c15e89f",
+          "title": "La piel del silencio",
+          "image": "photos/2acd9e5e2743dde5c8ef62f1.webp",
+          "thumb": "photos/2acd9e5e2743dde5c8ef62f1-thumb.webp",
+          "dhash": "231b271959e4cc174e353f5037415037414e353f563a455e4149543a435338435036414f373e4731394d343f48303a462f38472f3948303a",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-voz-de-arcilla-1fe6ab59b3ea",
+          "title": "La voz de arcilla",
+          "image": "photos/c94fe57d5e66111fea10df32.webp",
+          "thumb": "photos/c94fe57d5e66111fea10df32-thumb.webp",
+          "dhash": "0f110c4c07030b00240d012a10022c11032a1104220d023c1b094d26102d13052b11034f22096a3213401c0a200c022f12033514052c1105",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "retratos-botanicos",
       "title": "Retratos botánicos",
       "items": [
