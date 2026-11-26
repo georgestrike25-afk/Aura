@@ -14,7 +14,11 @@ import android.service.wallpaper.WallpaperService
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
+import app.aura.core.studio.AutoDesign
+import app.aura.core.studio.ClockText
 import app.aura.core.studio.ClockMaterial
+import app.aura.studio.render.ClockPainter
+import app.aura.studio.render.StudioFonts
 import app.aura.core.studio.MaskStroke
 import app.aura.core.studio.StudioProject
 import app.aura.studio.mask.MaskRenderer
@@ -313,6 +317,27 @@ class StudioFlowTest {
     }
 
     /** Columnas con tinta (alfa visible) entre las filas indicadas. */
+    @Test
+    fun autoDesignDigitsStayOnCanvasAndDoNotOverlapForEveryMinute() {
+        val pixels = IntArray(72 * 156) { 0xFF253044.toInt() }
+        val mask = IntArray(pixels.size) { i -> if (i % 72 in 30..42 && i / 72 >= 47) Color.BLACK else 0 }
+        val painter = ClockPainter(StudioFonts.resolver(context))
+        for (proposal in AutoDesign.propose(pixels, 72, 156, mask, 0)) {
+            val d = proposal.design
+            for (is24 in listOf(true, false)) {
+                for (minute in 0 until 24 * 60) {
+                    val (hours, minutes) = ClockText.parts(minute / 60, minute % 60, is24)
+                    val extra = ClockExtras(hours, if (is24) minutes else "$minutes pm", null)
+                    val rects = painter.digitBounds(1440, 3120, d, extra).values.sortedBy { it.left }
+                    val label = "${proposal.title} $hours$minutes ($is24)"
+                    assertEquals(label, hours.length + 2, rects.size)
+                    assertTrue(label, rects.all { it.left >= 0 && it.top >= 0 && it.right <= 1440 && it.bottom <= 3120 })
+                    assertTrue(label, rects.zipWithNext().all { (left, right) -> left.right <= right.left + 0.5f })
+                }
+            }
+        }
+    }
+
     private fun inkColumns(b: Bitmap, top: Int, bottom: Int): List<Boolean> = List(b.width) { x ->
         (top until bottom step 3).any { y -> Color.alpha(b.getPixel(x, y)) > 128 }
     }
