@@ -3,6 +3,48 @@
   "license": "",
   "collections": [
     {
+      "id": "metamorfosis",
+      "title": "Metamorfosis",
+      "items": [
+        {
+          "id": "el-nido-de-las-manos-0b749fb38a9c",
+          "title": "El nido de las manos",
+          "image": "photos/a772a45928eff394e5fdb904.webp",
+          "thumb": "photos/a772a45928eff394e5fdb904-thumb.webp",
+          "dhash": "19330dcdcc332b9e3921113f2412311c0d2e1b0d32201248301b442d19321f11532f15623c1d633d1c502d156435146839166839165e3215",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-piedra-aprende-a-nadar-033e8ef33a23",
+          "title": "La piedra aprende a nadar",
+          "image": "photos/3074be7cb98e1f6edd0640f6.webp",
+          "thumb": "photos/3074be7cb98e1f6edd0640f6-thumb.webp",
+          "dhash": "0f0f0f0d1c3387991b2b272d3e3831433b1d2d281623212b38342b383314211f24322d3f4a422d3a351a28241f2b2627332e2a383224312b",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-piel-del-relampago-7c8225bbe523",
+          "title": "La piel del relámpago",
+          "image": "photos/6c0253bb147cc96f0405e27f.webp",
+          "thumb": "photos/6c0253bb147cc96f0405e27f-thumb.webp",
+          "dhash": "59018f0e27310f2f251c23291d262c1e272f1d27251c2332212b31212b271c24302028391e28391f2a32212c27161d331b23361e26291b23",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-ultima-pluma-ce9c591ec98c",
+          "title": "La última pluma",
+          "image": "photos/5d191336a70f98619eb8b491.webp",
+          "thumb": "photos/5d191336a70f98619eb8b491-thumb.webp",
+          "dhash": "03170b4d0f171f3314263a15293e152b3f13283c2033473040502e3f501f34485260697377756a73734a5e675560645f6a695365653f575d",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "silencio-lunar",
       "title": "Silencio lunar",
       "items": [
