@@ -3,6 +3,48 @@
   "license": "",
   "collections": [
     {
+      "id": "retratos-botanicos",
+      "title": "Retratos botánicos",
+      "items": [
+        {
+          "id": "el-cardo-de-cobre-6201820ea37c",
+          "title": "El cardo de cobre",
+          "image": "photos/364773c5d313ebacd193ec7b.webp",
+          "thumb": "photos/364773c5d313ebacd193ec7b-thumb.webp",
+          "dhash": "071e19a5303030b6424e56535f6756656d4e5e6738464e444e5448525848555c444f554b504e4f54525c605f3b4041434641474640464e50",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-corazon-del-granado-9162f8b80925",
+          "title": "El corazón del granado",
+          "image": "photos/155a4da89b55c65ffb2fddcd.webp",
+          "thumb": "photos/155a4da89b55c65ffb2fddcd-thumb.webp",
+          "dhash": "f9fd7f3f1f1d081861351d3f1d0f2b1008270e084f2b1745211334160d2a120b33180e4c21143b190f2f180f2a0e0939140c2d120b2d170f",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-helecho-de-humo-837a4790e0cf",
+          "title": "El helecho de humo",
+          "image": "photos/7fcf059fdbfc7190fd861eff.webp",
+          "thumb": "photos/7fcf059fdbfc7190fd861eff-thumb.webp",
+          "dhash": "6083030d0dcf2f170e1a150e1d1a193437244b52102224162f2e1d3d3d1e3e441831341b3f3d1c40411c393f1b32321f3d3f1e3e421b3335",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-orquidea-de-sal-1f529dd55d0d",
+          "title": "La orquídea de sal",
+          "image": "photos/dbfc5658cdc64174952e5903.webp",
+          "thumb": "photos/dbfc5658cdc64174952e5903-thumb.webp",
+          "dhash": "e0f048cc242665236e4d5b6949586e4d5d7653628d6a768f6f79906f79926e78ab898dae8b8db59091b68f91ab8c8fa9898ab38f8eb59091",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "lo-que-el-tiempo-guarda",
       "title": "Lo que el tiempo guarda",
       "items": [
