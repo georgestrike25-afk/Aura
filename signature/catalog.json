@@ -221,6 +221,42 @@
           "dhash": "241e6013776719860f27261939381e40401b3d3d1e40412947492f4f4f2e52522f4d452f443d3552501f413f111e14192c201f352e1a322e",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-lince-del-pedregal-be0d1fb3c05a",
+          "title": "El lince del pedregal",
+          "image": "photos/09bee8d70f33b7a2b07d5db8.webp",
+          "thumb": "photos/09bee8d70f33b7a2b07d5db8-thumb.webp",
+          "dhash": "130a068c4d0b881927281a323425363a2a36392f2a2d233d3b2e41413632352c4a3e275f4f3c57503e4844324e411d5a4d2e554b38544c38",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-tejon-de-la-hojarasca-795400b5f329",
+          "title": "El tejón de la hojarasca",
+          "image": "photos/5695538fba256fd65f6b687b.webp",
+          "thumb": "photos/5695538fba256fd65f6b687b-thumb.webp",
+          "dhash": "03118f8e327c899b2a28183432203b3a28353423312c1a3c3929423d2d2e2f1d3c321b372e1d362c1d3a321c412c1749341d48321c46301b",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-ardilla-del-ultimo-ray-6b0733b74d08",
+          "title": "La ardilla del último rayo",
+          "image": "photos/5230c49ba6c0ef11be9862a4.webp",
+          "thumb": "photos/5230c49ba6c0ef11be9862a4-thumb.webp",
+          "dhash": "0103014d4ccf83cc30402c334e3f4a65524d64512d43363e4d41455a4f3a574b4d452d67482b6a57384650394333194e341a5b3e1c5b3f1f",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-lechuza-del-claro-ec70b834eea8",
+          "title": "La lechuza del claro",
+          "image": "photos/77b47475a1079034f7994d88.webp",
+          "thumb": "photos/77b47475a1079034f7994d88-thumb.webp",
+          "dhash": "010f0f0f0e9d17c0694c576e505b6e505b6a4c577251548c696a89686a715157674e46866b60755e595943405a413560493f604a41634c44",
+          "width": 1440,
+          "height": 3120
         }
       ]
     },
