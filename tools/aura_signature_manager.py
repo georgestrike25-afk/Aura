@@ -22,7 +22,7 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import filedialog, messagebox, simpledialog, ttk
 
-from PIL import Image, ImageTk
+from PIL import Image, ImageOps, ImageTk
 
 import aura_signature_sync as sync
 
@@ -30,6 +30,7 @@ APP = "Aura Signature"
 VERSION = "1.1.0"
 TOKEN_URL = "https://github.com/settings/personal-access-tokens/new"
 IS_WINDOWS = sys.platform == "win32"
+UI_FONT = "Segoe UI" if IS_WINDOWS else "DejaVu Sans"
 
 try:  # arrastrar y soltar (opcional)
     from tkinterdnd2 import DND_FILES, TkinterDnD
@@ -201,15 +202,17 @@ class ManagerApp:
         self.root.configure(bg=PALETTE["bg"])
         style = ttk.Style()
         style.theme_use("clam")
-        style.configure(".", font=("Segoe UI", 10), background=PALETTE["bg"], foreground=PALETTE["text"])
+        style.configure(".", font=(UI_FONT, 10), background=PALETTE["bg"], foreground=PALETTE["text"],
+                        bordercolor="#323940", lightcolor="#323940", darkcolor="#323940",
+                        troughcolor=PALETTE["panel"], arrowcolor=PALETTE["text"])
         style.configure("TButton", padding=(10, 6), background=PALETTE["card"], bordercolor=PALETTE["panel"])
         style.map("TButton", background=[("active", "#333a41")])
         style.configure("Accent.TButton", background=PALETTE["accent"], foreground=PALETTE["bg"])
         style.map("Accent.TButton", background=[("active", "#ecd2aa")])
-        style.configure("Title.TLabel", font=("Segoe UI Semibold", 24))
+        style.configure("Title.TLabel", font=(UI_FONT, 24, "bold"))
         style.configure("Muted.TLabel", foreground=PALETTE["muted"])
         style.configure("Sidebar.TFrame", background=PALETTE["panel"])
-        style.configure("Sidebar.TLabel", background=PALETTE["panel"], font=("Segoe UI Semibold", 16))
+        style.configure("Sidebar.TLabel", background=PALETTE["panel"], font=(UI_FONT, 16, "bold"))
         style.configure("Gallery.Treeview", background=PALETTE["panel"], fieldbackground=PALETTE["panel"],
                         borderwidth=0, rowheight=50)
         style.map("Gallery.Treeview", background=[("selected", "#534735")], foreground=[("selected", "#fff0d5")])
@@ -307,7 +310,7 @@ class ManagerApp:
         self.retry_uploads = ttk.Button(bottom, text="Reintentar", command=self._retry_failed, state="disabled")
         self.retry_uploads.pack(side="right")
         self.log_box = tk.Text(bottom, height=5, bg=PALETTE["panel"], fg=PALETTE["text"], relief="flat", wrap="word",
-                               font=("Segoe UI", 9), state="disabled")
+                               font=(UI_FONT, 9), state="disabled")
         if TkinterDnD is not None and hasattr(self.root, "drop_target_register"):
             self.root.drop_target_register(DND_FILES)
             self.root.dnd_bind("<<Drop>>", self._on_drop)
@@ -538,8 +541,8 @@ class ManagerApp:
         try:
             with Image.open(path) as source:
                 image = source.convert("RGB")
-            image.thumbnail(size, Image.Resampling.LANCZOS)
-            self.images[key] = ImageTk.PhotoImage(image, master=self.root)
+            tile = ImageOps.fit(image, size, Image.Resampling.LANCZOS)
+            self.images[key] = ImageTk.PhotoImage(tile, master=self.root)
             return self.images[key]
         except (OSError, ValueError):
             return None
@@ -558,7 +561,7 @@ class ManagerApp:
         if not items:
             text = "No hay resultados para esa búsqueda." if self.search.get().strip() else "Arrastrá fotos acá o usá Agregar fotos."
             tk.Label(self.grid, text=text, bg=PALETTE["bg"], fg=PALETTE["muted"],
-                     font=("Segoe UI", 11)).grid(padx=22, pady=44)
+                     font=(UI_FONT, 11)).grid(padx=22, pady=44)
         width, height = self.thumb_size
         per_row = max(1, (self.canvas.winfo_width() - 4) // (width + 18))
         for i, item in enumerate(items):
@@ -574,7 +577,7 @@ class ManagerApp:
             else:
                 art.create_text(width // 2, height // 2, text="Cargando…", fill=PALETTE["muted"])
             name = tk.Label(cell, text=item["title"], width=max(8, width // 8), anchor="w",
-                            bg=PALETTE["bg"], fg=PALETTE["text"], font=("Segoe UI", 10))
+                            bg=PALETTE["bg"], fg=PALETTE["text"], font=(UI_FONT, 10))
             name.pack(fill="x", pady=(3, 0))
             self.cards[wid] = art
             for widget in (cell, art, name):
@@ -879,6 +882,7 @@ class Viewer:
         self.app, self.items, self.index = app, items, index
         self.zoom = None  # None = ajustar a la ventana
         self.offset = [0.0, 0.0]
+        self.is_fullscreen = False
         self.images: dict[str, Image.Image] = {}
         self.photo = None
         self.win = w = tk.Toplevel(app.root)
@@ -891,9 +895,9 @@ class Viewer:
         self.canvas.pack(fill="both", expand=True)
         bar = self.bar = tk.Frame(w, bg=self.BAR, padx=14, pady=10)
         bar.pack(fill="x")
-        self.title = tk.Label(bar, text="", bg=self.BAR, fg=self.TEXT, font=("Segoe UI Semibold", 13), anchor="w")
+        self.title = tk.Label(bar, text="", bg=self.BAR, fg=self.TEXT, font=(UI_FONT, 13, "bold"), anchor="w")
         self.title.pack(fill="x")
-        self.info = tk.Label(bar, text="", bg=self.BAR, fg=self.SOFT, font=("Segoe UI", 9), anchor="w", justify="left", wraplength=780)
+        self.info = tk.Label(bar, text="", bg=self.BAR, fg=self.SOFT, font=(UI_FONT, 9), anchor="w", justify="left", wraplength=780)
         self.info.pack(fill="x")
         row = tk.Frame(bar, bg=self.BAR)
         row.pack(fill="x", pady=(8, 0))
@@ -916,7 +920,7 @@ class Viewer:
         w.bind("<F2>", lambda e: self.rename())
         w.bind("<m>", lambda e: self.move())
         w.bind("<F11>", lambda e: self.fullscreen())
-        w.bind("<Escape>", lambda e: self.fullscreen(False) if w.attributes("-fullscreen") else w.destroy())
+        w.bind("<Escape>", lambda e: self.fullscreen(False) if self.is_fullscreen else w.destroy())
         w.bind("<Key-0>", lambda e: self.set_zoom(None))
         w.bind("<Key-1>", lambda e: self.set_zoom(1.0))
         w.bind("<plus>", lambda e: self.zoom_by(1.25))
@@ -979,7 +983,7 @@ class Viewer:
             if thumb is not None and thumb.exists():
                 im = Image.open(thumb).convert("RGB")  # mientras baja la grande
             else:
-                c.create_text(cw / 2, ch / 2, text="Cargando…", fill=self.SOFT, font=("Segoe UI", 12))
+                c.create_text(cw / 2, ch / 2, text="Cargando…", fill=self.SOFT, font=(UI_FONT, 12))
                 return
         fit = min(cw / im.width, ch / im.height)
         scale = fit if self.zoom is None else self.zoom
@@ -995,7 +999,7 @@ class Viewer:
             self.photo = ImageTk.PhotoImage(shown)
             c.create_image(x0, y0, image=self.photo, anchor="nw")
         if self.zoom is not None:
-            c.create_text(12, 12, anchor="nw", text=f"{int(scale * 100)} %", fill=self.AMBER, font=("Segoe UI", 10))
+            c.create_text(12, 12, anchor="nw", text=f"{int(scale * 100)} %", fill=self.AMBER, font=(UI_FONT, 10))
 
     # ---------- navegación y zoom
 
@@ -1047,9 +1051,9 @@ class Viewer:
         self.draw()
 
     def fullscreen(self, on: bool | None = None):
-        on = not self.win.attributes("-fullscreen") if on is None else on
-        self.win.attributes("-fullscreen", on)
-        if on:
+        self.is_fullscreen = not self.is_fullscreen if on is None else on
+        self.win.attributes("-fullscreen", self.is_fullscreen)
+        if self.is_fullscreen:
             self.bar.pack_forget()
         else:
             self.bar.pack(fill="x")
