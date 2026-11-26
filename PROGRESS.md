@@ -1,3 +1,30 @@
+# Aura Artistic Evolution 2.0
+
+Rama de trabajo `aura-artistic-evolution-2`, derivada de `72313ef` en `aura-artistic-evolution`.
+
+## Estado de las etapas
+
+| Etapa | Avance | Verificación |
+|---|---|---|
+| Auditoría | Se revisaron documentación, navegación, clima, widgets, Studio, Signature, fondo animado y CI. La base ya incluye capas, cuatro dígitos editables, importación TTF/OTF, materiales, Open-Meteo y el reloj del sistema. | Rama base verificada. |
+| AutoDesign | Importar una foto abre tres propuestas generadas localmente a partir del encuadre, paleta, contraste, detalle y máscara del sujeto cuando está disponible. Cada diseño ofrece aplicar, editar y generar alternativas. | Pruebas JVM añadidas. Flujo Android pendiente de verificación. |
+| Información del reloj | Puro, Esencial, Ambiental y Completo, con posición, tamaño, fuente, color, opacidad y visibilidad por campo. Los proyectos anteriores conservan el modo Original. | Pendiente de verificación Android. |
+| Signature | Catálogo 2.0 remoto dedicado a fotografía, favoritos persistentes, colecciones, miniaturas, descarga bajo demanda, caché local, máscara y reloj recomendado opcionales. | El catálogo está vacío a la espera de las fotografías del propietario. |
+| Atmosphere | Puede seguir las condiciones meteorológicas guardadas, incluidos viento y nubosidad, con intensidad y apagado. El fondo limita el movimiento a periodos visibles. | Pendiente de verificación Android y Galaxy S24+. |
+| Clima y Widgets | Clima abre la app, muestra el estado de carga o antigüedad de los datos y conserva el pronóstico. El catálogo de widgets ofrece los meteorológicos. Los receptores e identificadores heredados siguen declarados para conservar widgets existentes. | Pendiente de pruebas del selector de One UI Home y de migración real. |
+| Compilación y distribución | CI prepara un APK firmado con el identificador `app.aura.preview`, instalable junto a la estable, y verifica las pruebas y el prefijo de la huella de firma antes de publicar. | Pendiente de ejecución y comprobación del artefacto. |
+
+## Límites y siguientes pasos
+
+- La segmentación de ML Kit se ejecuta localmente. La entrega inicial del modelo depende de Play Services. Si no hay modelo o sujeto, se presentan propuestas sin profundidad y se conserva el pincel manual.
+- El contraste y la ocupación estimados por AutoDesign son heurísticos. Queda por medir la legibilidad y la oclusión minuto a minuto sobre fotografías reales, también con máscaras imperfectas.
+- El proveedor de clima actual no expone alertas oficiales en el modelo de Aura. Se mantienen las condiciones y avisos de precipitación derivados del pronóstico.
+- Para publicar una colección, editar `signature/catalog-v2.json` en esta rama. Cada obra necesita un ID único estable, título, archivo de 1440 × 3120 y miniatura. La máscara opcional debe ser PNG de 1440 × 3120 con silueta opaca y fondo transparente. `recommendedDesign` admite el esquema de `ClockDesign`. Usar rutas nuevas cuando se actualicen imágenes y registrar la licencia suministrada. Verificar la fotografía con el estándar de composición del propietario.
+- Ejecutar `:core:test :app:testDebugUnitTest :app:lintDebug` y `:app:connectedDebugAndroidTest`. Verificar también la instalación paralela, el reloj del sistema y el fondo en un Galaxy S24+.
+- La etiqueta para la prueba es `aura-artistic-evolution-2-test`. El enlace de descarga se debe comunicar tras verificar que el APK está publicado.
+
+## Historial de Artistic Evolution 1
+
 # Aura — Artistic Evolution: progreso
 
 Rama: `aura-artistic-evolution` (no se fusiona a `main` automáticamente).
