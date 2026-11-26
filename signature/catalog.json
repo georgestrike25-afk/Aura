@@ -32,6 +32,15 @@
           "dhash": "07070f06072727866d6d62948f81b3aa9b989589545b506e706474766a5f655a7475687f7e718584787e7e7262625573726686827879776b",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-pastor-de-la-escarcha-2595db400d19",
+          "title": "El pastor de la escarcha",
+          "image": "photos/3a34e4610a0fe1655c05a0f8.webp",
+          "thumb": "photos/3a34e4610a0fe1655c05a0f8-thumb.webp",
+          "dhash": "0e268bccd9410f842c2e383437443738442d2f3a27282e2f30362f2f362b2b314d47484e494c544c4c574e4d4640424e47484f4849484143",
+          "width": 1440,
+          "height": 3120
         }
       ]
     },
