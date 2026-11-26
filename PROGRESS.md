@@ -186,3 +186,7 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
 - **MET Norway** reemplaza a Open-Meteo (cuyo plan gratis es solo no comercial): pronóstico de 10 días (ECMWF),
   48 h horarias, probabilidad y milímetros de lluvia, UV de cielo despejado; sol calculado en el teléfono (NOAA).
   Búsqueda de ciudades con el geocodificador de Android y zona horaria deducida del país.
+- **Fuentes de elementos**: familia «Elementos» con Rubik Burned (fuego), Rubik Wet Paint y Rubik Puddles (agua),
+  OFL. AutoDesign detecta escenas de fuego o agua por la paleta y la primera propuesta usa esa fuente con Ignis o
+  Aqua; las fuentes importadas cuyo nombre sugiere fuego/agua («Burn», «Water Splash») tienen prioridad. Las de la
+  persona no se incluyen en el APK (Burn: solo uso personal; Water Splash: versión demo con logo en los números).

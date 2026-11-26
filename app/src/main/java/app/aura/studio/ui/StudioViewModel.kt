@@ -391,6 +391,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
             ?: projects.value.firstOrNull { it.id == activeId.value && it.id != project.id }?.design
             ?: projects.value.firstOrNull { it.id != project.id && it.design != ClockDesign() }?.design
         _busy.value = "Componiendo propuestas…"
+        val themedFonts = StudioFonts.themedUserFonts(getApplication())
         viewModelScope.launch {
             try {
                 val (w, h) = previewSize
@@ -415,7 +416,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
                                     if (project.mask.inverted) for (index in it.indices) it[index] = it[index].inv()
                                 }
                             }
-                            AutoDesign.propose(pixels, analysisWidth, analysisHeight, subject, round, reference)
+                            AutoDesign.propose(pixels, analysisWidth, analysisHeight, subject, round, reference, themedFonts)
                         } finally {
                             sample.recycle()
                         }

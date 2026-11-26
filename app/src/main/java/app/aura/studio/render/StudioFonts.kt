@@ -17,13 +17,14 @@ enum class FontFamilyGroup(val label: String) {
     POETRY("Poetry"),
     DISPLAY("Display"),
     RETRO("Retro"),
+    ELEMENTS("Elementos"),
     MINE("Mis fuentes"),
 }
 
 /**
  * Fuentes para números incluidas en Aura (Google Fonts, licencia SIL OFL 1.1; ver
- * docs/licencias/fuentes), recortadas a los caracteres del reloj (0–9, «:», a. m./p. m.): las 61
- * ocupan ≈700 KB. Además, fuentes TTF/OTF que la persona importa desde el teléfono (id «user:…»).
+ * docs/licencias/fuentes), recortadas a los caracteres del reloj (0–9, «:», a. m./p. m.): las 64
+ * ocupan ≈780 KB. Además, fuentes TTF/OTF que la persona importa desde el teléfono (id «user:…»).
  */
 object StudioFonts {
     data class Entry(val id: String, val label: String, @FontRes val res: Int, val group: FontFamilyGroup)
@@ -99,6 +100,10 @@ object StudioFonts {
         e("clock_vt323", "VT323", R.font.clock_vt323, FontFamilyGroup.RETRO),
         e("clock_monofett", "Monofett", R.font.clock_monofett, FontFamilyGroup.RETRO),
         e("clock_codystar", "Codystar", R.font.clock_codystar, FontFamilyGroup.RETRO),
+        // Elementos: fuego y agua (AutoDesign las usa en escenas de fuego o de agua).
+        e("clock_rubikburned", "Fuego (Rubik Burned)", R.font.clock_rubikburned, FontFamilyGroup.ELEMENTS),
+        e("clock_rubikwetpaint", "Agua (Rubik Wet Paint)", R.font.clock_rubikwetpaint, FontFamilyGroup.ELEMENTS),
+        e("clock_rubikpuddles", "Charcos (Rubik Puddles)", R.font.clock_rubikpuddles, FontFamilyGroup.ELEMENTS),
     )
 
     const val USER_PREFIX = "user:"
@@ -150,6 +155,27 @@ object StudioFonts {
         userFontFile(context, id)?.delete()
         synchronized(cache) { cache.remove(id) }
     }
+
+    /**
+     * Fuentes importadas que por su nombre son de fuego o de agua («Burn», «Water Splash»…), con sus medidas,
+     * para que AutoDesign las prefiera en escenas de ese elemento.
+     */
+    fun themedUserFonts(context: Context): List<app.aura.core.studio.AutoDesign.ThemedFont> =
+        userFonts(context).mapNotNull { (id, name, file) ->
+            val theme = app.aura.core.studio.AutoDesign.themeOfName(name) ?: return@mapNotNull null
+            val face = runCatching { Typeface.createFromFile(file) }.getOrNull() ?: return@mapNotNull null
+            val paint = android.graphics.Paint().apply { typeface = face; textSize = 1000f }
+            val advance = paint.measureText("0123456789") / 10f / 1000f
+            val bounds = android.graphics.Rect().also { paint.getTextBounds("0", 0, 1, it) }
+            val cap = -bounds.top / 1000f
+            // Sin números, o con el mismo dibujo en todos (el logo de las versiones de demostración), no sirve.
+            val shapes = listOf("0", "1", "8").map { d -> android.graphics.Rect().also { paint.getTextBounds(d, 0, 1, it) } }
+            // En una fuente real el «1» es bastante más angosto que el «0»; en una demo los tres son el mismo logo.
+            val w0 = shapes[0].width().coerceAtLeast(1)
+            val sameGlyph = shapes.all { kotlin.math.abs(it.width() - w0) <= w0 * 0.05f && kotlin.math.abs(it.height() - shapes[0].height()) <= shapes[0].height() * 0.05f }
+            if (advance <= 0.05f || cap <= 0.2f || sameGlyph) null
+            else app.aura.core.studio.AutoDesign.ThemedFont(id, advance, cap, theme)
+        }
 
     fun resolver(context: Context): (String) -> Typeface? {
         val app = context.applicationContext

@@ -23,6 +23,41 @@ import kotlin.random.Random
 object AutoDesign {
     data class Proposal(val title: String, val design: ClockDesign)
 
+    /** Escenas con un elemento protagonista: la propuesta principal usa una fuente y un material a tono. */
+    enum class Theme(val material: ClockMaterial) { FIRE(ClockMaterial.IGNIS), WATER(ClockMaterial.AQUA) }
+
+    /** Fuente temática: incluida en Aura o importada por la persona (con sus medidas en em). */
+    data class ThemedFont(val id: String, val advance: Float, val cap: Float, val theme: Theme)
+
+    /** Incluidas en Aura (licencia OFL, se pueden vender con la app). */
+    private val builtInThemed = listOf(
+        "clock_rubikburned" to Theme.FIRE,
+        "clock_rubikwetpaint" to Theme.WATER,
+        "clock_rubikpuddles" to Theme.WATER,
+    ).mapNotNull { (id, th) -> FontMetrics.digits[id]?.let { ThemedFont(id, it.first, it.second, th) } }
+
+    /** Palabras en el nombre de una fuente importada que la asocian a fuego o agua. */
+    fun themeOfName(name: String): Theme? {
+        val n = name.lowercase()
+        return when {
+            listOf("burn", "fire", "flame", "fuego", "llama", "lava", "inferno", "blaze", "ember").any { it in n } -> Theme.FIRE
+            listOf("water", "splash", "agua", "aqua", "ocean", "wave", "rain", "drip", "liquid", "mar").any { it in n } -> Theme.WATER
+            else -> null
+        }
+    }
+
+    /** ¿La foto es una escena de fuego o de agua? (por sus colores, igual que el material que sugiere Fusion). */
+    fun themeOf(t: ImageTraits): Theme? {
+        val material = Fusion.harmonize(t).material
+        val vivid = t.palette.zip(t.weights).filter { it.second > 0.06f }.map { hsl(it.first) }
+        val fiery = vivid.any { (it[0] < 45f || it[0] > 340f) && it[1] > 0.55f && it[2] in 0.3f..0.75f }
+        return when {
+            material == ClockMaterial.IGNIS || (fiery && t.warmth > 0.1f) -> Theme.FIRE
+            material == ClockMaterial.AQUA || material == ClockMaterial.GLACIUS -> Theme.WATER
+            else -> null
+        }
+    }
+
     enum class Style(val title: String) {
         MONUMENT("Monumento"), STACKED("Apilado"), GIANT("Gigante"),
         EDITORIAL("Editorial"), SEPARATED("Separado"), LATERAL("Lateral"),
@@ -54,20 +89,33 @@ object AutoDesign {
         "clock_playfair", "clock_righteous", "clock_megrim",
     )
 
+    private val THEMED_STYLES = listOf(Style.MONUMENT, Style.GIANT, Style.STACKED)
+
     /** Hueco entre horas y minutos (sin dos puntos) o el ancho de los dos puntos, en em. */
     private const val GAP = 0.25f
 
-    fun propose(pixels: IntArray, width: Int, height: Int, subject: IntArray?, round: Int, reference: ClockDesign? = null): List<Proposal> {
+    fun propose(
+        pixels: IntArray, width: Int, height: Int, subject: IntArray?, round: Int, reference: ClockDesign? = null,
+        userFonts: List<ThemedFont> = emptyList(),
+    ): List<Proposal> {
         require(width > 0 && height > 0 && pixels.size == width * height)
         require(subject == null || subject.size == pixels.size)
         val ctx = Context(pixels, width, height, Scene.read(subject, width, height), reference?.hourFormat ?: HourFormat.SYSTEM)
         // Misma foto y misma vuelta → mismas propuestas; otra vuelta → otras.
         val rnd = Random(fingerprint(pixels) * 31 + round)
-        val styles = Style.entries.shuffled(rnd).take(3)
+        var styles = Style.entries.shuffled(rnd).take(3)
         val usedFonts = mutableSetOf<String>()
         val schemes = Scheme.entries.shuffled(rnd)
+        // Escena de fuego o agua: la primera propuesta lleva la fuente temática (primero las de la persona) y su material.
+        val theme = themeOf(ctx.traits)
+        val themed = theme?.let { th -> (userFonts.filter { it.theme == th }.shuffled(rnd) + builtInThemed.filter { it.theme == th }.shuffled(rnd)).firstOrNull() }
+        if (themed != null && styles.first() !in THEMED_STYLES) {
+            val s0 = THEMED_STYLES.filter { it !in styles }.random(rnd)
+            styles = listOf(s0) + styles.drop(1)
+        }
         return styles.mapIndexed { i, style ->
-            val design = build(style, ctx, rnd, schemes[i % schemes.size], usedFonts).copy(hourFormat = ctx.hourFormat)
+            val forced = if (i == 0 && themed != null) themed else null
+            val design = build(style, ctx, rnd, schemes[i % schemes.size], usedFonts, forced).copy(hourFormat = ctx.hourFormat)
             usedFonts += design.customFont.orEmpty()
             Proposal(style.title, design)
         }
@@ -95,12 +143,22 @@ object AutoDesign {
         return (target / (em * stretchX)).coerceIn(ClockDesign.MIN_SIZE, max)
     }
 
-    private fun build(style: Style, c: Context, rnd: Random, scheme: Scheme, used: Set<String>): ClockDesign {
+    private fun build(style: Style, c: Context, rnd: Random, scheme: Scheme, used: Set<String>, forced: ThemedFont? = null): ClockDesign {
+        fun choose(pool: List<String>) = forced?.let { it.id to (it.advance to it.cap) } ?: pick(pool, rnd, used)
+        val d = buildStyle(style, c, rnd, scheme, ::choose)
+        // Con fuente temática, el material del elemento (Ignis o Aqua) bien presente.
+        return if (forced == null) d else d.withMaterial(forced.theme.material).copy(
+            elementIntensity = rnd.nextInt(60, 85), textureScale = rnd.nextInt(35, 65), chameleon = 0,
+            color = d.color, accentColor = d.accentColor,
+        )
+    }
+
+    private fun buildStyle(style: Style, c: Context, rnd: Random, scheme: Scheme, choose: (List<String>) -> Pair<String, Pair<Float, Float>>): ClockDesign {
         val scene = c.scene
         val behind = scene != null
         return when (style) {
             Style.MONUMENT -> {
-                val (font, m) = pick(condensed, rnd, used)
+                val (font, m) = choose(condensed)
                 val stretchY = rnd.range(1.2f, 1.7f)
                 val size = fit(m.first, 4, rnd.range(0.80f, 0.90f), 1f)
                 val bandH = m.second * size * stretchY / c.aspect
@@ -111,7 +169,7 @@ object AutoDesign {
                 )
             }
             Style.GIANT -> {
-                val (font, m) = pick(giant, rnd, used)
+                val (font, m) = choose(giant)
                 val stretchX = rnd.range(0.8f, 0.95f)
                 val size = fit(m.first, 4, 0.92f, stretchX)
                 val stretchY = (rnd.range(0.36f, 0.44f) * c.aspect / (m.second * size)).coerceIn(1.3f, ClockDesign.MAX_STRETCH)
@@ -123,7 +181,7 @@ object AutoDesign {
                 )
             }
             Style.STACKED -> {
-                val (font, m) = pick(stacked, rnd, used)
+                val (font, m) = choose(stacked)
                 val side = scene?.freeSide ?: if (rnd.nextBoolean()) -1 else 1
                 val x = 0.5f + side * rnd.range(0.12f, 0.2f)
                 val size = fit(m.first, 2, rnd.range(0.44f, 0.54f), 1f, max = 0.46f)
@@ -141,7 +199,7 @@ object AutoDesign {
                 }
             }
             Style.EDITORIAL -> {
-                val (font, m) = pick(editorial, rnd, used)
+                val (font, m) = choose(editorial)
                 val size = fit(m.first + 0.06f, 4, rnd.range(0.56f, 0.70f), 1f)
                 val bandH = m.second * size / c.aspect
                 val y = if (scene != null) (scene.top - bandH * 0.9f).coerceIn(0.10f + bandH / 2, 0.36f)
@@ -152,7 +210,7 @@ object AutoDesign {
                 )
             }
             Style.SEPARATED -> {
-                val (font, m) = pick(wide, rnd, used)
+                val (font, m) = choose(wide)
                 val size = fit(m.first, 2, rnd.range(0.26f, 0.32f), 1f, max = 0.40f)
                 val stretchY = rnd.range(1.0f, 1.5f)
                 val bandH = m.second * size * stretchY / c.aspect
@@ -163,7 +221,7 @@ object AutoDesign {
                 )
             }
             Style.LATERAL -> {
-                val (font, m) = pick(condensed, rnd, used)
+                val (font, m) = choose(condensed)
                 val side = scene?.freeSide ?: if (rnd.nextBoolean()) -1 else 1
                 val x = 0.5f + side * 0.27f
                 val size = fit(m.first, 2, 0.30f, 1f, max = 0.34f)

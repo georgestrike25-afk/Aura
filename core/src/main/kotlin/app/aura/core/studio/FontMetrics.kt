@@ -68,5 +68,8 @@ object FontMetrics {
         "clock_vt323" to (0.400f to 0.560f),
         "clock_monofett" to (0.578f to 0.669f),
         "clock_codystar" to (0.518f to 0.747f),
+        "clock_rubikburned" to (0.682f to 0.746f),
+        "clock_rubikwetpaint" to (0.682f to 0.710f),
+        "clock_rubikpuddles" to (0.682f to 0.797f),
     )
 }

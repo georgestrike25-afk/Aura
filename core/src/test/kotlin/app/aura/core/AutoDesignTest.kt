@@ -94,4 +94,42 @@ class AutoDesignTest {
         val ref = ClockDesign(hourFormat = app.aura.core.time.HourFormat.H24)
         assertTrue(AutoDesign.propose(forest, width, height, null, 0, ref).all { it.design.hourFormat == ref.hourFormat })
     }
+
+    private val fire = IntArray(width * height) { i ->
+        val y = i / width
+        when {
+            y > 90 -> 0xFFF07A1E.toInt() // llamas naranjas
+            y > 70 -> 0xFFD6401A.toInt()
+            else -> 0xFF1A0E0A.toInt() // noche
+        }
+    }
+    private val sea = IntArray(width * height) { i -> if (i / width > 80) 0xFF1F7FA8.toInt() else 0xFF2A9CC7.toInt() }
+
+    @Test
+    fun fireSceneUsesAFireFontWithIgnis() {
+        for (round in 0 until 5) {
+            val first = AutoDesign.propose(fire, width, height, null, round).first().design
+            assertEquals("clock_rubikburned", first.customFont)
+            assertEquals(app.aura.core.studio.ClockMaterial.IGNIS, first.material)
+        }
+    }
+
+    @Test
+    fun waterSceneUsesAWaterFontWithAqua() {
+        val first = AutoDesign.propose(sea, width, height, null, 0).first().design
+        assertTrue(first.customFont in setOf("clock_rubikwetpaint", "clock_rubikpuddles"))
+        assertEquals(app.aura.core.studio.ClockMaterial.AQUA, first.material)
+    }
+
+    @Test
+    fun importedThemedFontHasPriority() {
+        val burn = AutoDesign.ThemedFont("user:123_Burn.otf", 0.45f, 0.8f, AutoDesign.themeOfName("Burn")!!)
+        assertEquals(AutoDesign.Theme.FIRE, burn.theme)
+        assertEquals(AutoDesign.Theme.WATER, AutoDesign.themeOfName("WaterSplash"))
+        assertEquals(null, AutoDesign.themeOfName("Montserrat"))
+        val first = AutoDesign.propose(fire, width, height, null, 0, userFonts = listOf(burn)).first().design
+        assertEquals("user:123_Burn.otf", first.customFont)
+        // En una escena común no se fuerza nada temático.
+        assertTrue(AutoDesign.propose(forest, width, height, null, 0, userFonts = listOf(burn)).none { it.design.customFont == burn.id })
+    }
 }
