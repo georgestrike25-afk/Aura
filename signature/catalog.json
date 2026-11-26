@@ -92,6 +92,15 @@
           "dhash": "01030707011900201f234d22255022265122254e41385e4d3e6160465d57425c5d3c4a6e42487e48438149414c2f355331345933335f3632",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-glaciar-violeta-f6883ae40497",
+          "title": "El glaciar violeta",
+          "image": "photos/6b7bedd41f4677617458b315.webp",
+          "thumb": "photos/6b7bedd41f4677617458b315-thumb.webp",
+          "dhash": "21230f0f0fbd0e165d4c6c6f5878806181806281544764705e7d70607e524965585c7461647c5b5c714b4c5f39343e433a4342373e342d33",
+          "width": 1440,
+          "height": 3120
         }
       ]
     },
