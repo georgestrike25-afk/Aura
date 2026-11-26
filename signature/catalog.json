@@ -3,6 +3,39 @@
   "license": "",
   "collections": [
     {
+      "id": "arte-abstracto",
+      "title": "Arte abstracto",
+      "items": [
+        {
+          "id": "pliegue-mineral-e7e56cf8f682",
+          "title": "Pliegue mineral",
+          "image": "photos/ee5010aa21ccf244d4fd051f.webp",
+          "thumb": "photos/ee5010aa21ccf244d4fd051f-thumb.webp",
+          "dhash": "e0e0e868cc4f4f1e15191e12161c12171d161a1f161c21161b21161c21181e22181e25252c312b31351a2126242b333a3f443c4346252d31",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "sedimento-rojo-3d20d9327d21",
+          "title": "Sedimento rojo",
+          "image": "photos/ce8c0fbaa1234fbf0557f85c.webp",
+          "thumb": "photos/ce8c0fbaa1234fbf0557f85c-thumb.webp",
+          "dhash": "2183064e0e1e38664c141b4f161a62201c6a241c3b13154b15175017193f13165e2217832717781a155618187727138724118e170f7d1e12",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "tension-de-lino-68c3e60d411b",
+          "title": "Tensión de lino",
+          "image": "photos/4ca6aeae5db06dfd09dc08ad.webp",
+          "thumb": "photos/4ca6aeae5db06dfd09dc08ad-thumb.webp",
+          "dhash": "0f0f0f0a4d4d1b171a1e0723260925290b1a1f09191c06292b0e282a0e1a1f091e21073634163331151b1f083d391b5c5130463d1c343113",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "mundos-submarinos",
       "title": "Mundos submarinos",
       "items": [
