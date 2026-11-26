@@ -308,6 +308,24 @@ class WidgetRenderingTest {
     }
 
     @Test
+    fun sunWidgetStaysVisibleWithoutWeatherAtEverySize() {
+        val renderer = WidgetRenderer(context)
+        val request = WidgetRenderer.Request(
+            WidgetType.ASTRO, Profiles.MINIMAL, null, app.aura.core.settings.AppSettings(),
+            System.currentTimeMillis(), 1, null,
+        )
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            for (size in SizeClass.entries) {
+                val view = renderer.renderSize(request, size).apply(context, FrameLayout(context))
+                val sunrise = view.findViewById<TextView>(R.id.w_sunrise)
+                assertEquals(context.getString(R.string.widget_no_data), sunrise.text.toString())
+                assertEquals(View.VISIBLE, sunrise.visibility)
+                view.findViewById<View>(R.id.w_sun)?.let { assertEquals(View.VISIBLE, it.visibility) }
+            }
+        }
+    }
+
+    @Test
     fun providersAreRegistered() {
         val providers = AppWidgetManager.getInstance(context).installedProviders.filter { it.provider.packageName == context.packageName }
         assertEquals(WidgetType.entries.count { !it.classic }, providers.size)

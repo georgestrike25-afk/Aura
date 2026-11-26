@@ -1,7 +1,5 @@
 package app.aura.ui.components
 
-import app.aura.aura
-
 import android.content.Context
 import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
@@ -21,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -172,20 +169,21 @@ fun previewSize(type: WidgetType, size: SizeClass): Pair<Dp, Dp> = when (type) {
  * que verá el launcher), así no hay una réplica que pueda desincronizarse.
  */
 @Composable
-private fun RealWidgetPreview(type: WidgetType, size: SizeClass, style: WidgetStyle, settings: AppSettings, modifier: Modifier) {
+private fun RealWidgetPreview(
+    type: WidgetType, size: SizeClass, style: WidgetStyle, settings: AppSettings,
+    snapshot: WeatherSnapshot, modifier: Modifier,
+) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val (w, h) = previewSize(type, size)
-    val snapshot by androidx.compose.runtime.produceState<app.aura.core.weather.WeatherSnapshot?>(null) {
-        value = context.aura.weather.cached()
-    }
     androidx.compose.ui.viewinterop.AndroidView(
         factory = { ctx -> android.widget.FrameLayout(ctx) },
         update = { frame ->
             val views = WidgetRenderer(context).renderSize(
                 WidgetRenderer.Request(type, style, snapshot, settings, System.currentTimeMillis(), 0, null), size,
             )
+            val widget = views.apply(context, frame)
             frame.removeAllViews()
-            frame.addView(views.apply(context, frame))
+            frame.addView(widget)
         },
         modifier = modifier.size(w, h),
     )
@@ -207,9 +205,17 @@ fun WidgetPreview(
     system24h: Boolean,
     settings: AppSettings,
     modifier: Modifier = Modifier,
+    snapshot: WeatherSnapshot? = null,
 ) {
     if (!type.classic && type != WidgetType.WEATHER) {
-        RealWidgetPreview(type, size, style.normalized(), settings, modifier)
+        if (snapshot == null || settings.activePlace == null) {
+            val (w, h) = previewSize(type, size)
+            Box(modifier.size(w, h).padding(8.dp), contentAlignment = Alignment.Center) {
+                Text("Sin datos de clima", color = Color.White, style = TextStyle(fontSize = 14.sp))
+            }
+        } else {
+            RealWidgetPreview(type, size, style.normalized(), settings, snapshot, modifier)
+        }
         return
     }
     val s = style.normalized()

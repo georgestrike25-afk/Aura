@@ -4,6 +4,12 @@ Rama de trabajo `aura-artistic-evolution-2`, derivada de `72313ef` en `aura-arti
 
 **El clima se siente. El tiempo se convierte en arte.**
 
+## Ajuste de AutoDesign y vistas de widgets
+
+- AutoDesign aplica el modo Puro a todas las propuestas. Las propuestas nuevas usan cifras altas, acabados de metal o vidrio y separación con el sujeto cuando hay máscara. Si Studio tiene un diseño de referencia, usa el estilo del proyecto abierto, el activo o el último personalizado, en ese orden.
+- Las vistas de widgets leen el estado de clima observado por la pantalla. Sin pronóstico muestran un estado explícito y Aura Sol conserva un mensaje visible en todos los tamaños.
+- La captura del zorro y la mujer en el agua se usó como referencia visual. La colección Signature requiere los originales verticales sin reloj.
+
 ## Validación y distribución
 
 [Descargar APK firmado](https://github.com/georgestrike25-afk/Aura/releases/download/aura-artistic-evolution-2-test/Aura.apk) · [Versión preliminar en GitHub](https://github.com/georgestrike25-afk/Aura/releases/tag/aura-artistic-evolution-2-test)

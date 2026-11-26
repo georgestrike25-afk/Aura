@@ -219,8 +219,9 @@ class WidgetRenderer(private val context: Context) {
             v.setTextViewText(R.id.w_temp, "—°")
             v.setViewVisibility(R.id.w_icon, View.GONE)
             setTextOrGone(v, R.id.w_place, context.getString(if (r.settings.activePlace == null) R.string.widget_no_place else R.string.widget_no_data))
-            listOf(R.id.w_hilo, R.id.w_condition, R.id.w_status, R.id.w_meta, R.id.w_hours, R.id.w_days, R.id.w_divider, R.id.w_tomorrow, R.id.w_indicators, R.id.w_sun)
+            listOf(R.id.w_hilo, R.id.w_condition, R.id.w_status, R.id.w_meta, R.id.w_hours, R.id.w_days, R.id.w_divider, R.id.w_tomorrow, R.id.w_indicators)
                 .forEach { v.setViewVisibility(it, View.GONE) }
+            if (r.type == WidgetType.ASTRO) showUnavailableSun(v)
             return
         }
 
@@ -351,10 +352,12 @@ class WidgetRenderer(private val context: Context) {
         val rise = today?.sunrise
         val set = today?.sunset
         if (rise == null || set == null) {
-            v.setViewVisibility(R.id.w_sun, View.GONE)
-            setTextOrGone(v, R.id.w_sunrise, context.getString(R.string.widget_no_data))
+            showUnavailableSun(v)
             return
         }
+        v.setViewVisibility(R.id.w_sun, View.VISIBLE)
+        v.setViewVisibility(R.id.w_sunbar, View.VISIBLE)
+        v.setViewVisibility(R.id.w_daylight, View.VISIBLE)
         val format = if (style.hourFormat != HourFormat.SYSTEM) style.hourFormat else r.settings.hourFormat
         val is24 = ClockPatterns.is24(format, DateFormat.is24HourFormat(context))
         val fmt = DateTimeFormatter.ofPattern(if (is24) "HH:mm" else "h:mm a", Locale.getDefault())
@@ -371,6 +374,13 @@ class WidgetRenderer(private val context: Context) {
         }
         v.setProgressBar(R.id.w_sunbar, 100, progress, false)
         setTextOrGone(v, R.id.w_sunrise_next, tomorrow?.sunrise?.let { "Mañana amanece ${clock(it)}" })
+    }
+
+    private fun showUnavailableSun(v: RemoteViews) {
+        v.setViewVisibility(R.id.w_sun, View.VISIBLE)
+        v.setTextViewText(R.id.w_sunrise, context.getString(R.string.widget_no_data))
+        v.setTextViewText(R.id.w_sunset, "—")
+        listOf(R.id.w_sunbar, R.id.w_daylight, R.id.w_sunrise_next).forEach { v.setViewVisibility(it, View.GONE) }
     }
 
     /** Bloque «Mañana»: condición, máxima y mínima del día siguiente (solo donde la composición lo incluye). */

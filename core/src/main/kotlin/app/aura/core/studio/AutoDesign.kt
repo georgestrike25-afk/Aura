@@ -5,9 +5,22 @@ import kotlin.math.abs
 object AutoDesign {
     data class Proposal(val title: String, val design: ClockDesign)
 
-    fun propose(pixels: IntArray, width: Int, height: Int, subject: IntArray?, round: Int): List<Proposal> {
+    fun propose(pixels: IntArray, width: Int, height: Int, subject: IntArray?, round: Int, reference: ClockDesign? = null): List<Proposal> {
         require(width > 0 && height > 0 && pixels.size == width * height)
         require(subject == null || subject.size == pixels.size)
+        if (reference != null) {
+            val style = reference.copy(
+                informationMode = ClockInformationMode.PURE, showDate = false, showWeather = false,
+                behindSubject = reference.behindSubject && subject != null,
+            )
+            val shift = listOf(-0.045f, 0.045f, -0.075f, 0.075f)[Math.floorMod(round, 4)]
+            return listOf(
+                Proposal("Tu estilo", style),
+                Proposal("Encuadre alternativo", style.copy(centerY = (style.centerY + shift).coerceIn(0.12f, 0.88f))),
+                Proposal("Cifras más altas", style.copy(stretchY = (style.stretchY * 1.12f).coerceAtMost(ClockDesign.MAX_STRETCH),
+                    stretchX = (style.stretchX * 0.92f).coerceAtLeast(ClockDesign.MIN_STRETCH))),
+            )
+        }
         val candidates = candidates(pixels, width, height, subject, separate = false)
         val preferred = candidates.take(7)
         val primary = preferred[Math.floorMod(round, preferred.size)]
@@ -16,9 +29,9 @@ object AutoDesign {
         val depth = if (subject != null) candidates(pixels, width, height, subject, separate = true).take(5)
             .let { it[Math.floorMod(round, it.size)] } else primary
         return listOf(
-            build("Editorial", primary, pixels, width, height, null, false),
-            build("Monumental", secondary, pixels, width, height, ClockMaterial.MINIMAL, false),
-            build("Profundidad".takeIf { subject != null } ?: "Luz", depth, pixels, width, height, ClockMaterial.METAL, subject != null),
+            build("Metal suave", primary, pixels, width, height, ClockMaterial.METAL, false),
+            build("Vidrio", secondary, pixels, width, height, ClockMaterial.GLASS, false),
+            build("Profundidad".takeIf { subject != null } ?: "Cristal", depth, pixels, width, height, ClockMaterial.GLASS, subject != null),
         )
     }
 
@@ -67,11 +80,7 @@ object AutoDesign {
     ): Proposal {
         val harmony = Fusion.harmonize(Fusion.analyze(pixels, width, height, candidate.region))
         val design = ClockDesign(
-            customFont = when (material) {
-                ClockMaterial.MINIMAL -> "clock_anton"
-                ClockMaterial.METAL -> "clock_oswald"
-                else -> if (harmony.fontId == "clock_anton") "clock_fjallaone" else "clock_bebas"
-            },
+            customFont = if (material == ClockMaterial.METAL) "clock_bebas" else "clock_oswald",
             boldHours = false,
             color = harmony.color,
             accentColor = harmony.accentColor,
@@ -79,19 +88,15 @@ object AutoDesign {
             centerX = candidate.x,
             centerY = candidate.y,
             size = if (split) 0.23f else 0.29f,
-            stretchX = 0.82f,
-            stretchY = 1.32f,
+            stretchX = 0.77f,
+            stretchY = 1.68f,
+            opacity = if (material == ClockMaterial.GLASS) 84 else 96,
             spread = if (split) 0.54f else 0f,
-            showColon = !split,
+            showColon = false,
             behindSubject = split,
-            informationMode = ClockInformationMode.ESSENTIAL,
-            informationStyles = listOf(ClockInformationField.DATE, ClockInformationField.TEMPERATURE)
-                .mapIndexed { index, field ->
-                    val y = 0.075f + index * 0.027f
-                    val textRegion = floatArrayOf(0.2f, y - 0.02f, 0.8f, y)
-                    val color = Fusion.harmonize(Fusion.analyze(pixels, width, height, textRegion)).color
-                    field to ClockInformationStyle(y = y, size = 0.036f, color = color)
-                }.toMap(),
+            informationMode = ClockInformationMode.PURE,
+            showDate = false,
+            showWeather = false,
             artistic = ArtisticClock(enabled = true),
         ).withMaterial(material ?: harmony.material)
         return Proposal(title, design.copy(shadow = maxOf(design.shadow, 42)))

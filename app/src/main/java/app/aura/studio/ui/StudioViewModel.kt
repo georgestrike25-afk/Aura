@@ -381,6 +381,9 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
         val project = current ?: return
         if (_busy.value != null) return
         val round = proposalRound++
+        val reference = project.design.takeUnless { it == ClockDesign() }
+            ?: projects.value.firstOrNull { it.id == activeId.value && it.id != project.id }?.design
+            ?: projects.value.firstOrNull { it.id != project.id && it.design != ClockDesign() }?.design
         _busy.value = "Componiendo propuestas…"
         viewModelScope.launch {
             try {
@@ -406,7 +409,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
                                     if (project.mask.inverted) for (index in it.indices) it[index] = it[index].inv()
                                 }
                             }
-                            AutoDesign.propose(pixels, analysisWidth, analysisHeight, subject, round)
+                            AutoDesign.propose(pixels, analysisWidth, analysisHeight, subject, round, reference)
                         } finally {
                             sample.recycle()
                         }

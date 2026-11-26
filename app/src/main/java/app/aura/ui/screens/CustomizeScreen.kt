@@ -160,9 +160,10 @@ fun CustomizeScreen(
             val scale = minOf(1f, (maxWidth - 24.dp) / w, (maxHeight - 24.dp) / h)
             WidgetPreview(
                 type, size, style, content, now, system24, settings,
+                snapshot = snapshot,
                 modifier = Modifier.requiredSize(w, h).graphicsLayer(scaleX = scale, scaleY = scale),
             )
-            if (content.isSample) {
+            if (content.isSample && (type.classic || type == WidgetType.WEATHER)) {
                 Surface(
                     color = Color(0x99000000),
                     shape = RoundedCornerShape(8.dp),

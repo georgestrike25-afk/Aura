@@ -115,6 +115,7 @@ fun WidgetsScreen(viewModel: AuraViewModel, onCustomize: (WidgetType, Int?) -> U
                     val scale = minOf(1f, (maxWidth - 16.dp) / w, (maxHeight - 16.dp) / h)
                     WidgetPreview(
                         type, size, style, content, now, system24, settings,
+                        snapshot = snapshot,
                         modifier = Modifier.requiredSize(w, h).graphicsLayer(scaleX = scale, scaleY = scale),
                     )
                 }
