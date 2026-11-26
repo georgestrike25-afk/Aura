@@ -10,7 +10,9 @@ Rama de trabajo `aura-artistic-evolution-2`, derivada de `72313ef` en `aura-arti
 - Las vistas de widgets leen el estado de clima observado por la pantalla. Sin pronóstico muestran un estado explícito y Aura Sol conserva un mensaje visible en todos los tamaños.
 - La captura del zorro y la mujer en el agua se usó como referencia visual. La colección Signature requiere los originales verticales sin reloj.
 
-## Validación y distribución
+- Revisión `ff7997d` publicada. Pasaron las 81 pruebas del núcleo, la instrumentación en Android 14 y `lint`. La descarga pública coincide con el APK firmado de Actions y tiene SHA-256 `d6a40642549f80c4872d4382c121d216954dd3c562348bfa2973fc088f1fbcf1`. [CI](https://github.com/georgestrike25-afk/Aura/actions/runs/45748587260) · [APK actualizado](https://github.com/georgestrike25-afk/Aura/releases/download/aura-artistic-evolution-2-test/Aura.apk?rev=ff7997d)
+
+## Validación y distribución inicial
 
 [Descargar APK firmado](https://github.com/georgestrike25-afk/Aura/releases/download/aura-artistic-evolution-2-test/Aura.apk) · [Versión preliminar en GitHub](https://github.com/georgestrike25-afk/Aura/releases/tag/aura-artistic-evolution-2-test)
 
