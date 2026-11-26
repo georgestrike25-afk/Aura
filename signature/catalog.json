@@ -3,6 +3,48 @@
   "license": "",
   "collections": [
     {
+      "id": "los-hijos-de-la-niebla",
+      "title": "Los hijos de la niebla",
+      "items": [
+        {
+          "id": "el-nino-de-la-escollera-534d02e2bf7b",
+          "title": "El niño de la escollera",
+          "image": "photos/ede594aaf6e531cd7f3d5c0d.webp",
+          "thumb": "photos/ede594aaf6e531cd7f3d5c0d-thumb.webp",
+          "dhash": "03130d2f278c264b1f3951223b54233c55213b5529435b40464b41484d2b4660354552684c236b50273a50612f3c464f473a524c4030404e",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-ternero-del-puerto-fc1ca8511360",
+          "title": "El ternero del puerto",
+          "image": "photos/5e88e1b1e02695e02f496af7.webp",
+          "thumb": "photos/5e88e1b1e02695e02f496af7-thumb.webp",
+          "dhash": "0e320f8c842e03131a1f201c20221b20221a1f2123282a3a3f423d414324292b423f3b494b4b56524d4b433c382c2041362c5542314e3827",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-hija-del-lodazal-474c21bfae9c",
+          "title": "La hija del lodazal",
+          "image": "photos/e865cf4507fabdd0e34397ee.webp",
+          "thumb": "photos/e865cf4507fabdd0e34397ee-thumb.webp",
+          "dhash": "181a250d4cf494ac192a1f1a2b201a2a1f1a2a1f2130252e3627333b2b2030244545343d39243c3824444534433a263f331d38301b403927",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-liebre-de-las-chimenea-aab63e8cba61",
+          "title": "La liebre de las chimeneas",
+          "image": "photos/d563a9eb48cb44d219de34f8.webp",
+          "thumb": "photos/d563a9eb48cb44d219de34f8-thumb.webp",
+          "dhash": "00300d4c0d00522b2b121c2c121c2c121c2c121c30151f3e1f2740212831151f613839744a487549476a3e3f653c39653f3d694240694341",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "arquitectura-del-alma",
       "title": "Arquitectura del alma",
       "items": [
