@@ -12,6 +12,7 @@ import android.util.AtomicFile
 import android.media.ExifInterface
 import app.aura.BuildConfig
 import app.aura.core.signature.ContentNames
+import app.aura.studio.mask.SubjectSegmenter
 import app.aura.core.signature.GalleryCollection
 import app.aura.core.signature.GalleryWork
 import app.aura.core.signature.Signature
@@ -148,9 +149,47 @@ class SignatureRepository(context: Context) {
         val w = minOf(720, bitmap.width)
         val mid = if (w == bitmap.width) bitmap else Bitmap.createScaledBitmap(bitmap, w, (w.toFloat() * bitmap.height / bitmap.width).toInt().coerceAtLeast(1), true)
         try {
-            return ContentNames.classify(PhotoLabeler.labels(mid), PhotoLabeler.faceArea(mid))
+            val subject = subjectCrop(mid)
+            val subjectLabels = subject?.let { crop -> try { PhotoLabeler.labels(crop) } finally { crop.recycle() } }.orEmpty()
+            return ContentNames.classify(PhotoLabeler.labels(mid), PhotoLabeler.faceArea(mid), subjectLabels)
         } finally {
             if (mid !== bitmap) mid.recycle()
+        }
+    }
+
+    /**
+     * Recorta al protagonista (el mismo separador de sujeto que usa Studio), así se reconoce lo que importa
+     * y no el cielo de fondo. null si no hay un sujeto claro o el separador no está disponible.
+     */
+    private suspend fun subjectCrop(photo: Bitmap): Bitmap? {
+        val result = runCatching { SubjectSegmenter().segment(photo, 0.5f) }.getOrNull() as? SubjectSegmenter.Result.Mask ?: return null
+        val mask = result.alpha
+        try {
+            if (result.coverage !in 0.02f..0.85f) return null
+            val bytes = ByteArray(mask.rowBytes * mask.height)
+            mask.copyPixelsToBuffer(java.nio.ByteBuffer.wrap(bytes))
+            var left = mask.width; var top = mask.height; var right = -1; var bottom = -1
+            for (y in 0 until mask.height) for (x in 0 until mask.width) {
+                if ((bytes[y * mask.rowBytes + x].toInt() and 0xFF) > 128) {
+                    if (x < left) left = x
+                    if (x > right) right = x
+                    if (y < top) top = y
+                    if (y > bottom) bottom = y
+                }
+            }
+            if (right < left || bottom < top) return null
+            val sx = photo.width / mask.width.toFloat()
+            val sy = photo.height / mask.height.toFloat()
+            val padX = (right - left) * 0.08f
+            val padY = (bottom - top) * 0.08f
+            val l = ((left - padX) * sx).toInt().coerceIn(0, photo.width - 1)
+            val t = ((top - padY) * sy).toInt().coerceIn(0, photo.height - 1)
+            val r = ((right + 1 + padX) * sx).toInt().coerceIn(l + 1, photo.width)
+            val b = ((bottom + 1 + padY) * sy).toInt().coerceIn(t + 1, photo.height)
+            if ((r - l) < 32 || (b - t) < 32) return null
+            return Bitmap.createBitmap(photo, l, t, r - l, b - t)
+        } finally {
+            mask.recycle()
         }
     }
 

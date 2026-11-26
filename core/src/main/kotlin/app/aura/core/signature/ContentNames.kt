@@ -8,7 +8,7 @@ object ContentNames {
     enum class Group(val title: String) {
         MOUNTAINS("Montañas"),
         WATER("Mar y agua"),
-        SKY("Cielo y noche"),
+        SKY("Cielos"),
         NATURE("Naturaleza"),
         CITY("Ciudad"),
         ANIMALS("Animales"),
@@ -18,7 +18,7 @@ object ContentNames {
     }
 
     /** Versión de la clasificación: si cambia, las fotos guardadas se vuelven a clasificar. */
-    const val VERSION = 2
+    const val VERSION = 3
 
     /** Una cara que ocupa al menos esta fracción de la foto la convierte en retrato. */
     const val PORTRAIT_FACE_AREA = 0.004f
@@ -34,13 +34,16 @@ object ContentNames {
             "Fireworks" to "Fuegos artificiales", "Space" to "Espacio", "Aurora" to "Aurora", "Rainbow" to "Arcoíris", "Night" to "Noche")
         add(Group.NATURE, "Flower" to "Flores", "Plant" to "Plantas", "Tree" to "Árboles", "Forest" to "Bosque", "Leaf" to "Hojas",
             "Garden" to "Jardín", "Grass" to "Pasto", "Jungle" to "Selva", "Field" to "Campo", "Petal" to "Pétalos", "Mushroom" to "Hongos")
-        add(Group.CITY, "Skyscraper" to "Rascacielos", "Building" to "Edificios", "City" to "Ciudad", "Bridge" to "Puente",
+        add(Group.CITY, "Stairs" to "Escalera", "Door" to "Puerta", "Arch" to "Arco", "Lighthouse" to "Faro", "Temple" to "Templo",
+            "Skyscraper" to "Rascacielos", "Building" to "Edificios", "City" to "Ciudad", "Bridge" to "Puente",
             "Tower" to "Torre", "Road" to "Ruta", "Street" to "Calle", "Neon" to "Neón", "Church" to "Iglesia", "Castle" to "Castillo",
             "Ruins" to "Ruinas", "Stadium" to "Estadio")
         add(Group.ANIMALS, "Dog" to "Perro", "Cat" to "Gato", "Bird" to "Pájaro", "Horse" to "Caballo", "Fish" to "Peces",
             "Butterfly" to "Mariposa", "Insect" to "Insecto", "Bear" to "Oso", "Pet" to "Mascota", "Duck" to "Pato", "Penguin" to "Pingüino",
             "Lion" to "León", "Tiger" to "Tigre", "Elephant" to "Elefante", "Rabbit" to "Conejo", "Owl" to "Búho", "Whale" to "Ballena",
-            "Wolf" to "Lobo", "Fox" to "Zorro", "Animal" to "Animal", "Cattle" to "Vacas", "Dinosaur" to "Dinosaurio")
+            "Wolf" to "Lobo", "Fox" to "Zorro", "Animal" to "Animal", "Cattle" to "Vacas", "Dinosaur" to "Dinosaurio",
+            "Deer" to "Ciervo", "Reindeer" to "Reno", "Moose" to "Alce", "Swan" to "Cisne", "Jellyfish" to "Medusa", "Turtle" to "Tortuga",
+            "Shark" to "Tiburón", "Dolphin" to "Delfín", "Eagle" to "Águila", "Dragon" to "Dragón", "Unicorn" to "Unicornio")
         add(Group.PEOPLE, "Selfie" to "Retrato", "Smile" to "Sonrisa", "Person" to "Persona", "Beard" to "Retrato", "Hair" to "Retrato",
             "Eyelash" to "Retrato", "Baby" to "Bebé", "Dude" to "Retrato", "Muscle" to "Atleta", "Dancing" to "Baile", "Bride" to "Boda")
         add(Group.VEHICLES, "Car" to "Auto", "Airplane" to "Avión", "Boat" to "Barco", "Bicycle" to "Bicicleta", "Motorcycle" to "Moto",
@@ -51,29 +54,43 @@ object ContentNames {
 
     data class Result(val group: Group, val name: String)
 
+    /** Fondos: casi todas las fotos los tienen, así que solo deciden si no hay nada más. */
+    private const val BACKGROUND_WEIGHT = 0.25f
+
+    /** Lo que se ve en toda la foto pesa menos que lo que se ve en el protagonista recortado. */
+    private const val SCENE_WEIGHT = 0.5f
+
     /**
-     * [labels]: (etiqueta en inglés, confianza 0–1). [faceArea]: fracción de la foto que ocupa la cara más
-     * grande (0 = sin caras). Con una cara es un retrato y el nombre suma el lugar («Retrato y mar»). Si
-     * no, el grupo es el que más confianza suma y el nombre, la etiqueta más fuerte más una segunda de otro
-     * tema («Montaña y cielo»). Lo que no se reconoce va a Arte como «Obra».
+     * Clasifica por el protagonista. [subject]: etiquetas del sujeto recortado (puede estar vacía si no se
+     * pudo separar); [scene]: etiquetas de toda la foto; [faceArea]: fracción de la foto que ocupa la cara
+     * más grande. Con cara es un retrato. Si no, manda lo que más pesa del protagonista; cielo, nubes y
+     * atardecer solo cuentan como fondo. El nombre empieza por el protagonista y suma el lugar si lo hay
+     * («Ciervo y mar»). Lo que no se reconoce va a Arte como «Obra».
      */
-    fun classify(labels: List<Pair<String, Float>>, faceArea: Float = 0f): Result {
+    fun classify(scene: List<Pair<String, Float>>, faceArea: Float = 0f, subject: List<Pair<String, Float>> = emptyList()): Result {
         val portrait = faceArea >= PORTRAIT_FACE_AREA
-        val known = labels.filter { it.second >= 0.5f }
-            .mapNotNull { (en, c) -> words[en.lowercase()]?.let { Triple(it.first, it.second, c) } }
+        data class Hit(val group: Group, val word: String, val weight: Float, val fromSubject: Boolean)
+        fun hits(list: List<Pair<String, Float>>, k: Float, fromSubject: Boolean) = list.filter { it.second >= 0.5f }
+            .mapNotNull { (en, c) -> words[en.lowercase()]?.let { (g, w) -> Hit(g, w, c, fromSubject) } }
             // Los animales se confunden mucho (personas tomadas por pájaros): solo con mucha confianza y sin caras.
-            .filter { it.first != Group.ANIMALS || (!portrait && it.third >= 0.8f) }
-            .sortedByDescending { it.third }
+            .filter { it.group != Group.ANIMALS || (!portrait && it.weight >= 0.8f) }
+            .map { it.copy(weight = it.weight * k * if (it.group == Group.SKY) BACKGROUND_WEIGHT else 1f) }
+        val all = (hits(subject, 1f, true) + hits(scene, SCENE_WEIGHT, false))
+            .sortedByDescending { it.weight }
+            .distinctBy { it.word }
+        // El lugar: lo más fuerte de toda la foto que no sea el protagonista.
+        fun place(except: String?) = all.filter { !it.fromSubject || subject.isEmpty() }
+            .firstOrNull { it.word != except && it.group != Group.PEOPLE && it.group != Group.ART }?.word
         if (portrait) {
-            val place = known.firstOrNull { it.first != Group.PEOPLE && it.first != Group.ART }?.second
-            return Result(Group.PEOPLE, if (place != null) "Retrato y ${place.lowercase()}" else "Retrato")
+            val where = place(null)
+            return Result(Group.PEOPLE, if (where != null) "Retrato y ${where.lowercase()}" else "Retrato")
         }
         // Sin cara, las etiquetas de personas no alcanzan para decir que es un retrato.
-        val scene = known.filter { it.first != Group.PEOPLE }
-        if (scene.isEmpty()) return Result(Group.ART, "Obra")
-        val group = scene.groupBy { it.first }.maxBy { (_, v) -> v.sumOf { it.third.toDouble() } }.key
-        val main = scene.first { it.first == group }.second
-        val second = scene.firstOrNull { it.first != group && it.second != main }?.second
+        val known = all.filter { it.group != Group.PEOPLE }
+        if (known.isEmpty()) return Result(Group.ART, "Obra")
+        val group = known.groupBy { it.group }.maxBy { (_, v) -> v.sumOf { it.weight.toDouble() } }.key
+        val main = known.first { it.group == group }.word
+        val second = known.firstOrNull { it.group != group && it.word != main }?.word
         return Result(group, if (second != null) "$main y ${second.lowercase()}" else main)
     }
 

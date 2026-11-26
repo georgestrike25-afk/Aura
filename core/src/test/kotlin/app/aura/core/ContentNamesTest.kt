@@ -27,9 +27,10 @@ class ContentNamesTest {
     fun aFaceMakesItAPortraitNeverABird() {
         val r = ContentNames.classify(listOf("Bird" to 0.7f, "Sky" to 0.8f, "Sea" to 0.6f), faceArea = 0.05f)
         assertEquals(ContentNames.Group.PEOPLE, r.group)
-        assertEquals("Retrato y cielo", r.name)
+        assertEquals("Retrato y mar", r.name) // el cielo es fondo: manda el mar
         // Sin cara, un «pájaro» dudoso tampoco manda.
-        assertEquals(ContentNames.Group.SKY, ContentNames.classify(listOf("Bird" to 0.7f, "Sky" to 0.8f)).group)
+        assertEquals(ContentNames.Group.SKY, ContentNames.classify(listOf("Bird" to 0.7f, "Sky" to 0.8f)).group) // solo cielo
+
         assertEquals(ContentNames.Group.ANIMALS, ContentNames.classify(listOf("Bird" to 0.95f, "Sky" to 0.6f)).group)
     }
 
@@ -58,5 +59,20 @@ class ContentNamesTest {
         assertFalse(ContentNames.same(a, ContentNames.fingerprint(gray, orange)))
         assertTrue(ContentNames.same(a, ContentNames.fingerprint(gray, blueish)))
         assertTrue(ContentNames.same(a, a.take(16))) // huella vieja: solo forma
+    }
+
+    @Test
+    fun skyIsOnlyBackgroundTheSubjectDecides() {
+        // Escalera en un lago, con mucho cielo: no es «Cielos».
+        val stairs = ContentNames.classify(
+            scene = listOf("Sky" to 0.95f, "Cloud" to 0.9f, "Lake" to 0.7f),
+            subject = listOf("Stairs" to 0.8f, "Rock" to 0.6f),
+        )
+        assertEquals(ContentNames.Group.CITY, stairs.group)
+        assertTrue(stairs.name.startsWith("Escalera"))
+        // Ciervo al atardecer: manda el ciervo y el nombre lo nombra primero.
+        val deer = ContentNames.classify(scene = listOf("Sunset" to 0.9f, "Sky" to 0.9f, "Beach" to 0.6f), subject = listOf("Deer" to 0.85f))
+        assertEquals(ContentNames.Group.ANIMALS, deer.group)
+        assertTrue(deer.name.startsWith("Ciervo"))
     }
 }
