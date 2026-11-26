@@ -3,6 +3,48 @@
   "license": "",
   "collections": [
     {
+      "id": "lo-que-el-tiempo-guarda",
+      "title": "Lo que el tiempo guarda",
+      "items": [
+        {
+          "id": "el-ciervo-de-papel-ed5208c75f8c",
+          "title": "El ciervo de papel",
+          "image": "photos/9a22d72d67c69f3662516182.webp",
+          "thumb": "photos/9a22d72d67c69f3662516182-thumb.webp",
+          "dhash": "fcf9706c0d1b0e63462b412e1d2f26182a27182d492e44432d3e3a28372f1d343421345d454a45313d2b1c2f36263c3d2b3e39283c342439",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-peso-del-cielo-e5f8ecea521a",
+          "title": "El peso del cielo",
+          "image": "photos/7dd457fd983abe7f727d62dc.webp",
+          "thumb": "photos/7dd457fd983abe7f727d62dc-thumb.webp",
+          "dhash": "050c0d0de63163621f301a3c543849644a3249321e3020304534384f3b273b292f45302a3e2d314534334b353249312235262d423139543c",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-casa-que-espera-4bcec57df1a6",
+          "title": "La casa que espera",
+          "image": "photos/c2ffe28bd68e8318be9dea35.webp",
+          "thumb": "photos/c2ffe28bd68e8318be9dea35-thumb.webp",
+          "dhash": "170b125273f373335d34376036385f35385b333772424272423c6c3f3c6f414299584b9155488b52478b514bae644ca860499f5b489c5848",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-maleta-del-invierno-d60b679cfcb5",
+          "title": "La maleta del invierno",
+          "image": "photos/9a01195c542b04360a934977.webp",
+          "thumb": "photos/9a01195c542b04360a934977-thumb.webp",
+          "dhash": "0000080c0c080c0a0a12180d161d101d251726300f192018262f1e2f3a20333f1521292536402a3e492a3f4d141d22272f332e383d253641",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "retratos-del-mar",
       "title": "Retratos del mar",
       "items": [
