@@ -3,6 +3,132 @@
   "license": "",
   "collections": [
     {
+      "id": "suenos-y-memorias",
+      "title": "Sueños y memorias",
+      "items": [
+        {
+          "id": "el-abrigo-de-ayer-3f9f39de8eff",
+          "title": "El abrigo de ayer",
+          "image": "photos/f9b54402aaf3474ea7386c63.webp",
+          "thumb": "photos/f9b54402aaf3474ea7386c63-thumb.webp",
+          "dhash": "7c7329160e0e9c1f221f0e1b1a0c16160a16160b13140a1a180b1a180a141409201d0c3f2d0f3e2c0f1c1a0b2a220c3f2d0f392a0e27200b",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-tren-de-la-infancia-d834347357f8",
+          "title": "El tren de la infancia",
+          "image": "photos/eff9424e719201552f0cf3a5.webp",
+          "thumb": "photos/eff9424e719201552f0cf3a5-thumb.webp",
+          "dhash": "f4f3e78ddedcf5033e261a2015101e140f1b130e281c132b1b132a1c142118124026164326163420152d1d13452a19462817432817422717",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-almohada-de-lluvia-69d70f714bc7",
+          "title": "La almohada de lluvia",
+          "image": "photos/72cc1cf7e2b07275e7ec46ce.webp",
+          "thumb": "photos/72cc1cf7e2b07275e7ec46ce-thumb.webp",
+          "dhash": "0202098d8c02860013212d1927341c2b391b2b3a1a2834293543333f4e2a3a4c22272e30343b43454e3b3f49242528323234474549494a54",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-llave-de-la-siesta-c79346d312d7",
+          "title": "La llave de la siesta",
+          "image": "photos/9ac287e87a84ed24d07214a2.webp",
+          "thumb": "photos/9ac287e87a84ed24d07214a2-thumb.webp",
+          "dhash": "fe7f7fdf777b3f1f5131364d2e3246292d41262a653e3f5b37394d2f31472a2e9b625781514a5e3b3b5433357e4f4a84534d623e3e4f3134",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
+      "id": "naturaleza-y-humanidad",
+      "title": "Naturaleza y humanidad",
+      "items": [
+        {
+          "id": "el-guardian-del-deshielo-5918e5db1b83",
+          "title": "El guardián del deshielo",
+          "image": "photos/2956ce7c1e559dda4232e311.webp",
+          "thumb": "photos/2956ce7c1e559dda4232e311-thumb.webp",
+          "dhash": "0f030563d181072b1828531b2e5c1c305f192a57192b501d2a472733532336611528441d25332c394e34528020324e2441642d5178274a73",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-musico-del-bosque-fc987283a6c6",
+          "title": "El músico del bosque",
+          "image": "photos/1429966c07888c849f3c7473.webp",
+          "thumb": "photos/1429966c07888c849f3c7473-thumb.webp",
+          "dhash": "4111084e0f4c078722172022161f2317202217202418222b1d242b1d242519212e20253c29293d28262e2124392826402d28442f28382724",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-jardinera-del-asfalto-0616d9760d03",
+          "title": "La jardinera del asfalto",
+          "image": "photos/29abb45157449488292dfd49.webp",
+          "thumb": "photos/29abb45157449488292dfd49-thumb.webp",
+          "dhash": "08508e2b33616817252d2b252e2c242d2b252d2b3b3e3d3f3f3b3e3f3a3a3d3c484744403f374040384847443e3e383c3d343c3c343e3e38",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-mujer-que-siembra-nube-6ecc8a781057",
+          "title": "La mujer que siembra nubes",
+          "image": "photos/8604c972b9e6f8ba27d3eca8.webp",
+          "thumb": "photos/8604c972b9e6f8ba27d3eca8-thumb.webp",
+          "dhash": "450b53b3f1e6a3016639336638326639336439327f4d427545376c3f336f423a935a4279452e794834804e3d663926663a277b4b3782503c",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
+      "id": "la-gravedad-de-las-cosas",
+      "title": "La gravedad de las cosas",
+      "items": [
+        {
+          "id": "el-hilo-de-plomo-ce9e95fd74de",
+          "title": "El hilo de plomo",
+          "image": "photos/0bb7e1e5848d3689aa9f66d7.webp",
+          "thumb": "photos/0bb7e1e5848d3689aa9f66d7-thumb.webp",
+          "dhash": "0f0f070b0f0e171347593a64765160734f485a3a3d4e31495a3a495b3a4152344756365d6c475e6c4755623e65734d7a885d7b885d737e53",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-paraguas-de-piedra-36fc94bfe624",
+          "title": "El paraguas de piedra",
+          "image": "photos/bc58ad1f2872a07ddda32538.webp",
+          "thumb": "photos/bc58ad1f2872a07ddda32538-thumb.webp",
+          "dhash": "0f0f0f1312120f0f2930384048524b535d353d46262e37353d46363f482c343d2f373f3c444d3a434c3a434c303840444b52434a51353d44",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-silla-del-techo-54b86579aba3",
+          "title": "La silla del techo",
+          "image": "photos/b0111c2eee4a75bba732e604.webp",
+          "thumb": "photos/b0111c2eee4a75bba732e604-thumb.webp",
+          "dhash": "0e17172e26723e074b300f5034114f33124a3010513511563913573a145136136c471a6c471a6b4619644217794d1d7c501f774c1c6d4518",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-taza-ingravida-af93a63af6d9",
+          "title": "La taza ingrávida",
+          "image": "photos/bdebe177d9788e72e181278d.webp",
+          "thumb": "photos/bdebe177d9788e72e181278d-thumb.webp",
+          "dhash": "07070f0f07070315411a2165343e874c596435423d1a2260323d63333e4520293b1b235c2f356d3c424c252e3e1c225329305e3037552932",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "animales-mitologicos",
       "title": "Animales mitológicos",
       "items": [
