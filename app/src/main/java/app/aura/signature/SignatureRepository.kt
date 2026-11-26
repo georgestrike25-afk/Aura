@@ -13,6 +13,7 @@ import android.util.AtomicFile
 import android.media.ExifInterface
 import app.aura.BuildConfig
 import app.aura.core.signature.GalleryCollection
+import app.aura.core.signature.GalleryWork
 import app.aura.core.signature.Signature
 import app.aura.core.signature.SignatureCatalog
 import app.aura.core.signature.SignatureCollection
@@ -90,7 +91,7 @@ class SignatureRepository(context: Context) {
         return listOf(
             GalleryCollection(
                 MINE_ID, "Mis obras", "Imágenes que subiste desde el teléfono. Quedan solo acá.",
-                items.reversed().map { app.aura.core.signature.GalleryWork(it, Signature.LOCAL_BASE) },
+                items.reversed().map { GalleryWork(it, Signature.LOCAL_BASE) },
             ),
         )
     }
