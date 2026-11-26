@@ -3,6 +3,48 @@
   "license": "",
   "collections": [
     {
+      "id": "retratos-del-mar",
+      "title": "Retratos del mar",
+      "items": [
+        {
+          "id": "bajo-la-marea-1ede7294d827",
+          "title": "Bajo la marea",
+          "image": "photos/05b55c0447ee8a0ab710ca59.webp",
+          "thumb": "photos/05b55c0447ee8a0ab710ca59-thumb.webp",
+          "dhash": "03031e0f16530d02022e3902313c02333e01313d11383c1d3f3e184142073e45042d350930351b3b3b0d3b41001d27001f2901212b04222c",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "entre-dos-mareas-5820dadc264d",
+          "title": "Entre dos mareas",
+          "image": "photos/a780f7e73a9c23e4054b4ad5.webp",
+          "thumb": "photos/a780f7e73a9c23e4054b4ad5-thumb.webp",
+          "dhash": "504f3960c1d4dcf918363f17364016354015343f3f4a492833342e37382c42476147313f29174630223c3b364737262f2417201e171f221e",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "farol-de-regreso-6543ddec7250",
+          "title": "Farol de regreso",
+          "image": "photos/bbdde7f93471329fa6faec14.webp",
+          "thumb": "photos/bbdde7f93471329fa6faec14-thumb.webp",
+          "dhash": "009068e4a3c5cdcf1a404c1a414d1a414e1a424f30484e2a3e4342575b475c603031302d251d5d5249615b56363432433327604f44494b4a",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "vigia-de-la-tormenta-b6a5546d0ff5",
+          "title": "Vigía de la tormenta",
+          "image": "photos/060b81ac3c92adb299e16517.webp",
+          "thumb": "photos/060b81ac3c92adb299e16517-thumb.webp",
+          "dhash": "070f070909e7e7011c49551d4a561d4a551a4652264f592e5158304c4f224b546762575150484b493f2c3a3952594d445149575f5a424e4c",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "aura-signature",
       "title": "Aura Signature",
       "items": [
