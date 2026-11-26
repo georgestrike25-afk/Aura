@@ -15,7 +15,7 @@ las fotos se procesan en el teléfono. Pensada para un Samsung Galaxy S24+.
 - `tools/aura_widgets.py` GENERA los layouts XML de widgets: no editarlos a mano.
 - `tools/aura_signature_publish.py`: prepara imágenes para Signature (también `--inbox`).
 
-## Estado al 26/11/2026 (rama `aura-artistic-evolution-2`)
+## Estado al 26/11/2026 (rama `main`; la rama `aura-artistic-evolution-2` se fusionó en main)
 - Una sola app: paquete `app.aura` (se instala encima de la Aura del usuario). No volver a crear un paquete aparte.
 - Navegación: abre en Clima; pestañas Clima, Studio, Signature, Widgets, Ajustes. El catálogo de widgets
   muestra solo los de clima (los clásicos siguen registrados para no romper los ya puestos). El usuario
@@ -37,6 +37,11 @@ las fotos se procesan en el teléfono. Pensada para un Samsung Galaxy S24+.
   pero NO se usa: su plan gratis es solo no comercial y la app se va a vender.
 - **Publicación en Play (pendiente)**: política de privacidad, ficha de la tienda, `uses-feature` para excluir
   TV/autos/relojes, Play Billing (compra única), cuenta de desarrollador del usuario.
+
+- **Gestor de Signature para PC** (`docs/SIGNATURE_PC.md`): `tools/aura_signature_manager.py` (Tk) +
+  `tools/aura_signature_sync.py` (lógica probada). Publica en `main` por la API de GitHub con un token del usuario
+  (fine-grained, solo Contents del repo Aura, guardado en el administrador de credenciales de Windows).
+  El .exe se compila en `.github/workflows/signature-manager.yml` y queda en `dist/AuraSignature.exe`.
 
 ## Compilar y entregar
 - Se compila en GitHub Actions (`.github/workflows/android.yml`): pruebas de `core`, APK firmado, lint y

@@ -48,12 +48,11 @@ data class GalleryCollection(val id: String, val title: String, val description:
 
 object Signature {
     /**
-     * Carpetas publicadas, en orden de prioridad: primero `main` y después la rama de trabajo. La app
-     * lee todas y las combina, así una obra subida en cualquiera de las dos aparece sola.
+     * Carpetas publicadas, en orden de prioridad. Hoy solo `main` (donde publica el gestor de Signature
+     * para PC); se dejó como lista por si se suma un servidor de imágenes.
      */
     val BASE_URLS = listOf(
         "https://raw.githubusercontent.com/georgestrike25-afk/Aura/main/signature/",
-        "https://raw.githubusercontent.com/georgestrike25-afk/Aura/aura-artistic-evolution-2/signature/",
     )
     const val CATALOG = "catalog.json"
 

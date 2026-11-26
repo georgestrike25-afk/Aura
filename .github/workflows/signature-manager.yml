@@ -1,0 +1,79 @@
+name: "Signature: gestor para PC"
+
+# Compila «Aura Signature» (gestor de fondos para Windows) y lo publica en dist/ y en la versión
+# «aura-signature-pc». Las pruebas de la lógica corren antes, en Linux.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/aura_signature_*.py"
+      - "tools/test_aura_signature_sync.py"
+      - "tools/requirements-signature.txt"
+      - ".github/workflows/signature-manager.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: signature-manager-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet pillow==11.0.0
+      - name: Pruebas de la lógica
+        run: cd tools && python -m unittest test_aura_signature_sync -v
+
+  windows:
+    needs: test
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet -r tools/requirements-signature.txt
+      - name: Compilar AuraSignature.exe
+        shell: bash
+        run: |
+          pyinstaller --noconfirm --onefile --windowed --name AuraSignature \
+            --icon tools/aura_signature.ico --paths tools \
+            --collect-data sv_ttk --collect-all tkinterdnd2 \
+            --hidden-import keyring.backends.Windows \
+            tools/aura_signature_manager.py
+          ls -la dist
+      - name: Probar que arranca
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath dist/AuraSignature.exe -PassThru
+          Start-Sleep -Seconds 12
+          if ($p.HasExited) { Write-Error "El gestor se cerró al arrancar (código $($p.ExitCode))"; exit 1 }
+          Stop-Process -Id $p.Id -Force
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AuraSignature
+          path: dist/AuraSignature.exe
+      - name: Publicar en dist/ y en la versión aura-signature-pc
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p out && cp dist/AuraSignature.exe out/
+          git fetch origin "$GITHUB_REF_NAME"
+          git checkout -B publish "origin/$GITHUB_REF_NAME"
+          mkdir -p dist && cp out/AuraSignature.exe dist/AuraSignature.exe
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f dist/AuraSignature.exe
+          git commit -m "Gestor Aura Signature para PC (${GITHUB_SHA::7}) [skip ci]" || exit 0
+          for i in 1 2 3; do git pull --rebase origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME" && break; sleep 5; done
+          tag=aura-signature-pc
+          gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --title "Aura Signature para PC" --notes "Gestor de fondos de Signature para Windows." --latest=false
+          gh release upload "$tag" out/AuraSignature.exe --clobber
