@@ -53,12 +53,13 @@ class SignatureRepository(context: Context) {
 
     /** Galería con lo que ya está en el teléfono (sin red). */
     fun cached(): List<GalleryCollection> =
-        mine() + Signature.merge(Signature.BASE_URLS.mapNotNull { b -> cachedSource(b)?.let { it to b } })
+        mine() + visibleRemote(Signature.BASE_URLS.mapNotNull { b -> cachedSource(b)?.let { it to b } })
 
     fun hasRemoteCache(): Boolean = Signature.BASE_URLS.any { cacheFile(it).exists() }
 
     /** Descarga los catálogos publicados; si una carpeta falla se usa su copia guardada. */
     suspend fun refresh(): Result<List<GalleryCollection>> = withContext(Dispatchers.IO) {
+        purgeLegacy()
         var lastError: IOException? = null
         var any = false
         val sources = Signature.BASE_URLS.mapNotNull { base ->
@@ -74,7 +75,7 @@ class SignatureRepository(context: Context) {
             }
         }
         if (!any) Result.failure(lastError ?: IOException("Sin catálogo"))
-        else Result.success(mine() + Signature.merge(sources))
+        else Result.success(mine() + visibleRemote(sources))
     }
 
     // ---------- Mis obras (subidas desde el teléfono) ----------
@@ -87,7 +88,7 @@ class SignatureRepository(context: Context) {
     private fun mine(): List<GalleryCollection> {
         val order = ContentNames.Group.entries.map { it.name.lowercase() }
         return mineCatalog().collections
-            .map { col -> col to col.items.filter { File(mineDir, it.image).isFile && File(mineDir, it.thumb).isFile } }
+            .map { col -> col to col.items.filter { it.dhash != null && File(mineDir, it.image).isFile && File(mineDir, it.thumb).isFile } }
             .filter { it.second.isNotEmpty() }
             .sortedBy { (col, _) -> order.indexOf(col.id.removePrefix(MINE_PREFIX)).let { if (it < 0) order.size else it } }
             .map { (col, items) ->
@@ -102,7 +103,7 @@ class SignatureRepository(context: Context) {
     data class ImportResult(val added: Int, val repeated: Int, val failed: Int)
 
     /**
-     * Copia imágenes elegidas con el selector de fotos, recortadas a 1440×3120. Reconoce el contenido para
+     * Copia imágenes elegidas con el selector de fotos (enteras, hasta 1440×3120). Reconoce el contenido para
      * agruparlas y nombrarlas, y saltea las que ya están (misma foto aunque tenga otro nombre o tamaño).
      */
     suspend fun importImages(uris: List<Uri>): ImportResult = withContext(Dispatchers.IO) {
@@ -113,12 +114,12 @@ class SignatureRepository(context: Context) {
         var repeated = 0
         var failed = 0
         for (uri in uris) {
-            val bitmap = runCatching { decodeCover(uri, W, H) }.getOrNull()
+            val bitmap = runCatching { decodeFit(uri, W, H) }.getOrNull()
             if (bitmap == null) { failed++; continue }
             try {
                 val hash = fingerprintOf(bitmap)
                 if (known.any { ContentNames.same(it, hash) }) { repeated++; continue }
-                val small = Bitmap.createScaledBitmap(bitmap, W / 4, H / 4, true)
+                val small = Bitmap.createScaledBitmap(bitmap, 360, (360f * bitmap.height / bitmap.width).toInt().coerceAtLeast(1), true)
                 val content = ContentNames.classify(PhotoLabeler.labels(small))
                 val hex = hash
                 val id = "mine-" + hash.take(16) + "-" + System.currentTimeMillis().toString(36)
@@ -132,7 +133,7 @@ class SignatureRepository(context: Context) {
                 known += hash
                 val colId = MINE_PREFIX + content.group.name.lowercase()
                 val col = collections[colId] ?: SignatureCollection(colId, content.group.title)
-                collections[colId] = col.copy(items = col.items + SignatureWork(id = id, title = title, image = image, thumb = thumb, dhash = hex))
+                collections[colId] = col.copy(items = col.items + SignatureWork(id = id, title = title, image = image, thumb = thumb, dhash = hex, width = bitmap.width, height = bitmap.height))
                 added++
             } finally {
                 bitmap.recycle()
@@ -159,6 +160,32 @@ class SignatureRepository(context: Context) {
         return ContentNames.fingerprint(gray, colors)
     }
 
+    /** Borra todas las fotos subidas desde el teléfono. */
+    fun deleteAllMine() {
+        mineDir.listFiles()?.forEach { it.delete() }
+    }
+
+    /** Quita las fotos subidas con la primera versión (sin huella: podían estar repetidas y mal nombradas). */
+    private fun purgeLegacy() {
+        val cols = mineCatalog().collections
+        val legacy = cols.flatMap { it.items }.filter { it.dhash == null }
+        if (legacy.isEmpty()) return
+        legacy.forEach { File(mineDir, it.image).delete(); File(mineDir, it.thumb).delete() }
+        saveMine(cols.map { c -> c.copy(items = c.items.filter { it.dhash != null }) }.filter { it.items.isNotEmpty() })
+    }
+
+    /** Obras publicadas que la persona quitó de su galería (siguen publicadas, pero no se muestran acá). */
+    private fun hidden(): Set<String> = prefs.getStringSet("hidden", emptySet()).orEmpty()
+
+    fun hide(id: String) {
+        prefs.edit().putStringSet("hidden", hidden() + id).apply()
+    }
+
+    private fun visibleRemote(sources: List<Pair<SignatureCatalog, String>>): List<GalleryCollection> {
+        val hide = hidden()
+        return Signature.merge(sources).map { c -> c.copy(items = c.items.filterNot { it.work.id in hide }) }.filter { it.items.isNotEmpty() }
+    }
+
     fun deleteMine(id: String) {
         val cols = mineCatalog().collections
         val work = cols.flatMap { it.items }.firstOrNull { it.id == id } ?: return
@@ -172,8 +199,11 @@ class SignatureRepository(context: Context) {
         writeAtomic(mineIndex, json.encodeToString(SignatureCatalog.serializer(), catalog).toByteArray(Charsets.UTF_8))
     }
 
-    /** Decodifica sin pasarse de memoria, respeta la rotación EXIF y recorta al centro para cubrir w×h. */
-    private fun decodeCover(uri: Uri, w: Int, h: Int): Bitmap? {
+    /**
+     * Decodifica sin pasarse de memoria y respeta la rotación EXIF. Conserva la foto entera (sin recortar
+     * ni agrandar): solo la achica si pasa de [maxW]×[maxH]. El encuadre se elige después en Studio.
+     */
+    private fun decodeFit(uri: Uri, maxW: Int, maxH: Int): Bitmap? {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         app.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
         if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
@@ -188,22 +218,22 @@ class SignatureRepository(context: Context) {
             }
         }.getOrNull() ?: 0
         val (srcW, srcH) = if (rotation % 180 == 0) bounds.outWidth to bounds.outHeight else bounds.outHeight to bounds.outWidth
-        // El mayor submuestreo que todavía cubre w×h sin agrandar.
-        val maxSample = minOf(srcW / w.toFloat(), srcH / h.toFloat())
+        val scale = minOf(1f, maxW / srcW.toFloat(), maxH / srcH.toFloat())
+        val outW = (srcW * scale).toInt().coerceAtLeast(1)
+        val outH = (srcH * scale).toInt().coerceAtLeast(1)
         var sample = 1
-        while (sample * 2 <= maxSample) sample *= 2
+        while (srcW / (sample * 2) >= outW && srcH / (sample * 2) >= outH) sample *= 2
         val decoded = app.contentResolver.openInputStream(uri)?.use {
             BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample })
         } ?: return null
-        val out = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val out = Bitmap.createBitmap(outW, outH, Bitmap.Config.ARGB_8888)
         val dw = if (rotation % 180 == 0) decoded.width else decoded.height
-        val dh = if (rotation % 180 == 0) decoded.height else decoded.width
-        val scale = maxOf(w / dw.toFloat(), h / dh.toFloat())
+        val k = outW / dw.toFloat()
         val m = Matrix().apply {
             postTranslate(-decoded.width / 2f, -decoded.height / 2f)
             postRotate(rotation.toFloat())
-            postScale(scale, scale)
-            postTranslate(w / 2f, h / 2f)
+            postScale(k, k)
+            postTranslate(outW / 2f, outH / 2f)
         }
         Canvas(out).drawBitmap(decoded, m, Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG))
         decoded.recycle()
@@ -232,10 +262,14 @@ class SignatureRepository(context: Context) {
         BitmapFactory.decodeFile(f.path, BitmapFactory.Options().apply { inSampleSize = sample })
     }
 
-    /** Obra en buena calidad para el visor (720×1560: nítida en pantalla y liviana en memoria). */
+    /** Obra en buena calidad para el visor (~1080 de ancho: nítida en pantalla y liviana en memoria). */
     suspend fun preview(base: String, w: SignatureWork): Bitmap? = withContext(Dispatchers.IO) {
         val f = (if (base == Signature.LOCAL_BASE) local(w.image) else fetch(base, w.image, W to H)) ?: return@withContext null
-        BitmapFactory.decodeFile(f.path, BitmapFactory.Options().apply { inSampleSize = 2 })
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeFile(f.path, bounds)
+        var sample = 1
+        while (bounds.outWidth / (sample * 2) >= 1080) sample *= 2
+        BitmapFactory.decodeFile(f.path, BitmapFactory.Options().apply { inSampleSize = sample })
     }
 
     /** Obra completa en disco, lista para abrir en Studio. */

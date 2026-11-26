@@ -81,10 +81,16 @@ object Signature {
      */
     fun merge(sources: List<Pair<SignatureCatalog, String>>): List<GalleryCollection> {
         val seenWorks = mutableSetOf<String>()
+        val seenPrints = mutableListOf<String>()
         val out = LinkedHashMap<String, GalleryCollection>()
         for ((catalog, base) in sources) {
             for (col in catalog.collections) {
-                val items = col.items.filter { seenWorks.add(it.id) }.map { GalleryWork(it, base) }
+                val items = col.items.filter { w ->
+                    val h = w.dhash
+                    val repeated = h != null && seenPrints.any { ContentNames.same(it, h) }
+                    if (!repeated && h != null) seenPrints += h
+                    !repeated && seenWorks.add(w.id)
+                }.map { GalleryWork(it, base) }
                 if (items.isEmpty()) continue
                 val prev = out[col.id]
                 out[col.id] = prev?.copy(items = prev.items + items)

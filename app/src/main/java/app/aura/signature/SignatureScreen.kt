@@ -17,12 +17,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -105,9 +107,16 @@ class SignatureViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun deleteMine(id: String) {
-        repo.deleteMine(id)
+    /** Borra una foto propia; una publicada se quita de la galería de este teléfono. */
+    fun delete(gw: GalleryWork) {
+        if (gw.base == Signature.LOCAL_BASE) repo.deleteMine(gw.work.id) else repo.hide(gw.work.id)
         _catalog.value = repo.cached()
+    }
+
+    fun deleteAllMine() {
+        repo.deleteAllMine()
+        _catalog.value = repo.cached()
+        _message.value = "Se borraron todas tus fotos."
     }
 
     private val _loading = MutableStateFlow(false)
@@ -205,6 +214,17 @@ fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: Sign
     val message by vm.message.collectAsStateWithLifecycle()
     var favoritesOnly by rememberSaveable { mutableStateOf(false) }
     var previewKey by rememberSaveable { mutableStateOf<String?>(null) }
+    var confirmDeleteAll by rememberSaveable { mutableStateOf(false) }
+    val hasMine = catalog.any { col -> col.items.any { it.base == Signature.LOCAL_BASE } }
+    if (confirmDeleteAll) {
+        AlertDialog(
+            onDismissRequest = { confirmDeleteAll = false },
+            title = { Text("¿Borrar todas tus fotos?") },
+            text = { Text("Se borran del teléfono todas las fotos que subiste a Signature. Los proyectos de Studio no se tocan.") },
+            confirmButton = { TextButton(onClick = { confirmDeleteAll = false; vm.deleteAllMine() }) { Text("Borrar todas") } },
+            dismissButton = { TextButton(onClick = { confirmDeleteAll = false }) { Text("Cancelar") } },
+        )
+    }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(20)) { uris ->
         vm.import(uris)
     }
@@ -216,7 +236,12 @@ fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: Sign
             works = visible, start = startIndex, vm = vm, favorites = favorites, opening = opening, error = error,
             onClose = { previewKey = null },
             onUse = { gw -> vm.open(gw.base, gw.work) { uri, mask -> previewKey = null; onUse(uri, gw.work, mask) } },
-            onDelete = { gw -> vm.deleteMine(gw.work.id); previewKey = null },
+            onDelete = { gw ->
+                val i = visible.indexOf(gw)
+                val next = visible.getOrNull(i + 1) ?: visible.getOrNull(i - 1)
+                vm.delete(gw)
+                previewKey = next?.let { it.base + it.work.id }
+            },
         )
     }
 
@@ -240,6 +265,11 @@ fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: Sign
                     }
                     TextButton(onClick = { favoritesOnly = !favoritesOnly }) {
                         Text(if (favoritesOnly) "Ver todas" else "Ver favoritos")
+                    }
+                }
+                if (hasMine) {
+                    TextButton(onClick = { confirmDeleteAll = true }) {
+                        Text("Borrar todas mis fotos", color = MaterialTheme.colorScheme.error)
                     }
                 }
             }
@@ -331,18 +361,18 @@ private fun PhotoViewer(
                 val w = current.work
                 Column(
                     Modifier.align(Alignment.BottomCenter).fillMaxWidth()
-                        .background(Color.Black.copy(alpha = 0.55f)).padding(horizontal = 20.dp, vertical = 14.dp),
+                        .background(Color.Black.copy(alpha = 0.6f))
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        .padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 10.dp),
                 ) {
-                    Text(w.title, style = MaterialTheme.typography.titleLarge, color = Color.White, maxLines = 1)
+                    Text(w.title, style = MaterialTheme.typography.titleLarge, color = Color.White, maxLines = 2)
                     Text("${pager.currentPage + 1} de ${works.size} · deslizá para ver otra", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.75f))
                     error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         TextButton(onClick = { vm.toggleFavorite(w.id) }) {
                             Text(if (w.id in favorites) "★ Favorito" else "☆ Favorito", color = Color.White)
                         }
-                        if (current.base == Signature.LOCAL_BASE) {
-                            TextButton(enabled = opening == null, onClick = { onDelete(current) }) { Text("Borrar", color = Color.White) }
-                        }
+                        TextButton(enabled = opening == null, onClick = { onDelete(current) }) { Text("Borrar", color = Color.White) }
                         Spacer(Modifier.weight(1f))
                         Button(enabled = opening == null, onClick = { onUse(current) }) {
                             if (opening == w.id) CircularProgressIndicator(Modifier.height(18.dp).width(18.dp), strokeWidth = 2.dp)
