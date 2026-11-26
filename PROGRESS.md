@@ -4,7 +4,7 @@
 
 - Rama `aura-signature-gallery`. Cuadrícula grafito, portadas de colección, búsqueda, tamaños de miniatura, selección por rango y arrastre a colecciones. Los movimientos de varias obras se publican juntos.
 - El primer clic conserva la tarjeta para que el doble clic abra el visor. El visor ofrece zoom al cursor, desplazamiento, ajuste y pantalla completa.
-- Prueba local con Tk y pantalla virtual para selección, doble clic, zoom, búsqueda y arrastre. La compilación y el arranque del ejecutable se verifican en Windows en el workflow de Signature.
+- Prueba local con Tk y pantalla virtual para selección, doble clic, zoom, búsqueda y arrastre. El workflow compiló el ejecutable y verificó su arranque en Windows, además de probar la galería y el visor con Tk. [Compilación de Windows](https://github.com/georgestrike25-afk/Aura/actions/runs/45903504367).
 
 
 Rama de trabajo `aura-artistic-evolution-2`, derivada de `72313ef` en `aura-artistic-evolution`.
