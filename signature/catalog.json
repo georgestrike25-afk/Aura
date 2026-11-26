@@ -3,6 +3,48 @@
   "license": "",
   "collections": [
     {
+      "id": "el-jardin-de-los-recuerdos",
+      "title": "El jardín de los recuerdos",
+      "items": [
+        {
+          "id": "el-dedal-de-las-violetas-f3db51df7d03",
+          "title": "El dedal de las violetas",
+          "image": "photos/94d4199867caa9734340fb5c.webp",
+          "thumb": "photos/94d4199867caa9734340fb5c-thumb.webp",
+          "dhash": "09d24c4d2a3757571d1c181f1d19201e1a201e1a1c1a1824211f24211f1c1a17352d30372b323428312c2528624d55614b535a484d453935",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-injerto-de-la-infancia-9832649764d5",
+          "title": "El injerto de la infancia",
+          "image": "photos/ce944771a33a5fdaaf87e5ff.webp",
+          "thumb": "photos/ce944771a33a5fdaaf87e5ff-thumb.webp",
+          "dhash": "c4218848070f75133b1016390f163b0f163d1016491a204f1d22562125592127512423652e2c6d322f592a2748221c52251f50221c49211a",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-baldosa-de-los-domingo-12639dfe030b",
+          "title": "La baldosa de los domingos",
+          "image": "photos/1e2429593329abeb17572b86.webp",
+          "thumb": "photos/1e2429593329abeb17572b86-thumb.webp",
+          "dhash": "64ef4ccc2d240f462d29092725092a2708302b08634e2160502d554b2b49401e86694190745aa2805d9f7849a37a54bc8660c68e5cab7e4b",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-regadera-del-verano-e95266cc8f00",
+          "title": "La regadera del verano",
+          "image": "photos/41c346d0b1ee3d414321599c.webp",
+          "thumb": "photos/41c346d0b1ee3d414321599c-thumb.webp",
+          "dhash": "4d84e8688d6d3f4a2326112428122226101b21102025122729152427142127124b4424584b2b4840263e3a1b5148265d4a2656452b493f28",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "entre-tinta-y-oro",
       "title": "Entre tinta y oro",
       "items": [
