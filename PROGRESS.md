@@ -217,8 +217,12 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
 - El pintor filtra el muestreo de texturas. Ventus, Aqua, Lux, Aether e Ignis repiten su desplazamiento
   por ciclos completos, con el mismo intervalo de actualización del fondo.
 - Se validaron localmente las teselas de todos los materiales, incluidas sus uniones horizontales y
-  verticales. Compilación de prueba y capturas del emulador en curso.
+  verticales, salvo el eje vertical de Ignis, que se adapta a la altura del glifo.
 - En la CI de `186d056` pasaron las pruebas de renderizado de Aura Elements y selección inteligente.
   La suite se interrumpió dos veces al comenzar la comprobación exhaustiva de AutoDesign, por cierre
   del proceso durante la instrumentación. Se corrigió la liberación de bitmaps al destruir Studio para
   que espere el bloqueo de renderizado. Se liberan también las imágenes temporales de las pruebas.
+- `d12ed09` superó las 102 pruebas unitarias, lint y 35 pruebas instrumentadas en el emulador
+  Android 14. [CI](https://github.com/georgestrike25-afk/Aura/actions/runs/45912824390).
+  El [APK actualizado](https://github.com/georgestrike25-afk/Aura/releases/download/aura-studio-materials-test/Aura.apk)
+  conserva la firma original. Capturas de los 13 acabados en `docs/capturas/` (`a40476e`).
