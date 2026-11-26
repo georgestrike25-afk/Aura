@@ -3,6 +3,132 @@
   "license": "",
   "collections": [
     {
+      "id": "silencio-lunar",
+      "title": "Silencio lunar",
+      "items": [
+        {
+          "id": "el-cuenco-de-la-noche-06971e4c8e18",
+          "title": "El cuenco de la noche",
+          "image": "photos/b1f5592f309cb8f7f4159963.webp",
+          "thumb": "photos/b1f5592f309cb8f7f4159963-thumb.webp",
+          "dhash": "4601b18d4c2016131f1a151f1a15201b171f1b161d1915231f1925201b1e1a1561584e6b61566c6256645b50807569998d7e9f92839d9081",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-invernadero-sin-aire-89b56dd80d06",
+          "title": "El invernadero sin aire",
+          "image": "photos/d6cd1d887de12f634c2a5fa5.webp",
+          "thumb": "photos/d6cd1d887de12f634c2a5fa5-thumb.webp",
+          "dhash": "28350a0ecd0e79410c14170c14170c13160b12150f181a101b1c0f191b0e1718283b382d403c2b3e3a293b384f6a5f4c665b476157476157",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-antena-del-silencio-9e6584c12fa8",
+          "title": "La antena del silencio",
+          "image": "photos/977b40a8b9e613b3a1940300.webp",
+          "thumb": "photos/977b40a8b9e613b3a1940300-thumb.webp",
+          "dhash": "0a270b0d28360f83060e15061019061019060e1609121a0a141c09141c09121b323a3a374042303a3e2c373d2d32314349484c54523e4647",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-huella-que-se-cierra-ef43a262c5fb",
+          "title": "La huella que se cierra",
+          "image": "photos/0cb1d6370fb2e61c6c51f42b.webp",
+          "thumb": "photos/0cb1d6370fb2e61c6c51f42b-thumb.webp",
+          "dhash": "01040413010101031716211d1c292a2637302c3e2826363c374a4c445950485f59506972637c7f6d8589768e60566f71637e7d6d86796b84",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
+      "id": "guardianes-del-tiempo",
+      "title": "Guardianes del tiempo",
+      "items": [
+        {
+          "id": "el-custodio-de-la-espera-566467e52aaa",
+          "title": "El custodio de la espera",
+          "image": "photos/147398178a4ba8440f9aefb2.webp",
+          "thumb": "photos/147398178a4ba8440f9aefb2-thumb.webp",
+          "dhash": "23070f07068e11073213093911073c140936150a32140a421a0b431c0e36170d3a1b0f4a2613582e195327154f261662321d6c38206b3721",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-guardian-del-regreso-7eceb7024ef2",
+          "title": "El guardián del regreso",
+          "image": "photos/5950239836f579aa2f5af453.webp",
+          "thumb": "photos/5950239836f579aa2f5af453-thumb.webp",
+          "dhash": "40010e2563e9c947292b272e302b393e353d433a393c35393c363f433b3e423b5a5f54474942505249666a5f4749414e4f475f605655574d",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-cuidadora-del-primer-b-c3e55d3c663d",
+          "title": "La cuidadora del primer brote",
+          "image": "photos/5389680cd8701ae516ac5618.webp",
+          "thumb": "photos/5389680cd8701ae516ac5618-thumb.webp",
+          "dhash": "0121096cccc1c9843a212b4227306942429a65553e262d422a2c5938357046425032343925234c30298553443b23252f1c1d3c232157312b",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-guardiana-de-la-gota-6f200104deab",
+          "title": "La guardiana de la gota",
+          "image": "photos/8bee7784cbba589320dc34d6.webp",
+          "thumb": "photos/8bee7784cbba589320dc34d6-thumb.webp",
+          "dhash": "0f030e480c840b0f0c0f0f131b201920231114150d1011181a1d1a1b1e1215150f131717191e1c1c21191a1c151c20212d38282e36202024",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
+      "id": "anatomia-del-viento",
+      "title": "Anatomía del viento",
+      "items": [
+        {
+          "id": "el-nervio-de-la-luz-2df7399989e5",
+          "title": "El nervio de la luz",
+          "image": "photos/0166e64b184e8b1aca849c28.webp",
+          "thumb": "photos/0166e64b184e8b1aca849c28-thumb.webp",
+          "dhash": "0f0f0f0b4d0f0f0f11213a16264016264010203a12233f192b48182a48122341182a47293b582a3c591a2c4b1e304d3546613546611f304d",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-traquea-de-cobre-d0f574803fff",
+          "title": "La tráquea de cobre",
+          "image": "photos/8eecf017b58b04e8131ffe66.webp",
+          "thumb": "photos/8eecf017b58b04e8131ffe66-thumb.webp",
+          "dhash": "79190f4b4d67674b17201c171f1b151d19141c191d25202128212027211d252031342c3231243a352830322a3e3a2e3c35274a402f413c30",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "membrana-de-agua-89edf04862ef",
+          "title": "Membrana de agua",
+          "image": "photos/038ba1ade21a33f00ed0957b.webp",
+          "thumb": "photos/038ba1ade21a33f00ed0957b-thumb.webp",
+          "dhash": "190f1b090f030703463b4d55455957495e4f445941384a493e50483d5043394b6954667c607187687b74596b4f404c6953627d606d5e4b59",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "vertebras-de-arena-949417693721",
+          "title": "Vértebras de arena",
+          "image": "photos/7eea0c69997e3c545eba1b82.webp",
+          "thumb": "photos/7eea0c69997e3c545eba1b82-thumb.webp",
+          "dhash": "030f032f0f270307211e1c29231f2d252028221e2824202f2823312a23292521403025533b2b63452f513a2a30221a3e291e492f21402b1f",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "almas-de-cristal",
       "title": "Almas de cristal",
       "items": [
@@ -795,6 +921,42 @@
           "image": "photos/060b81ac3c92adb299e16517.webp",
           "thumb": "photos/060b81ac3c92adb299e16517-thumb.webp",
           "dhash": "070f070909e7e7011c49551d4a561d4a551a4652264f592e5158304c4f224b546762575150484b493f2c3a3952594d445149575f5a424e4c",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-hielo-que-respira-eb4183ef0325",
+          "title": "El hielo que respira",
+          "image": "photos/41453490d5b912afabd85466.webp",
+          "thumb": "photos/41453490d5b912afabd85466-thumb.webp",
+          "dhash": "939fabc9ddcc9bd90d2c320c2d320a2c32072a312b37332438361e363719343761462b52432e373c3126363229281e26281f1424220b2122",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-pulpo-del-espejo-2224fe480de2",
+          "title": "El pulpo del espejo",
+          "image": "photos/a126520da230003479e3321b.webp",
+          "thumb": "photos/a126520da230003479e3321b-thumb.webp",
+          "dhash": "030789244bc92f1c31231c5a3828824b2c6c3f262525223b2f294f392d47382f33291f412c20462f223e2f25332314412b1935251a30241c",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-red-de-vidrio-e7788c8d60fb",
+          "title": "La red de vidrio",
+          "image": "photos/5f45a377c014f684cafd92d4.webp",
+          "thumb": "photos/5f45a377c014f684cafd92d4-thumb.webp",
+          "dhash": "000303171315111b132c31172f332535352a3736383d36454136574632514434403526523d27624023573e272c21123b2a15372a193a301f",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-tortuga-del-contraluz-973e2b2f89ec",
+          "title": "La tortuga del contraluz",
+          "image": "photos/730dac70a42e5acb2eb587ba.webp",
+          "thumb": "photos/730dac70a42e5acb2eb587ba-thumb.webp",
+          "dhash": "0f0f1f1f47ea691b2228197653237154271d251a182b20504a2b3e422a0d241d1b2b1d2d2d18332d16172216212818232c1a1b22121c1b0d",
           "width": 1440,
           "height": 3120
         }
