@@ -9,8 +9,9 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.resume
 
 /**
- * Reconoce qué hay en una foto (montaña, perro, cielo…) con el modelo de ML Kit incluido en la app:
- * funciona sin conexión y la foto no sale del teléfono. Si falla, devuelve una lista vacía.
+ * Reconoce qué hay en una foto (montaña, perro, cielo…) con el modelo de ML Kit de Google Play Services
+ * (se baja una sola vez con la app; no suma peso al APK). Corre en el teléfono: la foto no sale de ahí.
+ * Si el modelo todavía no está, devuelve una lista vacía y la foto queda en «Otras».
  */
 object PhotoLabeler {
     suspend fun labels(bitmap: Bitmap): List<Pair<String, Float>> = withTimeoutOrNull(8_000L) {
