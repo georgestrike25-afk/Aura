@@ -153,3 +153,21 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   docs/capturas). Corregido en el camino: nombre de paquete tapado por `app`, composable en función local,
   llave sobrante, prueba que esperaba 5 widgets. Versión de prueba publicada en `aura-artistic-evolution-test`;
   `aura-latest` (estable) sin tocar. Límites: ver docs/ARTISTIC_EVOLUTION.md.
+
+## Unificación (Claude, 26/11/2026)
+
+- **Una sola Aura**: se quitó el paquete aparte `app.aura.preview` («Aura 2 · Prueba»). El APK es `app.aura`,
+  se instala encima de la Aura que ya está en el teléfono y la CI verifica la huella completa antes de publicarlo.
+- **Signature cargaba vacío**: la app leía `catalog-v2.json`, que no tenía obras. Ahora hay un solo
+  `signature/catalog.json` (las 12 obras + lo que se sume); la app lee `main` y esta rama y las combina, y revisa
+  si hay obras nuevas cada 5 minutos mientras la pantalla está abierta.
+- **Cómo sumar imágenes** (por ejemplo, hechas con ChatGPT):
+  1. En el teléfono: Signature → «Subir mis imágenes». Quedan en «Mis obras», solo en el teléfono.
+  2. Para todos: subirlas a `signature/inbox/<Colección>/` en GitHub (o mandárselas a Claude por el chat).
+     El workflow «Signature: bandeja» las recorta a 1440×3120, crea miniaturas, las registra y la app las
+     muestra sola, sin actualizar el APK.
+- **AutoDesign rehecho**: tres propuestas distintas al estilo de los fondos con profundidad, solo con el reloj
+  (sin fecha ni clima): «Monumento» (una línea enorme arriba, con el sujeto tapando la base), «Apilado» (horas
+  arriba y minutos abajo, del lado libre, minutos en color de acento) y «Gigante» (cifras altísimas detrás del
+  sujeto). Cada «Otras propuestas» cambia tipografías, colores y acabado.
+- Se respetan las decisiones de Codex: la app abre en Clima y el catálogo de widgets muestra solo los de clima.

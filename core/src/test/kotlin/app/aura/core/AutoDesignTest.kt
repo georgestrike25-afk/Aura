@@ -2,9 +2,9 @@ package app.aura.core
 
 import app.aura.core.studio.AutoDesign
 import app.aura.core.studio.ClockDesign
-import app.aura.core.studio.ClockMaterial
-import app.aura.core.studio.ClockLayout
 import app.aura.core.studio.ClockInformationMode
+import app.aura.core.studio.ClockLayout
+import app.aura.core.studio.DigitSlot
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
@@ -16,56 +16,61 @@ class AutoDesignTest {
     private val height = 156
     private val pixels = IntArray(width * height) { 0xFF202326.toInt() }
 
-    @Test
-    fun threeDistinctEditableDesignsAndNewAlternatives() {
-        val first = AutoDesign.propose(pixels, width, height, null, 0)
-        val next = AutoDesign.propose(pixels, width, height, null, 1)
-        assertEquals(3, first.map { it.design }.distinct().size)
-        assertNotEquals(first, next)
-        assertTrue(first.all { it.design.artistic.enabled && it.design.informationMode == ClockInformationMode.PURE })
-        assertFalse(first.any { it.design.behindSubject })
+    /** Sujeto (opaco) en la mitad derecha, desde el 40 % del alto hacia abajo. */
+    private val mask = IntArray(width * height) { i ->
+        if (i % width >= 30 && i / width >= (height * 0.4f).toInt()) 0xFF000000.toInt() else 0
     }
 
     @Test
-    fun savedStyleStillProducesDistinctCompositionsAndFinishes() {
-        val reference = ClockDesign(customFont = "clock_oswald", material = ClockMaterial.GLASS,
-            layout = ClockLayout.VERTICAL, spread = 0.5f, informationMode = ClockInformationMode.FULL)
-        val designs = AutoDesign.propose(pixels, width, height, null, 0, reference).map { it.design }
-        assertEquals(reference.customFont, designs[0].customFont)
-        assertEquals(reference.material, designs[0].material)
-        assertEquals(listOf(ClockLayout.HORIZONTAL, ClockLayout.HORIZONTAL, ClockLayout.VERTICAL), designs.map { it.layout })
-        assertTrue(designs[0].spread == 0f && designs[1].spread > 0.6f)
-        assertEquals(3, designs.map { it.material }.distinct().size)
-        assertTrue(designs.all { it.informationMode == ClockInformationMode.PURE && !it.showWeather && !it.showDate })
+    fun threeDistinctClockOnlyDesigns() {
+        val p = AutoDesign.propose(pixels, width, height, null, 0)
+        assertEquals(listOf("Monumento", "Apilado", "Gigante"), p.map { it.title })
+        assertEquals(3, p.map { it.design.customFont }.distinct().size)
+        assertEquals(listOf(ClockLayout.HORIZONTAL, ClockLayout.VERTICAL, ClockLayout.HORIZONTAL), p.map { it.design.layout })
+        // Solo el reloj: nada de fecha ni clima.
+        assertTrue(p.all { !it.design.showDate && !it.design.showWeather && it.design.informationMode == ClockInformationMode.PURE })
+        assertFalse(p.any { it.design.behindSubject })
     }
 
     @Test
-    fun successiveRoundsWithSavedStyleReplaceAllThreeProposals() {
-        val reference = ClockDesign(centerX = 0.5f, centerY = 0.5f, stretchX = 0.5f, stretchY = 2.5f)
-        val rounds = (0..16).map { round ->
-            AutoDesign.propose(pixels, width, height, null, round, reference).map { it.design }.toSet()
+    fun designsAreBigAndValid() {
+        for (round in 0..7) {
+            for (d in AutoDesign.propose(pixels, width, height, null, round).map { it.design }) {
+                assertEquals(d, d.normalized())
+                assertTrue("reloj chico: ${d.size}", d.size >= 0.3f)
+            }
         }
-        assertTrue(rounds.all { it.size == 3 })
-        assertTrue(rounds.zipWithNext().all { (previous, next) -> previous.intersect(next).isEmpty() })
+        val giant = AutoDesign.propose(pixels, width, height, null, 0)[2].design
+        assertTrue(giant.stretchY >= 1.6f)
     }
 
     @Test
-    fun savedStyleOffersPhotoSpecificContrast() {
-        val reference = ClockDesign(customFont = "clock_oswald")
-        val light = IntArray(pixels.size) { 0xFFEEEEEE.toInt() }
-        val darkDesign = AutoDesign.propose(pixels, width, height, null, 0, reference).last().design
-        val lightDesign = AutoDesign.propose(light, width, height, null, 0, reference).last().design
-        assertNotEquals(darkDesign.color, lightDesign.color)
-        assertEquals(darkDesign.customFont, lightDesign.customFont)
+    fun newRoundsChangeEveryProposal() {
+        val a = AutoDesign.propose(pixels, width, height, null, 0).map { it.design }
+        val b = AutoDesign.propose(pixels, width, height, null, 1).map { it.design }
+        a.zip(b).forEach { (x, y) -> assertNotEquals(x, y) }
     }
 
     @Test
-    fun centralMaskSupportsSeparatedGroups() {
-        val mask = IntArray(pixels.size) { i ->
-            if (i % width in 30..42 && i / width >= 38) 0xFF000000.toInt() else 0
-        }
-        val depth = AutoDesign.propose(pixels, width, height, mask, 0).single { it.design.behindSubject }.design
-        assertTrue(depth.spread > 0f)
-        assertFalse(depth.showColon)
+    fun subjectGoesInFrontAndStackFindsTheFreeSide() {
+        val p = AutoDesign.propose(pixels, width, height, mask, 0).map { it.design }
+        assertTrue(p.all { it.behindSubject })
+        assertTrue("apilado del lado libre (izquierda)", p[1].centerX < 0.5f)
+        // El monumento queda justo encima del sujeto, tapado en su base.
+        assertTrue(p[0].centerY in 0.2f..0.4f)
+    }
+
+    @Test
+    fun stackedMinutesUseAccent() {
+        val d = AutoDesign.propose(pixels, width, height, null, 0)[1].design
+        val minutes = d.artistic.style(DigitSlot.MINUTE_TENS).color
+        assertTrue(minutes != null && minutes != d.color)
+        assertEquals(null, d.artistic.style(DigitSlot.HOUR_TENS).color)
+    }
+
+    @Test
+    fun keepsSavedHourFormat() {
+        val ref = ClockDesign(hourFormat = app.aura.core.time.HourFormat.H24)
+        assertTrue(AutoDesign.propose(pixels, width, height, null, 0, ref).all { it.design.hourFormat == ref.hourFormat })
     }
 }
