@@ -3,6 +3,48 @@
   "license": "",
   "collections": [
     {
+      "id": "civilizaciones-antiguas",
+      "title": "Civilizaciones antiguas",
+      "items": [
+        {
+          "id": "el-espejo-de-la-selva-3019f4024d3f",
+          "title": "El espejo de la selva",
+          "image": "photos/e9f9611cde9fc1106561a9e3.webp",
+          "thumb": "photos/e9f9611cde9fc1106561a9e3-thumb.webp",
+          "dhash": "07cf8f56ccae230f040e0e01141b01192800131c06131407181d06192103121621282233392c323a311b241f2629213f3c2a383a2e292c22",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-lino-del-nilo-1fdffbcf75fe",
+          "title": "El lino del Nilo",
+          "image": "photos/893e4d3bbbf6056eb6b6322f.webp",
+          "thumb": "photos/893e4d3bbbf6056eb6b6322f-thumb.webp",
+          "dhash": "8c122a692b0f4f47051b19041c1b041d1c051c1a0b201c10241d11241d0c211c37351e56431c4b3f1d2930204f411b5b481d59461c463c1b",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-puente-que-recuerda-b159d0b63647",
+          "title": "El puente que recuerda",
+          "image": "photos/3553fdfe661a21db56d2a796.webp",
+          "thumb": "photos/3553fdfe661a21db56d2a796-thumb.webp",
+          "dhash": "e34f0f1a0f4c0f976f658c6e668e71678f6c62865b56736c65826b627c655b726b637b8673768671737365767b708a8776858979897f738b",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-alfarera-del-barro-cel-84edff221cb8",
+          "title": "La alfarera del barro celeste",
+          "image": "photos/0446f25767e154fb840b902b.webp",
+          "thumb": "photos/0446f25767e154fb840b902b-thumb.webp",
+          "dhash": "1e1f1b0e0e360e9f4a20205424214c2120431d204a251e6634255a2f2440201f683828864e327a462d4f28207f41279e5835914f306d3624",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "arte-abstracto",
       "title": "Arte abstracto",
       "items": [
