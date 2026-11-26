@@ -68,6 +68,14 @@ fun StudioHomeScreen(viewModel: StudioViewModel, onOpen: (String) -> Unit, onAut
     val projects by viewModel.projects.collectAsStateWithLifecycle()
     val activeId by viewModel.activeId.collectAsStateWithLifecycle()
     val busy by viewModel.busy.collectAsStateWithLifecycle()
+    val message by viewModel.message.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    LaunchedEffect(message) {
+        message?.let {
+            android.widget.Toast.makeText(context, it, android.widget.Toast.LENGTH_LONG).show()
+            viewModel.consumeMessage()
+        }
+    }
     // Selector oficial de fotos: sin permisos de almacenamiento, solo la imagen elegida.
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) viewModel.createFromPhoto(uri, onAutoDesign)

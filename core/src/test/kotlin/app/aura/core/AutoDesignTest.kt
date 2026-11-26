@@ -38,6 +38,16 @@ class AutoDesignTest {
     }
 
     @Test
+    fun successiveRoundsWithSavedStyleReplaceAllThreeProposals() {
+        val reference = ClockDesign(centerX = 0.5f, centerY = 0.5f, stretchX = 0.5f, stretchY = 2.5f)
+        val rounds = (0..16).map { round ->
+            AutoDesign.propose(pixels, width, height, null, round, reference).map { it.design }.toSet()
+        }
+        assertTrue(rounds.all { it.size == 3 })
+        assertTrue(rounds.zipWithNext().all { (previous, next) -> previous.intersect(next).isEmpty() })
+    }
+
+    @Test
     fun centralMaskSupportsSeparatedGroups() {
         val mask = IntArray(pixels.size) { i ->
             if (i % width in 30..42 && i / width >= 38) 0xFF000000.toInt() else 0

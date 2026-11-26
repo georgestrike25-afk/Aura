@@ -4,10 +4,12 @@ import android.graphics.Bitmap
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.segmentation.subject.SubjectSegmentation
 import com.google.mlkit.vision.segmentation.subject.SubjectSegmenterOptions
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeoutOrNull
+import java.nio.FloatBuffer
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
 import kotlin.math.roundToInt
 
@@ -20,6 +22,7 @@ import kotlin.math.roundToInt
  *   usuario sigue con el pincel manual.
  */
 class SubjectSegmenter {
+    private val processing = AtomicBoolean(false)
 
     sealed interface Result {
         data class Mask(val alpha: Bitmap, val coverage: Float) : Result
@@ -27,57 +30,85 @@ class SubjectSegmenter {
     }
 
     suspend fun segment(photo: Bitmap, threshold: Float): Result {
-        // Se procesa reducido (lado mayor 1024) para limitar memoria y tiempo.
         val scale = minOf(1f, MAX_SIDE / maxOf(photo.width, photo.height).toFloat())
-        val input = if (scale < 1f) {
-            Bitmap.createScaledBitmap(photo, (photo.width * scale).roundToInt().coerceAtLeast(1), (photo.height * scale).roundToInt().coerceAtLeast(1), true)
-        } else {
-            photo
-        }
-        val client = SubjectSegmentation.getClient(
-            SubjectSegmenterOptions.Builder().enableForegroundConfidenceMask().build(),
-        )
-        return try {
+        val width = (photo.width * scale).roundToInt().coerceAtLeast(1)
+        val height = (photo.height * scale).roundToInt().coerceAtLeast(1)
+        // La tarea nativa conserva su propia copia incluso si Studio deja de esperarla.
+        return withTimeoutOrNull(6_000L) {
             suspendCancellableCoroutine { cont ->
-                client.process(InputImage.fromBitmap(input, 0))
-                    .addOnSuccessListener(Dispatchers.Default.asExecutor()) { result ->
-                        if (!cont.isActive) return@addOnSuccessListener
-                        val buffer = result.foregroundConfidenceMask
-                        if (buffer == null) {
-                            cont.resume(Result.Unavailable("Sin sujeto detectado"))
-                            return@addOnSuccessListener
+                val input = if (width == photo.width && height == photo.height) {
+                    photo.copy(Bitmap.Config.ARGB_8888, false)
+                } else {
+                    Bitmap.createScaledBitmap(photo, width, height, true)
+                }
+                if (input == null) {
+                    cont.resume(Result.Unavailable("No se pudo preparar la imagen"))
+                    return@suspendCancellableCoroutine
+                }
+                if (!processing.compareAndSet(false, true)) {
+                    input.recycle()
+                    cont.resume(Result.Unavailable("La detección anterior sigue procesándose"))
+                    return@suspendCancellableCoroutine
+                }
+                val client = try {
+                    SubjectSegmentation.getClient(
+                        SubjectSegmenterOptions.Builder().enableForegroundConfidenceMask().build(),
+                    )
+                } catch (e: Exception) {
+                    input.recycle()
+                    processing.set(false)
+                    cont.resume(Result.Unavailable("Segmentación no disponible"))
+                    return@suspendCancellableCoroutine
+                }
+                try {
+                    client.process(InputImage.fromBitmap(input, 0))
+                        .addOnCompleteListener(Dispatchers.Default.asExecutor()) { task ->
+                            try {
+                                if (cont.isActive) {
+                                    val result = if (task.isSuccessful) {
+                                        try {
+                                            toMask(task.result.foregroundConfidenceMask, width, height, threshold)
+                                        } catch (e: Exception) {
+                                            Result.Unavailable("No se pudo leer la máscara")
+                                        }
+                                    } else {
+                                        Result.Unavailable("Segmentación no disponible")
+                                    }
+                                    cont.resume(result) { _, discarded, _ ->
+                                        if (discarded is Result.Mask) discarded.alpha.recycle()
+                                    }
+                                }
+                            } finally {
+                                input.recycle()
+                                try { client.close() } finally { processing.set(false) }
+                            }
                         }
-                        val w = input.width
-                        val h = input.height
-                        val pixels = IntArray(w * h)
-                        var covered = 0
-                        buffer.rewind()
-                        for (i in 0 until w * h) {
-                            val conf = buffer.get()
-                            // Rampa suave alrededor del umbral: bordes menos dentados que un corte binario.
-                            val a = ((conf - (threshold - 0.15f)) / 0.3f).coerceIn(0f, 1f)
-                            if (a > 0.5f) covered++
-                            pixels[i] = (a * 255).roundToInt() shl 24
-                        }
-                        if (covered == 0) {
-                            cont.resume(Result.Unavailable("Sin sujeto detectado"))
-                            return@addOnSuccessListener
-                        }
-                        val argb = Bitmap.createBitmap(pixels, w, h, Bitmap.Config.ARGB_8888)
-                        val alpha = argb.extractAlpha()
-                        argb.recycle()
-                        if (cont.isActive) cont.resume(Result.Mask(alpha, covered / (w * h).toFloat()))
-                        else alpha.recycle()
-                    }
-                    .addOnFailureListener { e -> cont.resume(Result.Unavailable(e.message ?: "Segmentación no disponible")) }
+                } catch (e: Exception) {
+                    input.recycle()
+                    try { client.close() } finally { processing.set(false) }
+                    cont.resume(Result.Unavailable("Segmentación no disponible"))
+                }
             }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Result.Unavailable(e.message ?: "Segmentación no disponible")
+        } ?: Result.Unavailable("La detección tardó demasiado")
+    }
+
+    private fun toMask(buffer: FloatBuffer?, width: Int, height: Int, threshold: Float): Result {
+        if (buffer == null || buffer.limit() < width * height) return Result.Unavailable("Sin sujeto detectado")
+        buffer.rewind()
+        val pixels = IntArray(width * height)
+        var covered = 0
+        for (i in pixels.indices) {
+            val confidence = buffer.get()
+            val alpha = ((confidence - (threshold - 0.15f)) / 0.3f).coerceIn(0f, 1f)
+            if (alpha > 0.5f) covered++
+            pixels[i] = (alpha * 255).roundToInt() shl 24
+        }
+        if (covered == 0) return Result.Unavailable("Sin sujeto detectado")
+        val argb = Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888)
+        return try {
+            Result.Mask(argb.extractAlpha(), covered / pixels.size.toFloat())
         } finally {
-            client.close()
-            if (input !== photo) input.recycle()
+            argb.recycle()
         }
     }
 

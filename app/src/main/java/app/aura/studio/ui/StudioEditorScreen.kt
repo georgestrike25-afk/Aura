@@ -127,8 +127,12 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, autoDesign
                 CircularProgressIndicator()
                 Text(busy.orEmpty())
             }
-            if (proposals.isEmpty() && busy == null && project != null) {
-                OutlinedButton(onClick = viewModel::generateProposals) { Text("Crear propuestas") }
+            if (proposals.isEmpty() && busy == null) {
+                if (project?.id == projectId) {
+                    OutlinedButton(onClick = viewModel::generateProposals) { Text("Crear propuestas") }
+                } else {
+                    OutlinedButton(onClick = { viewModel.open(projectId, autoDesign) }) { Text("Volver a intentar") }
+                }
             }
             if (proposals.isNotEmpty() && project?.hasMask == false) {
                 Text("Podés crear una máscara de profundidad desde Capas.", style = MaterialTheme.typography.bodySmall)

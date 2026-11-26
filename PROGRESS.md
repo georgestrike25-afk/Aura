@@ -4,6 +4,12 @@ Rama de trabajo `aura-artistic-evolution-2`, derivada de `72313ef` en `aura-arti
 
 **El clima se siente. El tiempo se convierte en arte.**
 
+## Corrección de AutoDesign
+
+- La detección del sujeto tiene un límite de seis segundos. Si el modelo tarda, se generan propuestas sin máscara y queda disponible la edición manual.
+- Se conservan dimensiones mínimas válidas al abrir fotos muy estrechas. Studio muestra los errores de importación y permite reintentar la apertura.
+- Con una referencia guardada, «Generar alternativas» cambia las tres propuestas de cada tanda, conservando la estética y el modo Puro.
+
 ## Ajuste de AutoDesign y vistas de widgets
 
 - AutoDesign aplica el modo Puro a todas las propuestas. Las propuestas nuevas usan cifras altas, acabados de metal o vidrio y separación con el sujeto cuando hay máscara. Si Studio tiene un diseño de referencia, usa el estilo del proyecto abierto, el activo o el último personalizado, en ese orden.

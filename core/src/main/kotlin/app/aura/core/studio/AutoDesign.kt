@@ -13,12 +13,18 @@ object AutoDesign {
                 informationMode = ClockInformationMode.PURE, showDate = false, showWeather = false,
                 behindSubject = reference.behindSubject && subject != null,
             )
-            val shift = listOf(-0.045f, 0.045f, -0.075f, 0.075f)[Math.floorMod(round, 4)]
+            val phase = Math.floorMod(round, 8)
+            val variation = 0.06f + phase * 0.025f
+            fun towardCenter(value: Float, amount: Float): Float =
+                value + (if (value < 0.5f) amount else -amount)
             return listOf(
-                Proposal("Tu estilo", style),
-                Proposal("Encuadre alternativo", style.copy(centerY = (style.centerY + shift).coerceIn(0.12f, 0.88f))),
-                Proposal("Cifras más altas", style.copy(stretchY = (style.stretchY * 1.12f).coerceAtMost(ClockDesign.MAX_STRETCH),
-                    stretchX = (style.stretchX * 0.92f).coerceAtLeast(ClockDesign.MIN_STRETCH))),
+                if (round == 0) Proposal("Tu estilo", style)
+                else Proposal("Posición lateral", style.copy(centerX = towardCenter(style.centerX, variation))),
+                Proposal("Encuadre alternativo", style.copy(centerY = towardCenter(style.centerY, variation))),
+                Proposal("Otra proporción", style.copy(
+                    stretchY = style.stretchY + (if (style.stretchY <= 1.8f) variation else -variation),
+                    stretchX = style.stretchX + (if (style.stretchX >= 0.85f) -variation else variation),
+                )),
             )
         }
         val candidates = candidates(pixels, width, height, subject, separate = false)

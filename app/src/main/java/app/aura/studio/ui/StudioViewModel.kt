@@ -131,8 +131,10 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
                 val name = title ?: ("Diseño " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("d/M HH:mm")))
                 val project = repo.create(uri, name, design, mask)
                 onCreated(project.id)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                _message.value = "No se pudo abrir la imagen: ${e.message}"
+                _message.value = "No se pudo abrir la imagen. Probá con otra foto."
             } finally {
                 _busy.value = null
             }
@@ -143,22 +145,26 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
         if (current?.id == id) return
         viewModelScope.launch {
             _busy.value = "Abriendo…"
-            val project = repo.load(id)
-            val ph = repo.photo(id)
-            if (project == null || ph == null) {
-                _message.value = "No se encontró el diseño"
-                _busy.value = null
+            val project = try {
+                val loaded = repo.load(id) ?: error("Diseño no disponible")
+                val ph = repo.photo(id) ?: error("Foto no disponible")
+                renderLock.withLock {
+                    releaseBitmaps()
+                    photo = ph
+                    previewPhoto = scaledCopy(ph, PREVIEW_PHOTO_SIDE)
+                    baseMask = repo.baseMask(id)
+                }
+                savedVersion = loaded
+                _history.value = History(loaded)
+                loaded
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _message.value = "No se pudo abrir el diseño. Podés volver a intentar."
                 return@launch
+            } finally {
+                _busy.value = null
             }
-            renderLock.withLock {
-                releaseBitmaps()
-                photo = ph
-                previewPhoto = scaledCopy(ph, PREVIEW_PHOTO_SIDE)
-                baseMask = repo.baseMask(id)
-            }
-            savedVersion = project
-            _history.value = History(project)
-            _busy.value = null
             // Primera vez: se intenta separar el sujeto automáticamente, sin intervención.
             if (!project.hasMask && !project.autoMask) {
                 detectSubject(silent = true) { if (autoDesign) generateProposals() }
@@ -392,7 +398,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
                 val analysisHeight = (analysisWidth * h / w.toFloat()).roundToInt()
                 val designs = withContext(Dispatchers.Default) {
                     renderLock.withLock {
-                        val src = previewPhoto ?: return@withLock emptyList()
+                        val src = checkNotNull(previewPhoto)
                         val sample = Bitmap.createBitmap(analysisWidth, analysisHeight, Bitmap.Config.ARGB_8888)
                         try {
                             compositor.drawPhoto(Canvas(sample), analysisWidth, analysisHeight, src, project)
@@ -669,7 +675,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
 
     private fun scaledCopy(src: Bitmap, maxSide: Int): Bitmap {
         val k = minOf(1f, maxSide / maxOf(src.width, src.height).toFloat())
-        return if (k >= 1f) src else Bitmap.createScaledBitmap(src, (src.width * k).roundToInt(), (src.height * k).roundToInt(), true)
+        return if (k >= 1f) src else Bitmap.createScaledBitmap(src, (src.width * k).roundToInt().coerceAtLeast(1), (src.height * k).roundToInt().coerceAtLeast(1), true)
     }
 
     private fun releaseBitmaps() {
