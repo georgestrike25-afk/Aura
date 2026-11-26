@@ -79,10 +79,10 @@ class LauncherWidgetTest {
             Thread.sleep(1500)
             setWallpaper(dark = false)
             val placed = listOf(
-                pin(WidgetType.DUO, ProfileId.MINIMAL),
-                pin(WidgetType.CLOCK, ProfileId.MINIMAL),
+                pin(WidgetType.ATMOSPHERE, ProfileId.SKY),
+                pin(WidgetType.HOURLY, ProfileId.MINIMAL),
                 pin(WidgetType.WEATHER, ProfileId.GLASS),
-                pin(WidgetType.FORECAST, ProfileId.DARK),
+                pin(WidgetType.WEEKLY, ProfileId.DARK),
             )
             println("AURA_PINNED $placed placed=${context.aura.widgets.placed()}")
         }

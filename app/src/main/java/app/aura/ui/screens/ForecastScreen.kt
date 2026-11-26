@@ -66,6 +66,7 @@ import app.aura.core.time.ClockPatterns
 import app.aura.core.units.TemperatureFormatter
 import app.aura.core.weather.DailyPoint
 import app.aura.core.weather.ForecastSlots
+import app.aura.core.weather.Freshness
 import app.aura.core.weather.WeatherCondition
 import app.aura.core.weather.WeatherInsights
 import app.aura.core.weather.WeatherSnapshot
@@ -96,13 +97,26 @@ fun ForecastScreen(viewModel: AuraViewModel, onOpenLocation: () -> Unit) {
     val snapshot by viewModel.snapshot.collectAsStateWithLifecycle()
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     LightStatusBarIcons()
+    val error by viewModel.lastError.collectAsStateWithLifecycle()
     val snap = snapshot
     if (snap == null) {
         Box(Modifier.fillMaxSize().background(AuraPalette.Night), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(32.dp)) {
-                Text("Todavía no hay pronóstico.", color = Color.White, style = MaterialTheme.typography.titleMedium)
+                if (refreshing) CircularProgressIndicator(color = Color.White)
+                Text(
+                    when {
+                        refreshing -> "Actualizando el pronóstico…"
+                        error != null -> "No se pudo cargar el pronóstico."
+                        else -> "Elegí una ubicación para ver el clima."
+                    },
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleMedium,
+                )
                 Spacer(Modifier.height(12.dp))
                 Button(onClick = onOpenLocation) { Text("Elegir ubicación") }
+                if (error != null && !refreshing) {
+                    Button(onClick = viewModel::refresh) { Text("Reintentar") }
+                }
             }
         }
         return
@@ -182,6 +196,12 @@ internal fun WeatherDetail(snap: WeatherSnapshot, settings: AppSettings, refresh
                 } else {
                     IconButton(onClick = onRefresh) { Icon(painterResource(R.drawable.ic_ui_refresh), "Actualizar", tint = Color.White) }
                 }
+            }
+
+            val age = nowSec * 1000L - snap.fetchedAtMillis
+            if (Freshness.of(snap.fetchedAtMillis, nowSec * 1000L, settings.refreshIntervalMinutes) != Freshness.FRESH) {
+                Text("Datos guardados · hace ${WeatherText.age(context, age)}", color = Soft,
+                    style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 8.dp, top = 4.dp))
             }
 
             // Héroe sobre el cielo.

@@ -28,7 +28,6 @@ import app.aura.R
 import app.aura.core.widget.WidgetType
 import app.aura.ui.screens.CustomizeRoute
 import app.aura.ui.screens.ForecastScreen
-import app.aura.ui.screens.HomeScreen
 import app.aura.ui.screens.LocationScreen
 import app.aura.ui.screens.SettingsScreen
 import app.aura.ui.screens.WidgetsScreen
@@ -40,7 +39,6 @@ import app.aura.ui.theme.Aura
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 object Routes {
-    const val HOME = "home"
     const val FORECAST = "forecast"
     const val WIDGETS = "widgets"
     const val SETTINGS = "settings"
@@ -61,11 +59,11 @@ object Routes {
 private data class Tab(val route: String, val label: String, @DrawableRes val icon: Int)
 
 private val tabs = listOf(
-    Tab(Routes.HOME, "Inicio", R.drawable.ic_ui_home),
     Tab(Routes.FORECAST, "Clima", R.drawable.ic_ui_forecast),
     Tab(Routes.STUDIO, "Studio", R.drawable.ic_ui_studio),
     Tab(Routes.SIGNATURE, "Signature", R.drawable.ic_ui_signature),
     Tab(Routes.WIDGETS, "Widgets", R.drawable.ic_ui_widgets),
+    Tab(Routes.SETTINGS, "Ajustes", R.drawable.ic_ui_settings),
 )
 
 @Composable
@@ -106,23 +104,12 @@ fun AuraNavHost(viewModel: AuraViewModel, destination: String?, onDestinationCon
             }
         },
     ) { padding ->
-        NavHost(nav, startDestination = Routes.HOME, modifier = Modifier.padding(padding)) {
-            composable(Routes.HOME) {
-                HomeScreen(
-                    viewModel,
-                    onOpenLocation = { nav.navigate(Routes.LOCATION) },
-                    onOpenWidgets = { nav.switchTab(Routes.WIDGETS) },
-                    onCustomize = { nav.navigate(Routes.customize(WidgetType.DUO)) },
-                    onOpenForecast = { nav.switchTab(Routes.FORECAST) },
-                    onOpenStudio = { nav.switchTab(Routes.STUDIO) },
-                    onOpenSettings = { nav.navigate(Routes.SETTINGS) },
-                )
-            }
+        NavHost(nav, startDestination = Routes.FORECAST, modifier = Modifier.padding(padding)) {
             composable(Routes.FORECAST) { ForecastScreen(viewModel, onOpenLocation = { nav.navigate(Routes.LOCATION) }) }
             composable(Routes.WIDGETS) {
                 WidgetsScreen(viewModel, onCustomize = { type, id -> nav.navigate(Routes.customize(type, id)) })
             }
-            composable(Routes.SETTINGS) { SettingsScreen(viewModel, onOpenLocation = { nav.navigate(Routes.LOCATION) }, onBack = { nav.popBackStack() }) }
+            composable(Routes.SETTINGS) { SettingsScreen(viewModel, onOpenLocation = { nav.navigate(Routes.LOCATION) }) }
             composable(Routes.SIGNATURE) {
                 app.aura.signature.SignatureScreen(onUse = { uri, work, mask ->
                     studio.createFromPhoto(uri, work.title, work.recommendedDesign, mask) { id ->
@@ -150,7 +137,7 @@ fun AuraNavHost(viewModel: AuraViewModel, destination: String?, onDestinationCon
                     navArgument("widgetId") { type = NavType.IntType; defaultValue = -1 },
                 ),
             ) { entry ->
-                val type = runCatching { WidgetType.valueOf(entry.arguments?.getString("type").orEmpty()) }.getOrDefault(WidgetType.DUO)
+                val type = runCatching { WidgetType.valueOf(entry.arguments?.getString("type").orEmpty()) }.getOrDefault(WidgetType.WEATHER)
                 val widgetId = entry.arguments?.getInt("widgetId")?.takeIf { it >= 0 }
                 CustomizeRoute(viewModel, type, widgetId, onDone = { nav.popBackStack() })
             }

@@ -99,11 +99,7 @@ fun WidgetsScreen(viewModel: AuraViewModel, onCustomize: (WidgetType, Int?) -> U
             }
             item { SectionTitle("Catálogo") }
         }
-        // Primero los widgets de clima (el reloj vive en el fondo de Studio); después los clásicos con reloj.
-        val ordered = WidgetType.entries.sortedBy { it.classic }
-        val firstClassic = ordered.firstOrNull { it.classic }
-        items(ordered, key = { it.name }) { type ->
-            if (type == firstClassic) SectionTitle("Clásicos con reloj")
+        items(WidgetType.entries.filterNot { it.classic }, key = { it.name }) { type ->
             val size = sizes[type] ?: SizeClass.MEDIUM
             val style = SettingsRepository.defaultStyleFor(type, profiles.getValue(type.defaultProfile), customized = false)
             AuraCard(padding = 16) {

@@ -12,6 +12,6 @@
     android:targetCellHeight="1"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="0"
-    android:widgetCategory="home_screen"
+    android:widgetCategory="0"
     android:configure="app.aura.widget.WidgetConfigActivity"
     android:widgetFeatures="reconfigurable|configuration_optional" />
