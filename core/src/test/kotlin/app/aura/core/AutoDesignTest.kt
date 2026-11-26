@@ -3,6 +3,7 @@ package app.aura.core
 import app.aura.core.studio.AutoDesign
 import app.aura.core.studio.ClockDesign
 import app.aura.core.studio.ClockMaterial
+import app.aura.core.studio.ClockLayout
 import app.aura.core.studio.ClockInformationMode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -26,15 +27,16 @@ class AutoDesignTest {
     }
 
     @Test
-    fun savedStyleKeepsTypographyAndMaterialAndOnlyShowsClock() {
-        val reference = ClockDesign(customFont = "clock_oswald", centerY = 0.54f, showColon = false,
-            stretchY = 1.9f, material = ClockMaterial.GLASS, informationMode = ClockInformationMode.FULL)
-        val proposals = AutoDesign.propose(pixels, width, height, null, 0, reference)
-        assertEquals(reference.centerY, proposals.first().design.centerY)
-        assertTrue(proposals.all {
-            it.design.customFont == reference.customFont && it.design.material == reference.material &&
-                it.design.informationMode == ClockInformationMode.PURE && !it.design.showWeather && !it.design.showDate
-        })
+    fun savedStyleStillProducesDistinctCompositionsAndFinishes() {
+        val reference = ClockDesign(customFont = "clock_oswald", material = ClockMaterial.GLASS,
+            layout = ClockLayout.VERTICAL, spread = 0.5f, informationMode = ClockInformationMode.FULL)
+        val designs = AutoDesign.propose(pixels, width, height, null, 0, reference).map { it.design }
+        assertEquals(reference.customFont, designs[0].customFont)
+        assertEquals(reference.material, designs[0].material)
+        assertEquals(listOf(ClockLayout.HORIZONTAL, ClockLayout.HORIZONTAL, ClockLayout.VERTICAL), designs.map { it.layout })
+        assertTrue(designs[0].spread == 0f && designs[1].spread > 0.6f)
+        assertEquals(3, designs.map { it.material }.distinct().size)
+        assertTrue(designs.all { it.informationMode == ClockInformationMode.PURE && !it.showWeather && !it.showDate })
     }
 
     @Test
@@ -54,7 +56,7 @@ class AutoDesignTest {
         val darkDesign = AutoDesign.propose(pixels, width, height, null, 0, reference).last().design
         val lightDesign = AutoDesign.propose(light, width, height, null, 0, reference).last().design
         assertNotEquals(darkDesign.color, lightDesign.color)
-        assertEquals(reference.customFont, lightDesign.customFont)
+        assertEquals(darkDesign.customFont, lightDesign.customFont)
     }
 
     @Test

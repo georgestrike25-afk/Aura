@@ -41,7 +41,8 @@ class SignatureRepository(context: Context) {
     suspend fun refresh(): Result<Pair<SignatureCatalog, String>> = withContext(Dispatchers.IO) {
         val base = Signature.PHOTO_BASE_URL
         try {
-            val text = get(Signature.url(base, Signature.PHOTO_CATALOG)).toString(Charsets.UTF_8)
+            val url = Signature.url(base, Signature.PHOTO_CATALOG) + "?refresh=" + System.currentTimeMillis()
+            val text = get(url).toString(Charsets.UTF_8)
             val catalog = Signature.parse(text)?.takeIf { it.version == 2 }
                 ?: throw IOException("Catálogo inválido")
             val atomic = AtomicFile(catalogFile)

@@ -1,5 +1,6 @@
 package app.aura.core.studio
 
+import app.aura.core.time.HourFormat
 import kotlin.math.abs
 
 object AutoDesign {
@@ -8,41 +9,40 @@ object AutoDesign {
     fun propose(pixels: IntArray, width: Int, height: Int, subject: IntArray?, round: Int, reference: ClockDesign? = null): List<Proposal> {
         require(width > 0 && height > 0 && pixels.size == width * height)
         require(subject == null || subject.size == pixels.size)
-        val candidates = candidates(pixels, width, height, subject, separate = false)
-        if (reference != null) {
-            val style = reference.copy(
-                informationMode = ClockInformationMode.PURE, showDate = false, showWeather = false,
-                behindSubject = reference.behindSubject && subject != null,
-            )
-            val space = candidates.minBy {
-                it.score + abs(it.x - style.centerX) + abs(it.y - style.centerY) * 1.7f
-            }
-            val harmony = Fusion.harmonize(Fusion.analyze(pixels, width, height, space.region))
-            val phase = Math.floorMod(round, 8)
-            val variation = 0.06f + phase * 0.025f
-            fun towardCenter(value: Float, amount: Float): Float =
-                value + (if (value < 0.5f) amount else -amount)
-            return listOf(
-                if (round == 0) Proposal("Tu estilo", style)
-                else Proposal("Posición lateral", style.copy(centerX = towardCenter(style.centerX, variation))),
-                Proposal("Encuadre alternativo", style.copy(centerY = towardCenter(space.y, variation))),
-                Proposal("Otra proporción", style.copy(
-                    stretchY = style.stretchY + (if (style.stretchY <= 1.8f) variation else -variation),
-                    stretchX = style.stretchX + (if (style.stretchX >= 0.85f) -variation else variation),
-                    color = harmony.color,
-                )),
-            )
-        }
-        val preferred = candidates.take(7)
-        val primary = preferred[Math.floorMod(round, preferred.size)]
-        val separated = candidates.filter { abs(it.y - primary.y) >= 0.12f }
-        val secondary = separated[Math.floorMod(round, separated.size)]
-        val depth = if (subject != null) candidates(pixels, width, height, subject, separate = true).take(5)
-            .let { it[Math.floorMod(round, it.size)] } else primary
+        val positions = candidates(pixels, width, height, subject, separate = false)
+        val sides = candidates(pixels, width, height, subject, separate = true)
+        val top = positions.filter { it.x == 0.5f && it.y <= 0.34f }.take(4)
+        val stacked = positions.filter { it.x != 0.5f && it.y in 0.34f..0.74f }.take(8)
+        val materials = listOf(ClockMaterial.GLASS, ClockMaterial.METAL, ClockMaterial.MINIMAL, ClockMaterial.STONE)
+        val first = if (round == 0 && reference != null) reference.material else materials[Math.floorMod(round, materials.size)]
+        val alternatives = materials.filterNot { it == first }
+        val second = alternatives[Math.floorMod(round, alternatives.size)]
+        val third = alternatives[Math.floorMod(round + 1, alternatives.size)]
+        val condensedFont = reference?.customFont ?: "clock_bebas"
         return listOf(
-            build("Metal suave", primary, pixels, width, height, ClockMaterial.METAL, false),
-            build("Vidrio", secondary, pixels, width, height, ClockMaterial.GLASS, false),
-            build("Profundidad".takeIf { subject != null } ?: "Cristal", depth, pixels, width, height, ClockMaterial.GLASS, subject != null),
+            build(top[Math.floorMod(round, top.size)], pixels, width, height, first).copy(
+                customFont = condensedFont,
+                size = 0.23f,
+                stretchX = 0.80f,
+                stretchY = 1.42f,
+                hourFormat = reference?.hourFormat ?: HourFormat.SYSTEM,
+            ).let { Proposal("En el cielo", it) },
+            build(sides[Math.floorMod(round, sides.size.coerceAtMost(7))], pixels, width, height, second).copy(
+                customFont = "clock_oswald",
+                size = 0.23f,
+                stretchX = 0.78f,
+                stretchY = 1.86f,
+                spread = 0.69f,
+                behindSubject = subject != null,
+            ).let { Proposal("Horas a los lados", it) },
+            build(stacked[Math.floorMod(round, stacked.size)], pixels, width, height, third).copy(
+                customFont = "clock_fjallaone",
+                layout = ClockLayout.VERTICAL,
+                size = 0.19f,
+                stretchX = 0.89f,
+                stretchY = 1.48f,
+                spread = 0.20f,
+            ).let { Proposal("En dos líneas", it) },
         )
     }
 
@@ -86,30 +86,24 @@ object AutoDesign {
     private data class Candidate(val x: Float, val y: Float, val region: FloatArray, val score: Float)
 
     private fun build(
-        title: String, candidate: Candidate, pixels: IntArray, width: Int, height: Int,
-        material: ClockMaterial?, split: Boolean,
-    ): Proposal {
+        candidate: Candidate, pixels: IntArray, width: Int, height: Int,
+        material: ClockMaterial,
+    ): ClockDesign {
         val harmony = Fusion.harmonize(Fusion.analyze(pixels, width, height, candidate.region))
-        val design = ClockDesign(
-            customFont = if (material == ClockMaterial.METAL) "clock_bebas" else "clock_oswald",
+        return ClockDesign(
             boldHours = false,
             color = harmony.color,
             accentColor = harmony.accentColor,
             lightAngle = harmony.lightAngle,
             centerX = candidate.x,
             centerY = candidate.y,
-            size = if (split) 0.23f else 0.29f,
-            stretchX = 0.77f,
-            stretchY = 1.68f,
             opacity = if (material == ClockMaterial.GLASS) 84 else 96,
-            spread = if (split) 0.54f else 0f,
             showColon = false,
-            behindSubject = split,
+            behindSubject = false,
             informationMode = ClockInformationMode.PURE,
             showDate = false,
             showWeather = false,
             artistic = ArtisticClock(enabled = true),
-        ).withMaterial(material ?: harmony.material)
-        return Proposal(title, design.copy(shadow = maxOf(design.shadow, 42)))
+        ).withMaterial(material).let { it.copy(shadow = maxOf(it.shadow, 42)) }
     }
 }

@@ -332,7 +332,13 @@ class StudioFlowTest {
                     val label = "${proposal.title} $hours$minutes ($is24)"
                     assertEquals(label, hours.length + 2, rects.size)
                     assertTrue(label, rects.all { it.left >= 0 && it.top >= 0 && it.right <= 1440 && it.bottom <= 3120 })
-                    assertTrue(label, rects.zipWithNext().all { (left, right) -> left.right <= right.left + 0.5f })
+                    assertTrue(label, rects.indices.all { index ->
+                        val a = rects[index]
+                        rects.drop(index + 1).none { b ->
+                            minOf(a.right, b.right) - maxOf(a.left, b.left) > 0.5f &&
+                                minOf(a.bottom, b.bottom) - maxOf(a.top, b.top) > 0.5f
+                        }
+                    })
                 }
             }
         }

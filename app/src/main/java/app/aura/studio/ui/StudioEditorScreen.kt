@@ -116,10 +116,14 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, autoDesign
 
     val project = history?.current
     if (!advanced) {
+        val proposalScroll = rememberScrollState()
+        LaunchedEffect(proposals) {
+            if (proposals.isNotEmpty()) proposalScroll.scrollTo(0)
+        }
         Column(
             Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.statusBars)
                 .windowInsetsPadding(WindowInsets.navigationBars)
-                .verticalScroll(rememberScrollState()).padding(20.dp),
+                .verticalScroll(proposalScroll).padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             app.aura.ui.components.ScreenHeader("Aura AutoDesign", onBack = leave)
