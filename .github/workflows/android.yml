@@ -242,6 +242,11 @@ jobs:
           run-id: ${{ steps.source.outputs.run_id }}
           github-token: ${{ github.token }}
 
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          path: preview
+
       - name: Verificar identidad, firma y publicar
         env:
           GH_TOKEN: ${{ github.token }}
@@ -255,13 +260,32 @@ jobs:
           test "$fingerprints" = 1f6f0c68557969d4f59cc8281f86c09437ce3f94511c10471867908c92867c2c
           "$tools/aapt" dump badging "$apk" > package.txt
           grep -F "package: name='app.aura.preview'" package.txt
-          cp "$apk" Aura.apk
+          install -m 0644 "$apk" preview/dist/Aura-2-Prueba.apk
+          git -C preview add -f dist/Aura-2-Prueba.apk
+          if ! git -C preview diff --cached --quiet; then
+            git -C preview config user.name "github-actions[bot]"
+            git -C preview config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git -C preview commit -m "APK de Aura 2 (${SOURCE_SHA::7}) [skip ci]"
+            git -C preview pull --rebase origin "$GITHUB_REF_NAME"
+            git -C preview push origin "HEAD:$GITHUB_REF_NAME"
+          fi
+          distributed_sha="$(git -C preview rev-parse HEAD)"
+          download="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${distributed_sha}/dist/Aura-2-Prueba.apk"
+          echo "$download" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Adjuntar a GitHub Releases
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+        run: |
+          set -euo pipefail
+          cp preview/dist/Aura-2-Prueba.apk Aura.apk
           tag=aura-artistic-evolution-2-test
           notes="APK firmado de Aura 2. Commit ${SOURCE_SHA::7}, instalable junto a Aura estable."
           if ! gh release view "$tag" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
             gh release create "$tag" Aura.apk --repo "$GITHUB_REPOSITORY" --title "Aura Artistic Evolution 2 · Prueba" --notes "$notes" --prerelease --latest=false --target "$SOURCE_SHA"
           else
             gh release upload "$tag" Aura.apk --repo "$GITHUB_REPOSITORY" --clobber
-            gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --notes "$notes" --draft=false --prerelease --latest=false
           fi
           echo "https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/Aura.apk" >> "$GITHUB_STEP_SUMMARY"
