@@ -3,6 +3,30 @@
   "license": "",
   "collections": [
     {
+      "id": "emociones-humanas",
+      "title": "Emociones humanas",
+      "items": [
+        {
+          "id": "el-asombro-de-abrir-las-m-1580f3b81f35",
+          "title": "El asombro de abrir las manos",
+          "image": "photos/c74fbfb79f60fd7e799a142c.webp",
+          "thumb": "photos/c74fbfb79f60fd7e799a142c-thumb.webp",
+          "dhash": "30b1090f2527468e101d3b111d3c0f1c3c101d3d31355152444e5a4a533f3e567d626b9c6e5db47f6197726b6d535194664fa9714d745549",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-peso-de-la-ausencia-0512e53d4e3d",
+          "title": "El peso de la ausencia",
+          "image": "photos/6868a663b47f5994b2ddf8a8.webp",
+          "thumb": "photos/6868a663b47f5994b2ddf8a8-thumb.webp",
+          "dhash": "8f9080c7c8d0d0001a15101b1611221b153a2e24201913231c163b2f24503f3132261d201a142b221a6a513e2e231b2f241c3a2c225f4836",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "civilizaciones-antiguas",
       "title": "Civilizaciones antiguas",
       "items": [
