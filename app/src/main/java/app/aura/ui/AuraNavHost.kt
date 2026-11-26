@@ -124,8 +124,10 @@ fun AuraNavHost(viewModel: AuraViewModel, destination: String?, onDestinationCon
             }
             composable(Routes.SETTINGS) { SettingsScreen(viewModel, onOpenLocation = { nav.navigate(Routes.LOCATION) }, onBack = { nav.popBackStack() }) }
             composable(Routes.SIGNATURE) {
-                app.aura.signature.SignatureScreen(onUse = { uri, title ->
-                    studio.createFromPhoto(uri, title) { id -> nav.navigate(Routes.studioEditor(id)) }
+                app.aura.signature.SignatureScreen(onUse = { uri, work, mask ->
+                    studio.createFromPhoto(uri, work.title, work.recommendedDesign, mask) { id ->
+                        nav.navigate(Routes.studioEditor(id, work.recommendedDesign == null))
+                    }
                 })
             }
             composable(Routes.STUDIO) { StudioHomeScreen(studio, onOpen = { id -> nav.navigate(Routes.studioEditor(id)) }, onAutoDesign = { id -> nav.navigate(Routes.studioEditor(id, true)) }) }

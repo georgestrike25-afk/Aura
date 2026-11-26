@@ -3,6 +3,7 @@ package app.aura.signature
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.AtomicFile
 import app.aura.BuildConfig
 import app.aura.core.signature.Signature
 import app.aura.core.signature.SignatureCatalog
@@ -13,31 +14,45 @@ import java.io.File
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import java.security.MessageDigest
 
 /**
  * Descarga y guarda en el teléfono el catálogo de Aura Signature y sus imágenes. Todo queda en caché:
  * sin conexión se ve lo ya descargado. Las obras se bajan solo al elegirlas (miniaturas ~40 KB, obra ~300 KB).
  */
 class SignatureRepository(context: Context) {
-    private val dir = File(context.applicationContext.filesDir, "signature").apply { mkdirs() }
+    private val dir = File(context.applicationContext.filesDir, "signature-photos").apply { mkdirs() }
     private val catalogFile = File(dir, "catalog.json")
-    private val baseFile = File(dir, "base.txt")
+    private val prefs = context.applicationContext.getSharedPreferences("signature-photos", Context.MODE_PRIVATE)
+
+    fun favorites(): Set<String> = prefs.getStringSet("favorites", emptySet()).orEmpty().toSet()
+
+    fun saveFavorites(ids: Set<String>) {
+        prefs.edit().putStringSet("favorites", ids).apply()
+    }
 
     /** Catálogo guardado (puede ser null la primera vez sin conexión). */
     fun cached(): Pair<SignatureCatalog, String>? {
         val c = catalogFile.takeIf { it.exists() }?.readText()?.let(Signature::parse) ?: return null
-        return c to (baseFile.takeIf { it.exists() }?.readText() ?: Signature.BASE_URLS.last())
+        return c to Signature.PHOTO_BASE_URL
     }
 
     /** Descarga el catálogo más reciente; si falla, devuelve el guardado (o el error si no hay). */
     suspend fun refresh(): Result<Pair<SignatureCatalog, String>> = withContext(Dispatchers.IO) {
         var lastError: Exception? = null
-        for (base in Signature.BASE_URLS) {
+        for (base in listOf(Signature.PHOTO_BASE_URL)) {
             try {
-                val text = get(Signature.url(base, "catalog.json")).toString(Charsets.UTF_8)
+                val text = get(Signature.url(base, Signature.PHOTO_CATALOG)).toString(Charsets.UTF_8)
                 val catalog = Signature.parse(text) ?: continue
-                catalogFile.writeText(text)
-                baseFile.writeText(base)
+                val atomic = AtomicFile(catalogFile)
+                val output = atomic.startWrite()
+                try {
+                    output.write(text.toByteArray(Charsets.UTF_8))
+                    atomic.finishWrite(output)
+                } catch (e: IOException) {
+                    atomic.failWrite(output)
+                    throw e
+                }
                 return@withContext Result.success(catalog to base)
             } catch (e: IOException) {
                 lastError = e
@@ -48,24 +63,36 @@ class SignatureRepository(context: Context) {
 
     /** Miniatura (descargada una vez). */
     suspend fun thumb(base: String, w: SignatureWork): Bitmap? = withContext(Dispatchers.IO) {
-        val f = fetch(base, w.thumb, "thumb_${w.id}.webp") ?: return@withContext null
+        val f = fetch(base, w.thumb) ?: return@withContext null
         BitmapFactory.decodeFile(f.path)
     }
 
     /** Obra completa en disco, lista para abrir en Studio. */
-    suspend fun full(base: String, w: SignatureWork): File? = withContext(Dispatchers.IO) { fetch(base, w.image, "full_${w.id}.webp") }
+    suspend fun full(base: String, w: SignatureWork): File? = withContext(Dispatchers.IO) { fetch(base, w.image, 1440 to 3120) }
 
-    private fun fetch(base: String, path: String, name: String): File? {
+    suspend fun mask(base: String, w: SignatureWork): File? = withContext(Dispatchers.IO) {
+        w.mask?.let { fetch(base, it, 1440 to 3120) }
+    }
+
+    private fun fetch(base: String, path: String, expectedSize: Pair<Int, Int>? = null): File? {
+        val name = MessageDigest.getInstance("SHA-256").digest((base + path).toByteArray())
+            .joinToString("") { "%02x".format(it) }
         val f = File(dir, name)
         if (f.exists() && f.length() > 0) return f
         return runCatching {
             val bytes = get(Signature.url(base, path))
-            val tmp = File(dir, "$name.part")
-            tmp.writeBytes(bytes)
-            // Solo se guarda si es una imagen que Android puede leer.
-            val opts = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-            BitmapFactory.decodeFile(tmp.path, opts)
-            if (opts.outWidth <= 0) { tmp.delete(); null } else f.also { tmp.renameTo(it) }
+            val tmp = File.createTempFile("photo-", ".part", dir)
+            try {
+                tmp.writeBytes(bytes)
+                val opts = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                BitmapFactory.decodeFile(tmp.path, opts)
+                val size = opts.outWidth to opts.outHeight
+                if (opts.outWidth <= 0 || opts.outHeight <= 0 || maxOf(opts.outWidth, opts.outHeight) > 3120 ||
+                    (expectedSize != null && size != expectedSize)) null
+                else if (tmp.renameTo(f)) f else null
+            } finally {
+                tmp.delete()
+            }
         }.getOrNull()
     }
 

@@ -1,5 +1,6 @@
 package app.aura.core.signature
 
+import app.aura.core.studio.ClockDesign
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -30,6 +31,8 @@ data class SignatureWork(
     /** Rutas relativas a la carpeta del catálogo. */
     val image: String,
     val thumb: String,
+    val mask: String? = null,
+    val recommendedDesign: ClockDesign? = null,
     val width: Int = 1440,
     val height: Int = 3120,
     /** Zona libre sugerida para el reloj (izq., arriba, der., abajo; fracciones). */
@@ -43,6 +46,9 @@ object Signature {
         "https://raw.githubusercontent.com/georgestrike25-afk/Aura/aura-artistic-evolution/signature/",
     )
 
+    const val PHOTO_BASE_URL = "https://raw.githubusercontent.com/georgestrike25-afk/Aura/aura-artistic-evolution-2/signature/"
+    const val PHOTO_CATALOG = "catalog-v2.json"
+
     private val json = Json { ignoreUnknownKeys = true }
 
     /** null si el texto no es un catálogo válido (nunca inventa contenido). */
@@ -51,11 +57,11 @@ object Signature {
         ?.let { c ->
             c.copy(
                 collections = c.collections
-                    .map { col -> col.copy(items = col.items.filter { it.id.isSafeId() && it.image.isSafePath() && it.thumb.isSafePath() }) }
+                    .map { col -> col.copy(items = col.items.filter { it.id.isSafeId() && it.image.isSafePath() && it.thumb.isSafePath() && (it.mask == null || it.mask.isSafePath()) && it.width == 1440 && it.height == 3120 }) }
                     .filter { it.items.isNotEmpty() },
             )
         }
-        ?.takeIf { it.collections.isNotEmpty() }
+        ?.takeIf { it.version == 2 || it.collections.isNotEmpty() }
 
     fun url(base: String, path: String): String = base + path
 

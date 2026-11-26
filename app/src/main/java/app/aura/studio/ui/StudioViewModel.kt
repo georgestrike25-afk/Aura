@@ -118,14 +118,16 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
 
     // ---------------------------------------------------------------- proyectos
 
-    fun createFromPhoto(uri: Uri, onCreated: (String) -> Unit) = createFromPhoto(uri, null, onCreated)
+    fun createFromPhoto(uri: Uri, onCreated: (String) -> Unit) = createFromPhoto(uri, null, onCreated = onCreated)
 
-    fun createFromPhoto(uri: Uri, title: String?, onCreated: (String) -> Unit) {
+    fun createFromPhoto(
+        uri: Uri, title: String?, design: ClockDesign? = null, mask: java.io.File? = null, onCreated: (String) -> Unit,
+    ) {
         viewModelScope.launch {
             _busy.value = "Importando foto…"
             try {
                 val name = title ?: ("Diseño " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("d/M HH:mm")))
-                val project = repo.create(uri, name)
+                val project = repo.create(uri, name, design, mask)
                 onCreated(project.id)
             } catch (e: Exception) {
                 _message.value = "No se pudo abrir la imagen: ${e.message}"

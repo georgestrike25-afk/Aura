@@ -9,6 +9,7 @@ import android.graphics.ImageDecoder
 import android.graphics.Paint
 import android.net.Uri
 import android.os.Build
+import app.aura.core.studio.ClockDesign
 import app.aura.core.studio.StudioProject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,13 +51,17 @@ class ProjectRepository(context: Context) {
     fun thumbFile(id: String) = File(dir(id), THUMB)
 
     /** Importa la foto elegida con el selector del sistema: la copia reducida es la de trabajo. */
-    suspend fun create(uri: Uri, name: String): StudioProject = withContext(Dispatchers.IO) {
+    suspend fun create(uri: Uri, name: String, design: ClockDesign? = null, mask: File? = null): StudioProject = withContext(Dispatchers.IO) {
         val bitmap = decodeScaled(uri, MAX_PHOTO_SIDE) ?: error("No se pudo leer la imagen")
         val now = System.currentTimeMillis()
-        val project = StudioProject(id = UUID.randomUUID().toString(), name = name, createdAt = now, updatedAt = now)
+        val project = StudioProject(
+            id = UUID.randomUUID().toString(), name = name, createdAt = now, updatedAt = now,
+            design = design?.normalized() ?: ClockDesign(), hasMask = mask != null, autoMask = mask != null,
+        )
         dir(project.id).mkdirs()
         File(dir(project.id), PHOTO).outputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 92, it) }
         bitmap.recycle()
+        mask?.copyTo(File(dir(project.id), MASK))
         save(project)
         project
     }

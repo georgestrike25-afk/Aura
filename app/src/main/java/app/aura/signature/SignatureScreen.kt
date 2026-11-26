@@ -27,9 +27,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,6 +70,15 @@ class SignatureViewModel(app: Application) : AndroidViewModel(app) {
     /** Id de la obra que se está descargando para abrir en Studio. */
     val opening: StateFlow<String?> = _opening.asStateFlow()
 
+    private val _favorites = MutableStateFlow(repo.favorites())
+    val favorites = _favorites.asStateFlow()
+
+    fun toggleFavorite(id: String) {
+        val updated = _favorites.value.let { if (id in it) it - id else it + id }
+        repo.saveFavorites(updated)
+        _favorites.value = updated
+    }
+
     val thumbs = mutableStateMapOf<String, ImageBitmap>()
 
     init { refresh() }
@@ -84,11 +97,12 @@ class SignatureViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /** Descarga la obra completa y la entrega como Uri para crear un proyecto de Studio. */
-    fun open(base: String, w: SignatureWork, onReady: (Uri) -> Unit) = viewModelScope.launch {
+    fun open(base: String, w: SignatureWork, onReady: (Uri, java.io.File?) -> Unit) = viewModelScope.launch {
         _opening.value = w.id
         val f = repo.full(base, w)
+        val mask = if (f != null) repo.mask(base, w) else null
         _opening.value = null
-        if (f == null) _error.value = "No se pudo descargar «${w.title}»." else onReady(Uri.fromFile(f))
+        if (f == null) _error.value = "No se pudo descargar «${w.title}»." else onReady(Uri.fromFile(f), mask)
     }
 }
 
@@ -97,11 +111,13 @@ class SignatureViewModel(app: Application) : AndroidViewModel(app) {
  * protagonistas moderados). Tocar una obra la abre como proyecto nuevo en Studio.
  */
 @Composable
-fun SignatureScreen(onUse: (Uri, String) -> Unit, vm: SignatureViewModel = viewModel()) {
+fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: SignatureViewModel = viewModel()) {
     val catalog by vm.catalog.collectAsStateWithLifecycle()
     val loading by vm.loading.collectAsStateWithLifecycle()
     val error by vm.error.collectAsStateWithLifecycle()
     val opening by vm.opening.collectAsStateWithLifecycle()
+    val favorites by vm.favorites.collectAsStateWithLifecycle()
+    var favoritesOnly by rememberSaveable { mutableStateOf(false) }
 
     LazyColumn(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.statusBars), contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 24.dp)) {
         item {
@@ -111,6 +127,9 @@ fun SignatureScreen(onUse: (Uri, String) -> Unit, vm: SignatureViewModel = viewM
                     "Obras originales de Aura, pensadas para que el reloj viva dentro de la imagen. Tocá una para abrirla en Studio.",
                     style = MaterialTheme.typography.bodyMedium, color = Aura.tokens.mutedText,
                 )
+                TextButton(onClick = { favoritesOnly = !favoritesOnly }) {
+                    Text(if (favoritesOnly) "Ver todas las obras" else "Ver favoritos")
+                }
             }
         }
         val c = catalog
@@ -128,7 +147,14 @@ fun SignatureScreen(onUse: (Uri, String) -> Unit, vm: SignatureViewModel = viewM
             return@LazyColumn
         }
         val (cat, base) = c
+        if (cat.collections.isEmpty()) {
+            item { Text("Las primeras obras aparecerán acá cuando se publique la colección.", Modifier.padding(20.dp)) }
+        } else if (favoritesOnly && favorites.isEmpty()) {
+            item { Text("Todavía no guardaste favoritos.", Modifier.padding(20.dp)) }
+        }
         cat.collections.forEach { col ->
+            val works = if (favoritesOnly) col.items.filter { it.id in favorites } else col.items
+            if (works.isEmpty()) return@forEach
             item(key = col.id) {
                 Column(Modifier.padding(top = 8.dp, bottom = 12.dp)) {
                     Text(col.title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 20.dp))
@@ -136,9 +162,9 @@ fun SignatureScreen(onUse: (Uri, String) -> Unit, vm: SignatureViewModel = viewM
                         Text(col.description, style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText, modifier = Modifier.padding(horizontal = 20.dp))
                     }
                     LazyRow(contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 20.dp, vertical = 10.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        items(col.items, key = { it.id }) { w ->
+                        items(works, key = { it.id }) { w ->
                             LaunchedEffect(w.id) { vm.loadThumb(base, w) }
-                            Column(Modifier.width(150.dp).clickable(enabled = opening == null) { vm.open(base, w) { uri -> onUse(uri, w.title) } }) {
+                            Column(Modifier.width(150.dp).clickable(enabled = opening == null) { vm.open(base, w) { uri, mask -> onUse(uri, w, mask) } }) {
                                 Box(
                                     Modifier.fillMaxWidth().aspectRatio(w.width / w.height.toFloat()).clip(RoundedCornerShape(18.dp))
                                         .background(MaterialTheme.colorScheme.surfaceVariant),
@@ -149,6 +175,9 @@ fun SignatureScreen(onUse: (Uri, String) -> Unit, vm: SignatureViewModel = viewM
                                     if (opening == w.id) CircularProgressIndicator(color = Aura.tokens.accent)
                                 }
                                 Text(w.title, style = MaterialTheme.typography.labelLarge, maxLines = 1, modifier = Modifier.padding(top = 6.dp))
+                                TextButton(onClick = { vm.toggleFavorite(w.id) }) {
+                                    Text(if (w.id in favorites) "Quitar favorito" else "Guardar favorito")
+                                }
                             }
                         }
                     }
