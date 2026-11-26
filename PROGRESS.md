@@ -8,7 +8,7 @@ Rama de trabajo `aura-artistic-evolution-2`, derivada de `72313ef` en `aura-arti
 
 - La detección del sujeto tiene un límite de seis segundos. Si el modelo tarda, se generan propuestas sin máscara y queda disponible la edición manual.
 - Se conservan dimensiones mínimas válidas al abrir fotos muy estrechas. Studio muestra los errores de importación y permite reintentar la apertura.
-- Con una referencia guardada, «Generar alternativas» cambia las tres propuestas de cada tanda, conservando la estética y el modo Puro.
+- Con una referencia guardada, «Generar alternativas» cambia las tres propuestas de cada tanda. Las variantes adaptan el encuadre y el contraste a la foto con la tipografía y el material de referencia, en modo Puro.
 
 ## Ajuste de AutoDesign y vistas de widgets
 

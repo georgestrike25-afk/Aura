@@ -48,6 +48,16 @@ class AutoDesignTest {
     }
 
     @Test
+    fun savedStyleOffersPhotoSpecificContrast() {
+        val reference = ClockDesign(customFont = "clock_oswald")
+        val light = IntArray(pixels.size) { 0xFFEEEEEE.toInt() }
+        val darkDesign = AutoDesign.propose(pixels, width, height, null, 0, reference).last().design
+        val lightDesign = AutoDesign.propose(light, width, height, null, 0, reference).last().design
+        assertNotEquals(darkDesign.color, lightDesign.color)
+        assertEquals(reference.customFont, lightDesign.customFont)
+    }
+
+    @Test
     fun centralMaskSupportsSeparatedGroups() {
         val mask = IntArray(pixels.size) { i ->
             if (i % width in 30..42 && i / width >= 38) 0xFF000000.toInt() else 0

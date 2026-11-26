@@ -8,11 +8,16 @@ object AutoDesign {
     fun propose(pixels: IntArray, width: Int, height: Int, subject: IntArray?, round: Int, reference: ClockDesign? = null): List<Proposal> {
         require(width > 0 && height > 0 && pixels.size == width * height)
         require(subject == null || subject.size == pixels.size)
+        val candidates = candidates(pixels, width, height, subject, separate = false)
         if (reference != null) {
             val style = reference.copy(
                 informationMode = ClockInformationMode.PURE, showDate = false, showWeather = false,
                 behindSubject = reference.behindSubject && subject != null,
             )
+            val space = candidates.minBy {
+                it.score + abs(it.x - style.centerX) + abs(it.y - style.centerY) * 1.7f
+            }
+            val harmony = Fusion.harmonize(Fusion.analyze(pixels, width, height, space.region))
             val phase = Math.floorMod(round, 8)
             val variation = 0.06f + phase * 0.025f
             fun towardCenter(value: Float, amount: Float): Float =
@@ -20,14 +25,14 @@ object AutoDesign {
             return listOf(
                 if (round == 0) Proposal("Tu estilo", style)
                 else Proposal("Posición lateral", style.copy(centerX = towardCenter(style.centerX, variation))),
-                Proposal("Encuadre alternativo", style.copy(centerY = towardCenter(style.centerY, variation))),
+                Proposal("Encuadre alternativo", style.copy(centerY = towardCenter(space.y, variation))),
                 Proposal("Otra proporción", style.copy(
                     stretchY = style.stretchY + (if (style.stretchY <= 1.8f) variation else -variation),
                     stretchX = style.stretchX + (if (style.stretchX >= 0.85f) -variation else variation),
+                    color = harmony.color,
                 )),
             )
         }
-        val candidates = candidates(pixels, width, height, subject, separate = false)
         val preferred = candidates.take(7)
         val primary = preferred[Math.floorMod(round, preferred.size)]
         val separated = candidates.filter { abs(it.y - primary.y) >= 0.12f }
