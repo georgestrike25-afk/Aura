@@ -60,6 +60,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
     private val segmenter = SubjectSegmenter()
     private val renderLock = Mutex()
 
+    val weather = app.weather.snapshot
     val projects = repo.projects
     val activeId = repo.activeId
 
@@ -580,7 +581,8 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
             if (updateExtras) lastExtras = extras
             val tint = AtmospherePainter.tintFor(p.atmosphere, _now.value, snapshot)
             // En la vista previa las partículas las anima el editor por encima; al exportar quedan quietas.
-            compositor.render(out, src, m, p, extras, subject, tint = tint, particlesAt = if (preview) null else 0f)
+            val resolved = p.atmosphere.resolved(snapshot?.data?.current)
+            compositor.render(out, src, m, p.copy(atmosphere = resolved), extras, subject, tint = tint, particlesAt = if (preview) null else 0f)
             if (!preview) subject?.recycle()
             out
         }

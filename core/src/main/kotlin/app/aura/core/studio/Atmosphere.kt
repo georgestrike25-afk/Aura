@@ -1,5 +1,7 @@
 package app.aura.core.studio
 
+import app.aura.core.weather.CurrentConditions
+import app.aura.core.weather.WeatherCondition
 import kotlinx.serialization.Serializable
 import kotlin.math.PI
 import kotlin.math.sin
@@ -7,7 +9,7 @@ import kotlin.math.sin
 /** Efectos ambientales de Aura Atmosphere. */
 @Serializable
 enum class AtmosphereEffect(val label: String) {
-    NONE("Ninguno"), RAIN("Lluvia"), SNOW("Nieve"), WIND("Viento"), DUST("Polvo luminoso"), FOG("Niebla"), ASH("Cenizas"),
+    NONE("Ninguno"), RAIN("Lluvia"), SNOW("Nieve"), WIND("Viento"), DUST("Polvo luminoso"), FOG("Niebla"), ASH("Cenizas"), CLOUDS("Nubosidad"),
 }
 
 /**
@@ -24,8 +26,27 @@ data class Atmosphere(
     val timeLight: Boolean = false,
     /** 0–100: cuánto se nota la luz según la hora. */
     val timeLightStrength: Int = 50,
+    val followWeather: Boolean = false,
+    val enabled: Boolean = true,
 ) {
-    val active: Boolean get() = effect != AtmosphereEffect.NONE
+    val active: Boolean get() = enabled && intensity > 0 && effect != AtmosphereEffect.NONE
+    val moving: Boolean get() = active && animate && effect != AtmosphereEffect.CLOUDS
+
+    fun resolved(current: CurrentConditions?): Atmosphere {
+        if (!enabled || !followWeather) return this
+        val effect = when (current?.condition) {
+            WeatherCondition.DRIZZLE, WeatherCondition.RAIN, WeatherCondition.THUNDERSTORM -> AtmosphereEffect.RAIN
+            WeatherCondition.SNOW -> AtmosphereEffect.SNOW
+            WeatherCondition.FOG -> AtmosphereEffect.FOG
+            WeatherCondition.WIND -> AtmosphereEffect.WIND
+            else -> when {
+                (current?.windSpeedKmh ?: 0.0) >= 30.0 -> AtmosphereEffect.WIND
+                current?.condition == WeatherCondition.CLOUDY || (current?.cloudCoverPercent ?: 0) >= 60 -> AtmosphereEffect.CLOUDS
+                else -> AtmosphereEffect.NONE
+            }
+        }
+        return copy(effect = effect)
+    }
     fun normalized() = copy(intensity = intensity.coerceIn(0, 100), timeLightStrength = timeLightStrength.coerceIn(0, 100))
 }
 
@@ -39,7 +60,7 @@ data class Particle(val x: Float, val y: Float, val size: Float, val alpha: Floa
  */
 object AtmosphereParticles {
     fun count(a: Atmosphere): Int = when (a.effect) {
-        AtmosphereEffect.NONE, AtmosphereEffect.FOG -> 0
+        AtmosphereEffect.NONE, AtmosphereEffect.FOG, AtmosphereEffect.CLOUDS -> 0
         AtmosphereEffect.RAIN -> 40 + a.intensity * 2
         AtmosphereEffect.SNOW -> 30 + a.intensity
         AtmosphereEffect.WIND -> 12 + a.intensity / 3

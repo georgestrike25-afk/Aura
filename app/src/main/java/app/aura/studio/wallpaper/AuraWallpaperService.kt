@@ -17,6 +17,7 @@ import android.view.SurfaceHolder
 import androidx.core.content.ContextCompat
 import app.aura.AppContainer
 import app.aura.aura
+import app.aura.core.studio.Atmosphere
 import app.aura.core.studio.StudioProject
 import app.aura.studio.mask.MaskRenderer
 import app.aura.studio.render.AtmospherePainter
@@ -51,6 +52,8 @@ class AuraWallpaperService : WallpaperService() {
         private val handler = Handler(thread.looper)
         private val compositor = StudioCompositor(ClockPainter(StudioFonts.resolver(this@AuraWallpaperService)))
 
+        private var atmosphere = Atmosphere()
+        private var pendingAtmosphere = Atmosphere()
         private var project: StudioProject? = null
         private var background: Bitmap? = null
         private var subject: Bitmap? = null
@@ -76,7 +79,7 @@ class AuraWallpaperService : WallpaperService() {
         /** Prepara el fotograma del minuto siguiente unos segundos antes. */
         private val prepare = Runnable {
             val next = epochMinute(System.currentTimeMillis()) + 1
-            pending = compose(next, pending)
+            pending = compose(next, pending, preparing = true)
             pendingMinute = next
         }
 
@@ -133,9 +136,8 @@ class AuraWallpaperService : WallpaperService() {
          * Aura Living: con un efecto animado, se redibuja a ~24 cuadros por segundo solo mientras el fondo
          * está visible. Nunca con el ahorro de batería activado ni si el efecto está en «quieto».
          */
-        private fun animating(): Boolean {
-            val a = project?.atmosphere ?: return false
-            if (!visible || !a.active || !a.animate) return false
+        private fun animating(atmosphere: Atmosphere = this.atmosphere): Boolean {
+            if (!visible || !atmosphere.moving) return false
             val pm = getSystemService(android.content.Context.POWER_SERVICE) as android.os.PowerManager
             return !pm.isPowerSaveMode
         }
@@ -178,6 +180,7 @@ class AuraWallpaperService : WallpaperService() {
                 // Intercambio: el fotograma preparado pasa a ser el actual.
                 val old = frame
                 frame = pending
+                atmosphere = pendingAtmosphere
                 frameMinute = minute
                 pending = old
                 pendingMinute = -1
@@ -186,18 +189,21 @@ class AuraWallpaperService : WallpaperService() {
                 frameMinute = minute
             }
             post(frame)
+            handler.removeCallbacks(animate)
+            if (animating()) handler.postDelayed(animate, 42)
         }
 
         // ---------------------------------------------------------------- dibujo
 
         /** Compone el fotograma completo de [minute] fuera de pantalla, reutilizando [reuse] si sirve. */
-        private fun compose(minute: Long, reuse: Bitmap?): Bitmap? {
+        private fun compose(minute: Long, reuse: Bitmap?, preparing: Boolean = false): Bitmap? {
             if (width <= 0 || height <= 0) return reuse
             val out = reuse?.takeIf { it.width == width && it.height == height && !it.isRecycled }
                 ?: Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).also { reuse?.recycle() }
             val c = Canvas(out)
             val p = project
             val bg = background
+            var resolved = Atmosphere()
             if (p == null || bg == null) {
                 c.drawColor(EMPTY_COLOR)
             } else {
@@ -207,12 +213,14 @@ class AuraWallpaperService : WallpaperService() {
                 val extras = runBlocking {
                     ClockExtrasBuilder.build(applicationContext, p.design, app.settings.current(), snapshot, time)
                 }
-                val tint = AtmospherePainter.tintFor(p.atmosphere, time, snapshot)
+                resolved = p.atmosphere.resolved(snapshot?.data?.current)
+                val tint = AtmospherePainter.tintFor(resolved, time, snapshot)
                 // Las texturas Elements avanzan un poco cada minuto (sin dibujar entre minutos).
                 compositor.drawClock(c, width, height, p.design, extras, Backdrop(bg, Matrix()), subject, phase = (minute % 60) / 60f, tint = tint)
                 // Ambiente quieto: las partículas quedan en el fotograma (cero gasto extra).
-                if (p.atmosphere.active && !animating()) AtmospherePainter.drawEffect(c, width, height, p.atmosphere, (minute % 60) * 1f)
+                if (resolved.active && !animating(resolved)) AtmospherePainter.drawEffect(c, width, height, resolved, (minute % 60) * 1f)
             }
+            if (preparing) pendingAtmosphere = resolved else atmosphere = resolved
             return out
         }
 
@@ -225,7 +233,7 @@ class AuraWallpaperService : WallpaperService() {
             val canvas = runCatching { if (moving) holder.lockHardwareCanvas() else holder.lockCanvas() }.getOrNull() ?: return false
             try {
                 canvas.drawBitmap(bmp, 0f, 0f, null)
-                project?.let { p -> if (moving) AtmospherePainter.drawEffect(canvas, width, height, p.atmosphere, SystemClock.uptimeMillis() / 1000f) }
+                if (moving) AtmospherePainter.drawEffect(canvas, width, height, atmosphere, SystemClock.uptimeMillis() / 1000f)
             } finally {
                 runCatching { holder.unlockCanvasAndPost(canvas) }
             }

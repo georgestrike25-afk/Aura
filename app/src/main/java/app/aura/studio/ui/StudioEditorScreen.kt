@@ -95,6 +95,7 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, autoDesign
     val preview by viewModel.preview.collectAsStateWithLifecycle()
     val busy by viewModel.busy.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
+    val weather by viewModel.weather.collectAsStateWithLifecycle(initialValue = null)
     val proposals by viewModel.proposals.collectAsStateWithLifecycle()
     var advanced by rememberSaveable(projectId) { mutableStateOf(!autoDesign) }
     val snackbar = remember { SnackbarHostState() }
@@ -217,7 +218,10 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, autoDesign
                     preview?.let { Image(it, contentDescription = "Vista previa del fondo", modifier = Modifier.fillMaxSize()) }
                     if (tab == EditorTab.WARP && preview != null) WarpHandles(viewModel, area)
                     if (tab == EditorTab.DIGITS && preview != null && project?.design?.artistic?.enabled == true) DigitOverlay(viewModel, area)
-                    if (preview != null && project != null && project.atmosphere.active) AtmosphereOverlay(project.atmosphere, area)
+                    if (preview != null && project != null) {
+                        val atmosphere = project.atmosphere.resolved(weather?.data?.current)
+                        if (atmosphere.active) AtmosphereOverlay(atmosphere, area)
+                    }
                     if (preview == null || busy != null) {
                         Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
                             CircularProgressIndicator(color = Aura.tokens.accent)

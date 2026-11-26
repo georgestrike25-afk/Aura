@@ -366,7 +366,7 @@ private fun FontTile(sample: String, label: String, family: FontFamily?, on: Boo
 @Composable
 internal fun AtmosphereOverlay(a: app.aura.core.studio.Atmosphere, area: IntSize) {
     val time = androidx.compose.runtime.remember { androidx.compose.runtime.mutableFloatStateOf(0f) }
-    if (a.animate) {
+    if (a.moving) {
         androidx.compose.runtime.LaunchedEffect(a) {
             var start = -1L
             var last = 0L
@@ -389,9 +389,18 @@ internal fun AtmosphereOverlay(a: app.aura.core.studio.Atmosphere, area: IntSize
 @Composable
 internal fun ColumnScope.AtmospherePanel(vm: StudioViewModel, p: StudioProject) {
     val a = p.atmosphere
-    Text("Efecto ambiental", style = MaterialTheme.typography.bodyMedium)
-    Chips(app.aura.core.studio.AtmosphereEffect.entries.map { it to it.label }, a.effect) { e -> vm.atmosphere { it.copy(effect = e) } }
-    if (a.active) {
+    LabeledRow("Aura Atmosphere") {
+        Switch(a.enabled, { v -> vm.atmosphere { it.copy(enabled = v) } })
+    }
+    if (!a.enabled) return
+    LabeledRow("Seguir el clima de Aura") {
+        Switch(a.followWeather, { v -> vm.atmosphere { it.copy(followWeather = v) } })
+    }
+    if (!a.followWeather) {
+        Text("Efecto ambiental", style = MaterialTheme.typography.bodyMedium)
+        Chips(app.aura.core.studio.AtmosphereEffect.entries.map { it to it.label }, a.effect) { e -> vm.atmosphere { it.copy(effect = e) } }
+    }
+    if (a.active || a.followWeather || a.effect != app.aura.core.studio.AtmosphereEffect.NONE) {
         StudioSlider("Intensidad", a.intensity.toFloat(), 0f..100f, "${a.intensity} %", { v -> vm.atmosphereLive { it.copy(intensity = v.roundToInt()) } }, vm::commit)
         LabeledRow("Animado en el fondo", supporting = "Se mueve solo con la pantalla a la vista; apagado queda quieto y no gasta batería") {
             Switch(a.animate, { v -> vm.atmosphere { it.copy(animate = v) } })
