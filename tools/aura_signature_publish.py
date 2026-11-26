@@ -32,6 +32,21 @@ def encode(image, quality):
     return output.getvalue()
 
 
+def dhash(image):
+    """Huella visual de 64 bits (igual que ContentNames.dHash en la app)."""
+    gray = image.convert("L").resize((9, 8), Image.Resampling.LANCZOS)
+    px = list(gray.tobytes())
+    value = 0
+    for y in range(8):
+        for x in range(8):
+            value = (value << 1) | (1 if px[y * 9 + x] > px[y * 9 + x + 1] else 0)
+    return f"{value:016x}"
+
+
+def same(a, b):
+    return bin(int(a, 16) ^ int(b, 16)).count("1") <= 6
+
+
 def prepare(path, collection_id):
     with Image.open(path) as source:
         original = ImageOps.exif_transpose(source)
@@ -49,6 +64,7 @@ def prepare(path, collection_id):
         "title": title,
         "image": f"photos/{file_id}.webp",
         "thumb": f"photos/{file_id}-thumb.webp",
+        "dhash": dhash(full),
         "width": SIZE[0],
         "height": SIZE[1],
     }
@@ -61,9 +77,17 @@ def publish(catalog_path, title, originals):
         raise ValueError("La colección necesita un título con letras o números")
     catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
     catalog["version"] = 2
-    prepared = [prepare(path, collection_id) for path in originals]
-    if len({work["id"] for work, _, _ in prepared}) != len(prepared):
-        raise ValueError("Los originales deben tener nombres distintos")
+    known = [item.get("dhash") for col in catalog["collections"] for item in col["items"] if item.get("dhash")]
+    prepared = []
+    for path in originals:
+        work, image, thumb = prepare(path, collection_id)
+        if any(same(work["dhash"], other) for other in known):
+            print(f"Repetida, no se agrega: {path.name}")
+            continue
+        known.append(work["dhash"])
+        prepared.append((work, image, thumb))
+    if not prepared:
+        return 0
     collections = catalog["collections"]
     collection = next((col for col in collections if col["id"] == collection_id), None)
     if collection is None:
@@ -79,6 +103,7 @@ def publish(catalog_path, title, originals):
     pending = catalog_path.with_suffix(".json.tmp")
     pending.write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     pending.replace(catalog_path)
+    return len(prepared)
 
 
 IMAGES = {".png", ".jpg", ".jpeg", ".webp"}
@@ -93,11 +118,10 @@ def inbox(root):
             groups.setdefault(title, []).append(path)
     count = 0
     for title, paths in groups.items():
-        publish(root / "catalog.json", title, paths)
+        count += publish(root / "catalog.json", title, paths)
         for path in paths:
             path.unlink()
-        count += len(paths)
-    print(f"Signature: {count} obras nuevas en {len(groups)} colecciones")
+    print(f"Signature: {count} obras nuevas")
     return count
 
 

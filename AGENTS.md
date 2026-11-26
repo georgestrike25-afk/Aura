@@ -25,8 +25,11 @@ las fotos se procesan en el teléfono. Pensada para un Samsung Galaxy S24+.
   hay máscara. Referencia de estilo: fondos con profundidad tipo «Depth Wallpapers».
 - **Signature**: un solo `signature/catalog.json` (versión 2). La app lee `main` y esta rama y combina las
   colecciones (`Signature.BASE_URLS`, `Signature.merge`). «Subir mis imágenes» guarda en «Mis obras» (solo
-  en el teléfono). Imágenes nuevas para todos: subir a `signature/inbox/<Colección>/` y el workflow
-  `.github/workflows/signature.yml` las publica. Las obras remotas deben ser 1440×3120.
+  en el teléfono), agrupadas y nombradas según el contenido (`core/signature/ContentNames.kt` + ML Kit Image
+  Labeling incluido en el APK) y sin repetir la misma foto (dHash). Visor a pantalla completa que se desliza.
+  Las 12 obras generadas por código se borraron a pedido del usuario: no volver a crearlas. Imágenes nuevas
+  para todos: subir a `signature/inbox/<Colección>/` y el workflow `.github/workflows/signature.yml` las
+  publica (también descarta repetidas). Las obras remotas deben ser 1440×3120.
 
 ## Compilar y entregar
 - Se compila en GitHub Actions (`.github/workflows/android.yml`): pruebas de `core`, APK firmado, lint y

@@ -23,7 +23,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -58,6 +57,11 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Button
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import app.aura.core.signature.SignatureWork
 import app.aura.ui.theme.Aura
 import kotlinx.coroutines.delay
@@ -78,19 +82,24 @@ class SignatureViewModel(app: Application) : AndroidViewModel(app) {
     private val _importing = MutableStateFlow(false)
     val importing: StateFlow<Boolean> = _importing.asStateFlow()
 
-    /** Sube imágenes del teléfono a «Mis obras». */
+    /** Sube fotos del teléfono: se agrupan y nombran según su contenido, sin repetir. */
     fun import(uris: List<Uri>) = viewModelScope.launch {
         if (uris.isEmpty() || _importing.value) return@launch
         _importing.value = true
         try {
-            val n = repo.importImages(uris)
+            _message.value = "Reconociendo el contenido…"
+            val r = repo.importImages(uris)
             _catalog.value = repo.cached()
-            _message.value = when {
-                n == 0 -> "No se pudo leer ninguna de esas imágenes."
-                n < uris.size -> "Se agregaron $n de ${uris.size} imágenes a «Mis obras»."
-                n == 1 -> "Imagen agregada a «Mis obras»."
-                else -> "Se agregaron $n imágenes a «Mis obras»."
-            }
+            _message.value = buildList {
+                when (r.added) {
+                    0 -> {}
+                    1 -> add("Se agregó 1 foto, ordenada según su contenido.")
+                    else -> add("Se agregaron ${r.added} fotos, ordenadas según su contenido.")
+                }
+                if (r.repeated == 1) add("1 ya estaba y no se repitió.")
+                if (r.repeated > 1) add("${r.repeated} ya estaban y no se repitieron.")
+                if (r.failed > 0) add("${r.failed} no se pudieron leer.")
+            }.joinToString(" ").ifBlank { "No se agregó ninguna foto." }
         } finally {
             _importing.value = false
         }
@@ -134,6 +143,22 @@ class SignatureViewModel(app: Application) : AndroidViewModel(app) {
                 }
         } finally {
             _loading.value = false
+        }
+    }
+
+    /** Imágenes del visor (las últimas pocas, para no llenar la memoria). */
+    val previews = mutableStateMapOf<String, ImageBitmap>()
+    private val previewOrder = ArrayDeque<String>()
+
+    fun loadPreview(base: String, w: SignatureWork) {
+        val key = base + w.image
+        if (previews.containsKey(key)) return
+        viewModelScope.launch {
+            val bmp = repo.preview(base, w) ?: return@launch
+            previews[key] = bmp.asImageBitmap()
+            previewOrder.remove(key)
+            previewOrder.addLast(key)
+            while (previewOrder.size > 5) previews.remove(previewOrder.removeFirst())
         }
     }
 
@@ -183,43 +208,15 @@ fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: Sign
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(20)) { uris ->
         vm.import(uris)
     }
-    val selected: GalleryWork? = catalog.asSequence().flatMap { it.items.asSequence() }
-        .firstOrNull { it.base + it.work.id == previewKey }
-    if (selected != null) {
-        val w = selected.work
-        val mine = selected.base == Signature.LOCAL_BASE
-        AlertDialog(
-            onDismissRequest = { if (opening == null) previewKey = null },
-            title = { Text(w.title) },
-            text = {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    vm.thumbs[selected.base + w.thumb]?.let {
-                        Image(it, contentDescription = w.title, contentScale = ContentScale.Fit,
-                            modifier = Modifier.fillMaxWidth().height(320.dp))
-                    }
-                    if (opening == w.id) CircularProgressIndicator(Modifier.padding(12.dp))
-                    error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-                    Row {
-                        TextButton(onClick = { vm.toggleFavorite(w.id) }) {
-                            Text(if (w.id in favorites) "Quitar favorito" else "Favorito")
-                        }
-                        if (mine) TextButton(enabled = opening == null, onClick = { vm.deleteMine(w.id); previewKey = null }) {
-                            Text("Borrar")
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(enabled = opening == null, onClick = {
-                    vm.open(selected.base, w) { uri, mask ->
-                        previewKey = null
-                        onUse(uri, w, mask)
-                    }
-                }) { Text("Abrir en Studio") }
-            },
-            dismissButton = {
-                TextButton(enabled = opening == null, onClick = { previewKey = null }) { Text("Cerrar") }
-            },
+    // Lo que se ve (todas o solo favoritas), en orden: el visor pasa de una a la siguiente en este orden.
+    val visible: List<GalleryWork> = catalog.flatMap { col -> if (favoritesOnly) col.items.filter { it.work.id in favorites } else col.items }
+    val startIndex = visible.indexOfFirst { it.base + it.work.id == previewKey }
+    if (startIndex >= 0) {
+        PhotoViewer(
+            works = visible, start = startIndex, vm = vm, favorites = favorites, opening = opening, error = error,
+            onClose = { previewKey = null },
+            onUse = { gw -> vm.open(gw.base, gw.work) { uri, mask -> previewKey = null; onUse(uri, gw.work, mask) } },
+            onDelete = { gw -> vm.deleteMine(gw.work.id); previewKey = null },
         )
     }
 
@@ -251,7 +248,7 @@ fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: Sign
             item {
                 Column(Modifier.fillMaxWidth().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     if (loading) CircularProgressIndicator(color = Aura.tokens.accent)
-                    else Text("Todavía no hay obras. Subí las tuyas con el botón de arriba.", style = MaterialTheme.typography.bodyMedium)
+                    else Text("Todavía no hay fotos. Subí las tuyas con el botón de arriba: se ordenan solas según lo que muestran.", style = MaterialTheme.typography.bodyMedium)
                     error?.let {
                         Spacer(Modifier.height(12.dp))
                         Text(it, style = MaterialTheme.typography.bodyMedium)
@@ -300,10 +297,60 @@ fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: Sign
         }
         item {
             Text(
-                "Las obras se descargan al verlas y quedan guardadas en el teléfono. «Mis obras» nunca sale del teléfono.",
+                "Las obras se descargan al verlas y quedan guardadas en el teléfono. Tus fotos nunca salen del teléfono.",
                 style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText, modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
             )
             error?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(horizontal = 20.dp)) }
+        }
+    }
+}
+
+/** Visor a pantalla completa: se desliza a los costados para pasar de una obra a otra. */
+@Composable
+private fun PhotoViewer(
+    works: List<GalleryWork>, start: Int, vm: SignatureViewModel, favorites: Set<String>, opening: String?, error: String?,
+    onClose: () -> Unit, onUse: (GalleryWork) -> Unit, onDelete: (GalleryWork) -> Unit,
+) {
+    Dialog(onDismissRequest = { if (opening == null) onClose() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        val pager = rememberPagerState(initialPage = start) { works.size }
+        Box(Modifier.fillMaxSize().background(Color.Black)) {
+            HorizontalPager(pager, Modifier.fillMaxSize(), beyondViewportPageCount = 1, key = { works[it].base + works[it].work.id }) { page ->
+                val gw = works[page]
+                LaunchedEffect(gw.base, gw.work.id) { vm.loadThumb(gw.base, gw.work); vm.loadPreview(gw.base, gw.work) }
+                val img = vm.previews[gw.base + gw.work.image] ?: vm.thumbs[gw.base + gw.work.thumb]
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    if (img != null) Image(img, contentDescription = gw.work.title, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize())
+                    else CircularProgressIndicator(color = Aura.tokens.accent)
+                }
+            }
+            val current = works.getOrNull(pager.currentPage)
+            TextButton(onClick = onClose, enabled = opening == null, modifier = Modifier.align(Alignment.TopEnd).windowInsetsPadding(WindowInsets.statusBars).padding(8.dp)) {
+                Text("Cerrar", color = Color.White)
+            }
+            if (current != null) {
+                val w = current.work
+                Column(
+                    Modifier.align(Alignment.BottomCenter).fillMaxWidth()
+                        .background(Color.Black.copy(alpha = 0.55f)).padding(horizontal = 20.dp, vertical = 14.dp),
+                ) {
+                    Text(w.title, style = MaterialTheme.typography.titleLarge, color = Color.White, maxLines = 1)
+                    Text("${pager.currentPage + 1} de ${works.size} · deslizá para ver otra", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.75f))
+                    error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TextButton(onClick = { vm.toggleFavorite(w.id) }) {
+                            Text(if (w.id in favorites) "★ Favorito" else "☆ Favorito", color = Color.White)
+                        }
+                        if (current.base == Signature.LOCAL_BASE) {
+                            TextButton(enabled = opening == null, onClick = { onDelete(current) }) { Text("Borrar", color = Color.White) }
+                        }
+                        Spacer(Modifier.weight(1f))
+                        Button(enabled = opening == null, onClick = { onUse(current) }) {
+                            if (opening == w.id) CircularProgressIndicator(Modifier.height(18.dp).width(18.dp), strokeWidth = 2.dp)
+                            else Text("Usar en Studio")
+                        }
+                    }
+                }
+            }
         }
     }
 }

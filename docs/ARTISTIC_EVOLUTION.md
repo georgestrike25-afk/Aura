@@ -14,7 +14,7 @@ está en `PROGRESS.md`.
 | Aura Layers | `studio/ui/DigitsPanel.kt` (`LayersSection`), `StudioCompositor.drawClock` | Pila: dígitos delante del sujeto, sujeto, dígitos detrás, foto. Delante/detrás, ocultar, bloquear y reordenar por dígito. Máscara: borde ajustable (expandir/contraer) + suavizado + pincel. |
 | Aura Fonts | `studio/render/StudioFonts.kt`, `FontPicker` | 61 fuentes OFL (41 anteriores + 20 nuevas) en Editorial, Monument, Zen, Future, Poetry, Display y Retro; importar TTF/OTF propios (validados, máx. 8 MB, solo en el teléfono). |
 | Atmosphere y Living | `core/studio/Atmosphere.kt`, `studio/render/AtmospherePainter.kt` | Lluvia, nieve, viento, polvo luminoso, niebla y cenizas; luz según la hora (amanecer, hora dorada, atardecer, noche). Animación en el editor y en el fondo animado; quieta si se desactiva o con ahorro de batería. |
-| Signature | `signature/`, `core/signature/Signature.kt`, `signature/SignatureScreen.kt` | 12 obras originales 1440×3120 en 3 colecciones; catálogo remoto con caché (se suman colecciones sin actualizar el APK). |
+| Signature | `signature/`, `core/signature/`, `signature/SignatureScreen.kt` | Galería de fotos: colecciones publicadas en `signature/` (bandeja `signature/inbox/`) + fotos propias agrupadas y nombradas por contenido (ML Kit en el teléfono), sin repetidos (huella visual), visor a pantalla completa que se desliza. |
 | Widgets de clima | `core/widget/WidgetType.kt`, `tools/aura_widgets.py`, `widget/WidgetRenderer.kt` | Atmosphere, Detail, Hourly, Weekly y Sol, además de Weather (Minimal). Transparencia real, 3 tamaños, iconos y colores del estilo, vista previa real. |
 
 ## Batería y memoria
@@ -28,8 +28,8 @@ está en `PROGRESS.md`.
 
 ## Límites conocidos (honestos)
 
-- **Obras de Signature**: son ilustraciones digitales originales generadas por código, no fotografías. La
-  galería admite fotografía artística, pero solo se publicará la que tenga licencia compatible; no se simula.
+- **Signature**: las 12 ilustraciones generadas por código se retiraron (a pedido). La galería se llena con
+  las fotos que sube la persona o que se publican en `signature/inbox/`.
 - **Animación de los materiales**: la textura se mueve una vez por minuto en el fondo animado (no es una
   animación continua del fuego o el agua) para no gastar batería.
 - **Segmentación del sujeto**: sigue siendo ML Kit en el teléfono más el pincel. No hay un modelo local mejor,

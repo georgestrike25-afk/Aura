@@ -8,10 +8,10 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.net.Uri
 import android.os.Build
-import android.provider.OpenableColumns
 import android.util.AtomicFile
 import android.media.ExifInterface
 import app.aura.BuildConfig
+import app.aura.core.signature.ContentNames
 import app.aura.core.signature.GalleryCollection
 import app.aura.core.signature.GalleryWork
 import app.aura.core.signature.Signature
@@ -85,61 +85,89 @@ class SignatureRepository(context: Context) {
             ?: SignatureCatalog(version = 2, collections = emptyList())
 
     private fun mine(): List<GalleryCollection> {
-        val items = mineCatalog().collections.flatMap { it.items }
-            .filter { File(mineDir, it.image).isFile && File(mineDir, it.thumb).isFile }
-        if (items.isEmpty()) return emptyList()
-        return listOf(
-            GalleryCollection(
-                MINE_ID, "Mis obras", "Imágenes que subiste desde el teléfono. Quedan solo acá.",
-                items.reversed().map { GalleryWork(it, Signature.LOCAL_BASE) },
-            ),
-        )
+        val order = ContentNames.Group.entries.map { it.name.lowercase() }
+        return mineCatalog().collections
+            .map { col -> col to col.items.filter { File(mineDir, it.image).isFile && File(mineDir, it.thumb).isFile } }
+            .filter { it.second.isNotEmpty() }
+            .sortedBy { (col, _) -> order.indexOf(col.id.removePrefix(MINE_PREFIX)).let { if (it < 0) order.size else it } }
+            .map { (col, items) ->
+                GalleryCollection(
+                    col.id, col.title, "Tus fotos. Quedan solo en el teléfono.",
+                    items.reversed().map { GalleryWork(it, Signature.LOCAL_BASE) },
+                )
+            }
     }
 
-    /** Copia imágenes elegidas con el selector de fotos, recortadas a 1440×3120. Devuelve cuántas entraron. */
-    suspend fun importImages(uris: List<Uri>): Int = withContext(Dispatchers.IO) {
-        val current = mineCatalog().collections.flatMap { it.items }.toMutableList()
+    /** Resultado de subir fotos: cuántas entraron, cuántas ya estaban y cuántas no se pudieron leer. */
+    data class ImportResult(val added: Int, val repeated: Int, val failed: Int)
+
+    /**
+     * Copia imágenes elegidas con el selector de fotos, recortadas a 1440×3120. Reconoce el contenido para
+     * agruparlas y nombrarlas, y saltea las que ya están (misma foto aunque tenga otro nombre o tamaño).
+     */
+    suspend fun importImages(uris: List<Uri>): ImportResult = withContext(Dispatchers.IO) {
+        val collections = mineCatalog().collections.associate { it.id to it }.toMutableMap()
+        val known = (collections.values.flatMap { it.items } + remoteWorks()).mapNotNull { it.dhash?.toULongOrNull(16)?.toLong() }.toMutableList()
+        val names = collections.values.flatMap { it.items }.map { it.title }.toMutableList()
         var added = 0
+        var repeated = 0
+        var failed = 0
         for (uri in uris) {
-            val bitmap = runCatching { decodeCover(uri, W, H) }.getOrNull() ?: continue
+            val bitmap = runCatching { decodeCover(uri, W, H) }.getOrNull()
+            if (bitmap == null) { failed++; continue }
             try {
-                val id = "mine-" + System.currentTimeMillis().toString(36) + added
+                val hash = hashOf(bitmap)
+                if (known.any { ContentNames.sameImage(it, hash) }) { repeated++; continue }
+                val small = Bitmap.createScaledBitmap(bitmap, W / 4, H / 4, true)
+                val content = ContentNames.classify(PhotoLabeler.labels(small))
+                val hex = "%016x".format(hash)
+                val id = "mine-" + hex + "-" + System.currentTimeMillis().toString(36)
                 val image = "$id.webp"
                 val thumb = "$id-thumb.webp"
                 writeAtomic(File(mineDir, image), encode(bitmap, 92))
-                val small = Bitmap.createScaledBitmap(bitmap, W / 4, H / 4, true)
                 writeAtomic(File(mineDir, thumb), encode(small, 85))
                 small.recycle()
-                val title = displayName(uri)?.substringBeforeLast('.')?.replace('_', ' ')?.replace('-', ' ')?.trim()
-                    ?.takeIf { it.isNotBlank() }?.take(40) ?: "Mi obra ${current.size + 1}"
-                current += SignatureWork(id = id, title = title, image = image, thumb = thumb)
+                val title = ContentNames.unique(content.name, names)
+                names += title
+                known += hash
+                val colId = MINE_PREFIX + content.group.name.lowercase()
+                val col = collections[colId] ?: SignatureCollection(colId, content.group.title)
+                collections[colId] = col.copy(items = col.items + SignatureWork(id = id, title = title, image = image, thumb = thumb, dhash = hex))
                 added++
             } finally {
                 bitmap.recycle()
             }
         }
-        if (added > 0) saveMine(current)
-        added
+        if (added > 0) saveMine(collections.values.toList())
+        ImportResult(added, repeated, failed)
+    }
+
+    private fun remoteWorks(): List<SignatureWork> =
+        Signature.BASE_URLS.mapNotNull { cachedSource(it) }.flatMap { c -> c.collections.flatMap { it.items } }
+
+    /** dHash de la imagen (ver ContentNames.dHash). */
+    private fun hashOf(bitmap: Bitmap): Long {
+        val tiny = Bitmap.createScaledBitmap(bitmap, 9, 8, true)
+        val gray = IntArray(72) { i ->
+            val c = tiny.getPixel(i % 9, i / 9)
+            (((c shr 16) and 0xFF) * 299 + ((c shr 8) and 0xFF) * 587 + (c and 0xFF) * 114) / 1000
+        }
+        tiny.recycle()
+        return ContentNames.dHash(gray)
     }
 
     fun deleteMine(id: String) {
-        val items = mineCatalog().collections.flatMap { it.items }
-        val work = items.firstOrNull { it.id == id } ?: return
+        val cols = mineCatalog().collections
+        val work = cols.flatMap { it.items }.firstOrNull { it.id == id } ?: return
         File(mineDir, work.image).delete()
         File(mineDir, work.thumb).delete()
-        saveMine(items - work)
+        saveMine(cols.map { c -> c.copy(items = c.items.filterNot { it.id == id }) }.filter { it.items.isNotEmpty() })
     }
 
-    private fun saveMine(items: List<SignatureWork>) {
-        val catalog = SignatureCatalog(version = 2, collections = listOf(SignatureCollection(MINE_ID, "Mis obras", items = items)))
+    private fun saveMine(collections: List<SignatureCollection>) {
+        val catalog = SignatureCatalog(version = 2, collections = collections)
         writeAtomic(mineIndex, json.encodeToString(SignatureCatalog.serializer(), catalog).toByteArray(Charsets.UTF_8))
     }
-
-    private fun displayName(uri: Uri): String? = runCatching {
-        app.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c ->
-            if (c.moveToFirst()) c.getString(0) else null
-        }
-    }.getOrNull()
 
     /** Decodifica sin pasarse de memoria, respeta la rotación EXIF y recorta al centro para cubrir w×h. */
     private fun decodeCover(uri: Uri, w: Int, h: Int): Bitmap? {
@@ -199,6 +227,12 @@ class SignatureRepository(context: Context) {
         var sample = 1
         while (maxOf(bounds.outWidth, bounds.outHeight) / sample > 640) sample *= 2
         BitmapFactory.decodeFile(f.path, BitmapFactory.Options().apply { inSampleSize = sample })
+    }
+
+    /** Obra en buena calidad para el visor (720×1560: nítida en pantalla y liviana en memoria). */
+    suspend fun preview(base: String, w: SignatureWork): Bitmap? = withContext(Dispatchers.IO) {
+        val f = (if (base == Signature.LOCAL_BASE) local(w.image) else fetch(base, w.image, W to H)) ?: return@withContext null
+        BitmapFactory.decodeFile(f.path, BitmapFactory.Options().apply { inSampleSize = 2 })
     }
 
     /** Obra completa en disco, lista para abrir en Studio. */
@@ -273,7 +307,7 @@ class SignatureRepository(context: Context) {
 
     companion object {
         private const val MAX_BYTES = 12 * 1024 * 1024
-        const val MINE_ID = "mis-obras"
+        const val MINE_PREFIX = "mine-"
         private const val W = 1440
         private const val H = 3120
     }

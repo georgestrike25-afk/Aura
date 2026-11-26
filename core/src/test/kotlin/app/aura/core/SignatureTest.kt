@@ -14,9 +14,7 @@ class SignatureTest {
         if (f == null) return // el catálogo vive fuera de core; en la CI se prueba desde la raíz
         val c = Signature.parse(f.readText())
         assertNotNull(c)
-
-        assertEquals(3, c!!.collections.size)
-        assertEquals(12, c.collections.sumOf { it.items.size })
+        assertEquals(2, c!!.version)
     }
 
     @Test

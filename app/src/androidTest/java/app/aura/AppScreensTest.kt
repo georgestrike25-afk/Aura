@@ -60,7 +60,7 @@ class AppScreensTest {
             device.swipe(device.displayWidth / 2, device.displayHeight * 3 / 4, device.displayWidth / 2, device.displayHeight / 4, 30); shot("forecast_scrolled")
             tap("Widgets"); shot("widgets")
             tap("Studio"); shot("studio")
-            tap("Signature"); device.wait(Until.findObject(By.textContains("Sueños quietos")), 20_000); Thread.sleep(3000); shot("signature")
+            tap("Signature"); shot("signature")
             tap("Ajustes"); shot("settings")
             tap("Widgets")
             device.swipe(device.displayWidth / 2, device.displayHeight * 2 / 3, device.displayWidth / 2, device.displayHeight / 3, 30)
@@ -68,5 +68,47 @@ class AppScreensTest {
             device.swipe(device.displayWidth / 2, device.displayHeight * 3 / 4, device.displayWidth / 2, device.displayHeight / 3, 30)
             shot("customize_controls")
         }
+    }
+
+    /** Fotos propias en Signature: sin repetidos, agrupadas por contenido y con visor que pasa de una a otra. */
+    @Test
+    fun signatureImportsWithoutDuplicatesAndOpensViewer() = kotlinx.coroutines.runBlocking {
+        val ctx = instrumentation.targetContext
+        fun photo(name: String, sky: Int, ground: Int): android.net.Uri {
+            val b = android.graphics.Bitmap.createBitmap(1080, 2340, android.graphics.Bitmap.Config.ARGB_8888)
+            val c = android.graphics.Canvas(b)
+            c.drawColor(sky)
+            val p = android.graphics.Paint().apply { color = ground; isAntiAlias = true }
+            val path = android.graphics.Path().apply { moveTo(0f, 2340f); lineTo(540f, 1000f); lineTo(1080f, 2340f); close() }
+            c.drawPath(path, p)
+            val f = File(ctx.cacheDir, name)
+            f.outputStream().use { b.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, it) }
+            return android.net.Uri.fromFile(f)
+        }
+        val repo = app.aura.signature.SignatureRepository(ctx)
+        val a = photo("a.jpg", 0xFF3A6EA5.toInt(), 0xFFF2F2F2.toInt())
+        val b = photo("b.jpg", 0xFF2B1B3D.toInt(), 0xFFE07A2E.toInt())
+        val first = repo.importImages(listOf(a, b))
+        val again = repo.importImages(listOf(a))
+        println("AURA_SIGNATURE_IMPORT $first $again")
+        org.junit.Assert.assertEquals(2, first.added)
+        org.junit.Assert.assertEquals(1, again.repeated)
+        org.junit.Assert.assertEquals(0, again.added)
+        val titles = repo.cached().flatMap { it.items }.map { it.work.title }
+        org.junit.Assert.assertEquals(titles.size, titles.distinct().size)
+
+        ActivityScenario.launch(MainActivity::class.java).use {
+            dismissSystemDialogs()
+            tap("Signature")
+            device.wait(Until.findObject(By.desc(titles.first())), 15_000)?.click()
+            device.wait(Until.findObject(By.text("Usar en Studio")), 15_000)
+            shot("signature_viewer")
+            device.swipe(device.displayWidth * 4 / 5, device.displayHeight / 2, device.displayWidth / 5, device.displayHeight / 2, 20)
+            assertNotNull("El visor no pasó a la siguiente", device.wait(Until.findObject(By.textContains("2 de")), 10_000))
+            shot("signature_viewer_next")
+            device.pressBack()
+            shot("signature_mine")
+        }
+        Unit
     }
 }

@@ -88,6 +88,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     // Aura Studio: segmentación local del sujeto (gratuita, en el dispositivo, vía Play Services).
     implementation(libs.mlkit.subject.segmentation)
+    implementation(libs.mlkit.image.labeling)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(libs.junit)
