@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -341,7 +342,7 @@ private fun PhotoViewer(
     works: List<GalleryWork>, start: Int, vm: SignatureViewModel, favorites: Set<String>, opening: String?, error: String?,
     onClose: () -> Unit, onUse: (GalleryWork) -> Unit, onDelete: (GalleryWork) -> Unit,
 ) {
-    Dialog(onDismissRequest = { if (opening == null) onClose() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    Dialog(onDismissRequest = { if (opening == null) onClose() }, properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) {
         val pager = rememberPagerState(initialPage = start) { works.size }
         Box(Modifier.fillMaxSize().background(Color.Black)) {
             HorizontalPager(pager, Modifier.fillMaxSize(), beyondViewportPageCount = 1, key = { works[it].base + works[it].work.id }) { page ->
@@ -362,7 +363,8 @@ private fun PhotoViewer(
                 Column(
                     Modifier.align(Alignment.BottomCenter).fillMaxWidth()
                         .background(Color.Black.copy(alpha = 0.6f))
-                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        // Android 15 dibuja el visor debajo de la barra de navegación: se deja su alto (y un mínimo).
+                        .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets(bottom = 24.dp)))
                         .padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 10.dp),
                 ) {
                     Text(w.title, style = MaterialTheme.typography.titleLarge, color = Color.White, maxLines = 2)
