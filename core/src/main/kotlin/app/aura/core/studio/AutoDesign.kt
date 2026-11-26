@@ -90,7 +90,8 @@ object AutoDesign {
 
     /** Tamaño (alto del em / ancho del lienzo) para que [digits] cifras ocupen [target] del ancho. */
     private fun fit(advance: Float, digits: Int, target: Float, stretchX: Float, max: Float = ClockDesign.MAX_SIZE): Float {
-        val em = digits * advance + if (digits == 4) GAP else 0f
+        // El avance es el promedio de 0–9: un «00» de una fuente ancha ocupa más. Margen del 12 %.
+        val em = (digits * advance + if (digits == 4) GAP else 0f) * 1.12f
         return (target / (em * stretchX)).coerceIn(ClockDesign.MIN_SIZE, max)
     }
 
