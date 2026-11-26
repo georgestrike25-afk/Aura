@@ -48,10 +48,10 @@ object Routes {
     const val CUSTOMIZE = "customize/{type}?widgetId={widgetId}"
     const val STUDIO = "studio"
     const val SIGNATURE = "signature"
-    const val STUDIO_EDITOR = "studio/editor/{id}"
+    const val STUDIO_EDITOR = "studio/editor/{id}?autoDesign={autoDesign}"
     const val STUDIO_MASK = "studio/mask/{id}"
 
-    fun studioEditor(id: String) = "studio/editor/$id"
+    fun studioEditor(id: String, autoDesign: Boolean = false) = "studio/editor/$id?autoDesign=$autoDesign"
     fun studioMask(id: String) = "studio/mask/$id"
 
     fun customize(type: WidgetType, widgetId: Int? = null) =
@@ -128,11 +128,11 @@ fun AuraNavHost(viewModel: AuraViewModel, destination: String?, onDestinationCon
                     studio.createFromPhoto(uri, title) { id -> nav.navigate(Routes.studioEditor(id)) }
                 })
             }
-            composable(Routes.STUDIO) { StudioHomeScreen(studio, onOpen = { id -> nav.navigate(Routes.studioEditor(id)) }) }
-            composable(Routes.STUDIO_EDITOR, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
+            composable(Routes.STUDIO) { StudioHomeScreen(studio, onOpen = { id -> nav.navigate(Routes.studioEditor(id)) }, onAutoDesign = { id -> nav.navigate(Routes.studioEditor(id, true)) }) }
+            composable(Routes.STUDIO_EDITOR, arguments = listOf(navArgument("id") { type = NavType.StringType }, navArgument("autoDesign") { type = NavType.BoolType; defaultValue = false })) { entry ->
                 val id = entry.arguments?.getString("id").orEmpty()
                 StudioEditorScreen(
-                    studio, id,
+                    studio, id, autoDesign = entry.arguments?.getBoolean("autoDesign") == true,
                     onBack = { studio.close(); nav.popBackStack() },
                     onEditMask = { nav.navigate(Routes.studioMask(id)) },
                 )

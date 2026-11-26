@@ -85,12 +85,14 @@ private enum class EditorTab(val label: String) {
 }
 
 @Composable
-fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, onBack: () -> Unit, onEditMask: () -> Unit) {
-    LaunchedEffect(projectId) { viewModel.open(projectId) }
+fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, autoDesign: Boolean, onBack: () -> Unit, onEditMask: () -> Unit) {
+    LaunchedEffect(projectId) { viewModel.open(projectId, autoDesign) }
     val history by viewModel.history.collectAsStateWithLifecycle()
     val preview by viewModel.preview.collectAsStateWithLifecycle()
     val busy by viewModel.busy.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
+    val proposals by viewModel.proposals.collectAsStateWithLifecycle()
+    var advanced by rememberSaveable(projectId) { mutableStateOf(!autoDesign) }
     val snackbar = remember { SnackbarHostState() }
     var tab by rememberSaveable { mutableStateOf(EditorTab.CLOCK) }
     var area by remember { mutableStateOf(IntSize.Zero) }
@@ -108,6 +110,59 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, onBack: ()
     BackHandler(onBack = leave)
 
     val project = history?.current
+    if (!advanced) {
+        Column(
+            Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.statusBars)
+                .windowInsetsPadding(WindowInsets.navigationBars)
+                .verticalScroll(rememberScrollState()).padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            app.aura.ui.components.ScreenHeader("Aura AutoDesign", onBack = leave)
+            if (busy != null) {
+                CircularProgressIndicator()
+                Text(busy.orEmpty())
+            }
+            if (proposals.isEmpty() && busy == null && project != null) {
+                OutlinedButton(onClick = viewModel::generateProposals) { Text("Crear propuestas") }
+            }
+            proposals.forEach { choice ->
+                Text(choice.proposal.title, style = MaterialTheme.typography.titleLarge)
+                Image(
+                    choice.image, contentDescription = choice.proposal.title,
+                    modifier = Modifier.fillMaxWidth(0.65f).align(Alignment.CenterHorizontally)
+                        .aspectRatio(viewModel.screen.width / viewModel.screen.height.toFloat())
+                        .clip(RoundedCornerShape(18.dp)),
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(
+                        enabled = busy == null,
+                        onClick = {
+                            viewModel.chooseProposal(choice.proposal)
+                            advanced = true
+                            tab = EditorTab.EXPORT
+                            viewModel.prepareLive { intent ->
+                                try {
+                                    context.startActivity(intent)
+                                } catch (e: ActivityNotFoundException) {
+                                    viewModel.applyStatic(WallpaperApplier.Target.HOME)
+                                }
+                            }
+                        },
+                    ) { Text("Aplicar") }
+                    OutlinedButton(enabled = busy == null, onClick = {
+                        viewModel.chooseProposal(choice.proposal)
+                        advanced = true
+                    }) { Text("Editar") }
+                }
+            }
+            if (proposals.isNotEmpty()) {
+                OutlinedButton(enabled = busy == null, onClick = viewModel::generateProposals) { Text("Generar alternativas") }
+            }
+            TextButton(enabled = busy == null && project != null, onClick = { advanced = true }) { Text("Ajustes avanzados") }
+            SnackbarHost(snackbar)
+        }
+        return
+    }
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.statusBars)) {
             Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -201,6 +256,12 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, onBack: ()
                     .windowInsetsPadding(WindowInsets.navigationBars),
             ) {
                 if (project != null) {
+                    if (tab == EditorTab.CLOCK) {
+                        TextButton(enabled = busy == null, onClick = {
+                            viewModel.generateProposals()
+                            advanced = false
+                        }) { Text("Aura AutoDesign") }
+                    }
                     when (tab) {
                         EditorTab.FRAME -> FramePanel(viewModel, project)
                         EditorTab.CLOCK -> ClockPanel(viewModel, project)

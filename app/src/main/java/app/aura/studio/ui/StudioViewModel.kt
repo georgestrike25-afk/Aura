@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import app.aura.aura
+import app.aura.core.studio.AutoDesign
 import app.aura.core.studio.ArtisticClock
 import app.aura.core.studio.ClockDesign
 import app.aura.core.studio.Fusion
@@ -134,7 +135,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun open(id: String) {
+    fun open(id: String, autoDesign: Boolean = false) {
         if (current?.id == id) return
         viewModelScope.launch {
             _busy.value = "Abriendo…"
@@ -155,7 +156,9 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
             _history.value = History(project)
             _busy.value = null
             // Primera vez: se intenta separar el sujeto automáticamente, sin intervención.
-            if (!project.hasMask && !project.autoMask) detectSubject(silent = true)
+            if (!project.hasMask && !project.autoMask) {
+                detectSubject(silent = true) { if (autoDesign) generateProposals() }
+            } else if (autoDesign) generateProposals()
         }
     }
 
@@ -168,6 +171,8 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
 
     fun close() {
         _history.value = null
+        _proposals.value = emptyList()
+        proposalRound = 0
         _preview.value = null
         _maskOverlay.value = null
         gestureBase = null
@@ -352,6 +357,63 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
         commit()
     }
 
+    data class DesignPreview(val proposal: AutoDesign.Proposal, val image: ImageBitmap)
+
+    private val _proposals = MutableStateFlow<List<DesignPreview>>(emptyList())
+    val proposals = _proposals.asStateFlow()
+    private var proposalRound = 0
+
+    fun generateProposals() {
+        val project = current ?: return
+        if (_busy.value != null) return
+        val round = proposalRound++
+        _busy.value = "Componiendo propuestas…"
+        viewModelScope.launch {
+            try {
+                val (w, h) = previewSize
+                val analysisWidth = 72
+                val analysisHeight = (analysisWidth * h / w.toFloat()).roundToInt()
+                val designs = withContext(Dispatchers.Default) {
+                    renderLock.withLock {
+                        val src = previewPhoto ?: return@withLock emptyList()
+                        val sample = Bitmap.createBitmap(analysisWidth, analysisHeight, Bitmap.Config.ARGB_8888)
+                        try {
+                            compositor.drawPhoto(Canvas(sample), analysisWidth, analysisHeight, src, project)
+                            val pixels = IntArray(analysisWidth * analysisHeight)
+                            sample.getPixels(pixels, 0, analysisWidth, 0, 0, analysisWidth, analysisHeight)
+                            val subject = currentMask(project)?.let { m ->
+                                sample.eraseColor(Color.TRANSPARENT)
+                                val matrix = compositor.photoMatrix(analysisWidth, analysisHeight, src, project).apply {
+                                    preScale(src.width / m.width.toFloat(), src.height / m.height.toFloat())
+                                }
+                                Canvas(sample).drawBitmap(m, matrix, Paint(Paint.FILTER_BITMAP_FLAG))
+                                IntArray(pixels.size).also {
+                                    sample.getPixels(it, 0, analysisWidth, 0, 0, analysisWidth, analysisHeight)
+                                    if (project.mask.inverted) for (index in it.indices) it[index] = it[index].inv()
+                                }
+                            }
+                            AutoDesign.propose(pixels, analysisWidth, analysisHeight, subject, round)
+                        } finally {
+                            sample.recycle()
+                        }
+                    }
+                }
+                val previews = designs.map { proposal ->
+                    val image = renderAt(w / 2, h / 2, project.copy(design = proposal.design), preview = true, updateExtras = false)
+                    DesignPreview(proposal, image.asImageBitmap())
+                }
+                if (current?.id == project.id) _proposals.value = previews
+            } finally {
+                _busy.value = null
+            }
+        }
+    }
+
+    fun chooseProposal(proposal: AutoDesign.Proposal) {
+        design { proposal.design.copy(hourFormat = it.hourFormat, dateStyle = it.dateStyle) }
+        _proposals.value = emptyList()
+    }
+
     // ---------------------------------------------------------------- Aura Fusion
 
     private val _harmony = MutableStateFlow<Pair<ImageTraits, Harmony>?>(null)
@@ -395,13 +457,17 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
 
     // ---------------------------------------------------------------- máscara
 
-    fun detectSubject(silent: Boolean = false) {
+    fun detectSubject(silent: Boolean = false, onFinished: () -> Unit = {}) {
         val ph = photo ?: return
         val p = current ?: return
         viewModelScope.launch {
             _busy.value = "Buscando el sujeto…"
             val result = withContext(Dispatchers.Default) { segmenter.segment(ph, p.mask.threshold) }
             _busy.value = null
+            if (current?.id != p.id) {
+                if (result is SubjectSegmenter.Result.Mask) result.alpha.recycle()
+                return@launch
+            }
             when (result) {
                 is SubjectSegmenter.Result.Mask -> {
                     val (w, h) = MaskRenderer.workingSize(ph.width, ph.height)
@@ -418,10 +484,11 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
                 }
                 is SubjectSegmenter.Result.Unavailable -> {
                     // Se marca como intentado para no repetir en cada apertura.
-                    _history.value = _history.value?.replace(p.copy(autoMask = true))
+                    _history.value = _history.value?.let { it.replace(it.current.copy(autoMask = true)) }
                     if (!silent) _message.value = "Detección automática no disponible (${result.reason}). Usá el pincel."
                 }
             }
+            onFinished()
         }
     }
 
@@ -489,7 +556,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
         updateMaskOverlay(p)
     }
 
-    private suspend fun renderAt(w: Int, h: Int, p: StudioProject, preview: Boolean): Bitmap = withContext(Dispatchers.Default) {
+    private suspend fun renderAt(w: Int, h: Int, p: StudioProject, preview: Boolean, updateExtras: Boolean = true): Bitmap = withContext(Dispatchers.Default) {
         renderLock.withLock {
             val src = (if (preview) previewPhoto else photo) ?: photo ?: error("Sin foto")
             val out = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
@@ -508,7 +575,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
             }
             val snapshot = app.weather.cached()
             val extras = ClockExtrasBuilder.build(getApplication(), p.design, app.settings.current(), snapshot, _now.value)
-            lastExtras = extras
+            if (updateExtras) lastExtras = extras
             val tint = AtmospherePainter.tintFor(p.atmosphere, _now.value, snapshot)
             // En la vista previa las partículas las anima el editor por encima; al exportar quedan quietas.
             compositor.render(out, src, m, p, extras, subject, tint = tint, particlesAt = if (preview) null else 0f)

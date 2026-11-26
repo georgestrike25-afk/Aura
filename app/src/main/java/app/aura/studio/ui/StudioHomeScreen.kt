@@ -64,13 +64,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun StudioHomeScreen(viewModel: StudioViewModel, onOpen: (String) -> Unit) {
+fun StudioHomeScreen(viewModel: StudioViewModel, onOpen: (String) -> Unit, onAutoDesign: (String) -> Unit) {
     val projects by viewModel.projects.collectAsStateWithLifecycle()
     val activeId by viewModel.activeId.collectAsStateWithLifecycle()
     val busy by viewModel.busy.collectAsStateWithLifecycle()
     // Selector oficial de fotos: sin permisos de almacenamiento, solo la imagen elegida.
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) viewModel.createFromPhoto(uri, onOpen)
+        if (uri != null) viewModel.createFromPhoto(uri, onAutoDesign)
     }
     val ratio = viewModel.screen.width / viewModel.screen.height.toFloat()
 
@@ -94,7 +94,7 @@ fun StudioHomeScreen(viewModel: StudioViewModel, onOpen: (String) -> Unit) {
                     if (busy != null) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = Aura.tokens.onAccent)
                     else Icon(painterResource(R.drawable.ic_ui_add), null, Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text(busy ?: "Nuevo diseño desde una foto")
+                    Text(busy ?: "Diseñar desde una foto")
                 }
                 if (projects.isNotEmpty()) SectionTitle("Tus diseños")
             }
