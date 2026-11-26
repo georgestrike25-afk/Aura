@@ -40,12 +40,6 @@ data class SignatureWork(
 )
 
 object Signature {
-    /** Primero main (versión estable); si todavía no existe ahí, la rama de desarrollo. */
-    val BASE_URLS = listOf(
-        "https://raw.githubusercontent.com/georgestrike25-afk/Aura/main/signature/",
-        "https://raw.githubusercontent.com/georgestrike25-afk/Aura/aura-artistic-evolution/signature/",
-    )
-
     const val PHOTO_BASE_URL = "https://raw.githubusercontent.com/georgestrike25-afk/Aura/aura-artistic-evolution-2/signature/"
     const val PHOTO_CATALOG = "catalog-v2.json"
 
@@ -55,9 +49,10 @@ object Signature {
     fun parse(body: String): SignatureCatalog? = runCatching { json.decodeFromString(SignatureCatalog.serializer(), body) }
         .getOrNull()
         ?.let { c ->
+            val workIds = mutableSetOf<String>()
             c.copy(
-                collections = c.collections
-                    .map { col -> col.copy(items = col.items.filter { it.id.isSafeId() && it.image.isSafePath() && it.thumb.isSafePath() && (it.mask == null || it.mask.isSafePath()) && it.width == 1440 && it.height == 3120 }) }
+                collections = c.collections.filter { it.id.isSafeId() }.distinctBy { it.id }
+                    .map { col -> col.copy(items = col.items.filter { it.isValid() && workIds.add(it.id) }) }
                     .filter { it.items.isNotEmpty() },
             )
         }
@@ -65,7 +60,12 @@ object Signature {
 
     fun url(base: String, path: String): String = base + path
 
-    // Defensa: el catálogo es contenido remoto y los ids y rutas se usan como nombres de archivo.
+    private fun SignatureWork.isValid(): Boolean =
+        id.isSafeId() && image.isSafePath() && thumb.isSafePath() &&
+            (mask == null || (mask.endsWith(".png") && mask.isSafePath())) &&
+            width == 1440 && height == 3120
+
+    // El catálogo es contenido remoto. Las rutas siempre son relativas al catálogo.
     private fun String.isSafeId() = matches(Regex("[a-z0-9_-]{1,40}"))
-    private fun String.isSafePath() = matches(Regex("[a-z0-9_/-]{1,80}\\.(webp|jpg|png)")) && !contains("..")
+    private fun String.isSafePath() = matches(Regex("[a-z0-9_/-]{1,80}\\.(webp|jpg|png)")) && !startsWith("/") && !contains("//") && !contains("..")
 }

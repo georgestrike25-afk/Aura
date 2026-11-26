@@ -139,9 +139,15 @@ object StudioFonts {
         USER_PREFIX + target.name
     }
 
+    private fun userFontFile(context: Context, id: String): File? {
+        if (!id.startsWith(USER_PREFIX)) return null
+        val name = id.removePrefix(USER_PREFIX)
+        val file = File(userDir(context), name)
+        return file.takeIf { it.name == name && it.extension.lowercase() in setOf("ttf", "otf") && it.isFile }
+    }
+
     fun remove(context: Context, id: String) {
-        if (!id.startsWith(USER_PREFIX)) return
-        File(userDir(context), id.removePrefix(USER_PREFIX)).delete()
+        userFontFile(context, id)?.delete()
         synchronized(cache) { cache.remove(id) }
     }
 
@@ -151,7 +157,7 @@ object StudioFonts {
             synchronized(cache) {
                 cache[id] ?: run {
                     if (id.startsWith(USER_PREFIX)) {
-                        File(userDir(app), id.removePrefix(USER_PREFIX)).takeIf { it.exists() }
+                        userFontFile(app, id)
                             ?.let { runCatching { Typeface.createFromFile(it) }.getOrNull() }
                     } else {
                         all.firstOrNull { it.id == id }?.let { runCatching { ResourcesCompat.getFont(app, it.res) }.getOrNull() }

@@ -33,38 +33,40 @@ class SignatureRepository(context: Context) {
 
     /** Catálogo guardado (puede ser null la primera vez sin conexión). */
     fun cached(): Pair<SignatureCatalog, String>? {
-        val c = catalogFile.takeIf { it.exists() }?.readText()?.let(Signature::parse) ?: return null
+        val c = catalogFile.takeIf { it.exists() }?.readText()?.let(Signature::parse)?.takeIf { it.version == 2 } ?: return null
         return c to Signature.PHOTO_BASE_URL
     }
 
     /** Descarga el catálogo más reciente; si falla, devuelve el guardado (o el error si no hay). */
     suspend fun refresh(): Result<Pair<SignatureCatalog, String>> = withContext(Dispatchers.IO) {
-        var lastError: Exception? = null
-        for (base in listOf(Signature.PHOTO_BASE_URL)) {
+        val base = Signature.PHOTO_BASE_URL
+        try {
+            val text = get(Signature.url(base, Signature.PHOTO_CATALOG)).toString(Charsets.UTF_8)
+            val catalog = Signature.parse(text)?.takeIf { it.version == 2 }
+                ?: throw IOException("Catálogo inválido")
+            val atomic = AtomicFile(catalogFile)
+            val output = atomic.startWrite()
             try {
-                val text = get(Signature.url(base, Signature.PHOTO_CATALOG)).toString(Charsets.UTF_8)
-                val catalog = Signature.parse(text) ?: continue
-                val atomic = AtomicFile(catalogFile)
-                val output = atomic.startWrite()
-                try {
-                    output.write(text.toByteArray(Charsets.UTF_8))
-                    atomic.finishWrite(output)
-                } catch (e: IOException) {
-                    atomic.failWrite(output)
-                    throw e
-                }
-                return@withContext Result.success(catalog to base)
+                output.write(text.toByteArray(Charsets.UTF_8))
+                atomic.finishWrite(output)
             } catch (e: IOException) {
-                lastError = e
+                atomic.failWrite(output)
+                throw e
             }
+            Result.success(catalog to base)
+        } catch (e: IOException) {
+            cached()?.let { Result.success(it) } ?: Result.failure(e)
         }
-        cached()?.let { Result.success(it) } ?: Result.failure(lastError ?: IOException("Catálogo no disponible"))
     }
 
     /** Miniatura (descargada una vez). */
     suspend fun thumb(base: String, w: SignatureWork): Bitmap? = withContext(Dispatchers.IO) {
         val f = fetch(base, w.thumb) ?: return@withContext null
-        BitmapFactory.decodeFile(f.path)
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeFile(f.path, bounds)
+        var sample = 1
+        while (maxOf(bounds.outWidth, bounds.outHeight) / sample > 640) sample *= 2
+        BitmapFactory.decodeFile(f.path, BitmapFactory.Options().apply { inSampleSize = sample })
     }
 
     /** Obra completa en disco, lista para abrir en Studio. */
