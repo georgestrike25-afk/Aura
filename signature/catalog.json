@@ -3,6 +3,48 @@
   "license": "",
   "collections": [
     {
+      "id": "retratos-surrealistas-ii",
+      "title": "Retratos surrealistas II",
+      "items": [
+        {
+          "id": "el-hombre-de-los-parpados-d9cf0f2f6179",
+          "title": "El hombre de los párpados dorados",
+          "image": "photos/47422fb1691b6f7d790b0090.webp",
+          "thumb": "photos/47422fb1691b6f7d790b0090-thumb.webp",
+          "dhash": "1b134d1d4ccd272c2122122526142425142123132021123e321e3129161f2112262516372e1c3229172322132924142c26162b2515211e11",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-perfil-de-lluvia-8ab172bdfbc4",
+          "title": "El perfil de lluvia",
+          "image": "photos/505f325d73120ef8ad2e5977.webp",
+          "thumb": "photos/505f325d73120ef8ad2e5977-thumb.webp",
+          "dhash": "03031d662f2fe3a1101f21122226122428112025122124182426242f3015242814272c1e303526343614252a0d1d210e1d220f20260e2025",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-retrato-que-se-borra-c889227b6a71",
+          "title": "El retrato que se borra",
+          "image": "photos/c5768333e1b134251c7f4cea.webp",
+          "thumb": "photos/c5768333e1b134251c7f4cea-thumb.webp",
+          "dhash": "23330d0d4d49132e221d23231e25262028241e25231e24362f353c343b231f252a232d423a42433b442f28322a242b322b333029322b252d",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-mano-de-la-sombra-b96ac7cb944c",
+          "title": "La mano de la sombra",
+          "image": "photos/7900a93c399e26d16b1104f3.webp",
+          "thumb": "photos/7900a93c399e26d16b1104f3-thumb.webp",
+          "dhash": "0f0f0b194cf88c8e6233296e392d6937315f3231743d2c8b4f3b874a368046346d372d6c353062322f6b3b315b2d2d633130562d2d462729",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "retratos-del-mar-ii",
       "title": "Retratos del mar II",
       "items": [
