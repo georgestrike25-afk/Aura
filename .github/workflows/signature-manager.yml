@@ -41,13 +41,16 @@ jobs:
       - run: pip install --quiet -r tools/requirements-signature.txt
       - name: Probar la galería y el visor con Tk
         run: cd tools && python -m unittest test_aura_signature_manager -v
+      - name: Comprobar el ícono de la bandeja en Windows
+        run: python -c "import pystray, pystray._win32; print('bandeja OK')"
       - name: Compilar AuraSignature.exe
         shell: bash
         run: |
           pyinstaller --noconfirm --onefile --windowed --name AuraSignature \
             --icon tools/aura_signature.ico --paths tools \
             --collect-data sv_ttk --collect-all tkinterdnd2 \
-            --hidden-import keyring.backends.Windows \
+            --hidden-import keyring.backends.Windows --hidden-import pystray._win32 \
+            --add-data "tools/aura_signature.ico;." \
             tools/aura_signature_manager.py
           ls -la dist
       - name: Probar que arranca

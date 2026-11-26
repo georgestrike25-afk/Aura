@@ -38,6 +38,13 @@ teléfono, para todos los usuarios.
 - Seleccioná con **Ctrl + clic** o por rango con **Shift + clic**. La barra inferior indica la selección y ofrece **Mover a…** y **Quitar de Signature**.
 - **Actividad** despliega el registro. **Reintentar** vuelve a preparar los archivos que fallaron en el último lote.
 
+## Bandeja y estadísticas
+
+- Al **cerrar la ventana**, el gestor sigue sincronizando con un ícono junto al reloj de Windows (bandeja).
+  Clic en el ícono: abrir; clic derecho: **Sincronizar ahora** o **Salir**. Avisa cuando publica fondos.
+- **⋯ › Estadísticas**: total de obras, cuántas hay por colección y las últimas publicadas (con fecha, para lo
+  que se publique desde esta versión).
+
 ## Visor
 
 Doble clic en un fondo (o **Ver en grande**) abre el visor, con los atajos de Mirador: **← →** pasar,

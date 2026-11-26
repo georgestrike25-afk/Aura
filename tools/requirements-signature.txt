@@ -3,3 +3,4 @@ keyring==25.5.0
 sv-ttk==2.6.0
 tkinterdnd2==0.4.2
 pyinstaller==6.11.1
+pystray==0.19.5

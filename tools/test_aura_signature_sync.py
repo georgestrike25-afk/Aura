@@ -81,6 +81,7 @@ class GalleryTest(unittest.TestCase):
         self.assertEqual([copy], r.repeated)
         self.assertEqual(1, self.repo.n, "todo en un solo commit")
         self.assertIn("[skip ci]", self.repo.last_message)
+        self.assertTrue(all(i.get("added") for c in self.repo.catalog()["collections"] for i in c["items"]), "fecha de publicación")
         cat = self.repo.catalog()
         self.assertEqual(["Montañas"], [c["title"] for c in cat["collections"]])
         self.assertEqual(["Pico azul", "Fuego"], [i["title"] for i in cat["collections"][0]["items"]])

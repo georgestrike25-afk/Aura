@@ -211,6 +211,7 @@ class Gallery:
                     catalog["collections"].insert(0, col)
                 col["items"] = [i for i in col["items"] if i["id"] != p.work["id"]] + [p.work]
                 files["signature/" + p.work["image"]] = p.image
+                p.work.setdefault("added", time.strftime("%Y-%m-%d"))  # para las estadísticas del gestor
                 files["signature/" + p.work["thumb"]] = p.thumb
                 result.added.append(p.work)
                 result.thumbs[p.work["thumb"]] = p.thumb

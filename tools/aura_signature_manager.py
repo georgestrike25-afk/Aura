@@ -32,6 +32,11 @@ TOKEN_URL = "https://github.com/settings/personal-access-tokens/new"
 IS_WINDOWS = sys.platform == "win32"
 UI_FONT = "Segoe UI" if IS_WINDOWS else "DejaVu Sans"
 
+try:  # ícono en la bandeja del sistema (opcional)
+    import pystray
+except Exception:  # pragma: no cover
+    pystray = None
+
 try:  # arrastrar y soltar (opcional)
     from tkinterdnd2 import DND_FILES, TkinterDnD
 except Exception:  # pragma: no cover
@@ -193,8 +198,37 @@ class ManagerApp:
         root.after(150, self._drain)
         root.after(1500, self._first_run_shortcut)
         root.after(4000, self._tick)
+        self.tray = Tray(self) if pystray is not None else None
+        root.protocol("WM_DELETE_WINDOW", self.close_window)
         if start_minimized:
-            root.iconify()
+            if self.tray:
+                root.withdraw()  # arranca solo en la bandeja
+            else:
+                root.iconify()
+
+    # ---------- bandeja del sistema
+
+    def close_window(self):
+        """Cerrar la ventana no corta la sincronización: el gestor sigue en la bandeja."""
+        if self.tray is None:
+            self.quit()
+            return
+        self.root.withdraw()
+        if not self.cfg.values.get("tray_hint_shown"):
+            self.tray.notify("Aura Signature sigue sincronizando en la bandeja. Para salir: clic derecho en el ícono › Salir.")
+            self.cfg.values["tray_hint_shown"] = True
+            self.cfg.save()
+
+    def show_window(self):
+        self.root.deiconify()
+        self.root.state("normal")
+        self.root.lift()
+        self.root.focus_force()
+
+    def quit(self):
+        if self.tray:
+            self.tray.stop()
+        self.root.destroy()
 
     # ---------- aspecto
 
@@ -261,6 +295,7 @@ class ManagerApp:
         menu = tk.Menu(menu_button, tearoff=False)
         menu.add_command(label="Abrir carpeta", command=self.open_folder)
         menu.add_command(label="Actualizar", command=self.refresh_catalog)
+        menu.add_command(label="Estadísticas", command=self.statistics)
         menu.add_command(label="Configuración", command=self.settings)
         menu_button.configure(menu=menu)
         menu_button.pack(side="right")
@@ -416,6 +451,12 @@ class ManagerApp:
                     self.progress.stop()
                 elif kind in ("catalog", "thumb"):
                     refresh = True
+                elif kind == "tray":
+                    {"open": self.show_window, "sync": self.refresh_catalog, "quit": self.quit}[value]()
+                    if value == "quit":
+                        return
+                elif kind == "published" and self.tray and self.root.state() == "withdrawn":
+                    self.tray.notify(value)
                 elif kind == "failed":
                     self.failed_uploads = value
                     self.retry_uploads.configure(state="normal" if value else "disabled")
@@ -473,6 +514,7 @@ class ManagerApp:
         self.events.put(("log", " · ".join(parts) or "Nada nuevo."))
         if r.added:
             self.events.put(("log", "En unos minutos aparecen en Signature (el teléfono revisa cada 5 minutos)."))
+            self.events.put(("published", f"Se publicaron {len(r.added)} fondos en Signature."))
         self.events.put(("catalog", None))
 
     def _retry_failed(self):
@@ -804,6 +846,57 @@ class ManagerApp:
             self.selected_works.clear()
             self.run(lambda: (self.gallery.delete_works(ids), self.events.put(("catalog", None))), f"Borrando {len(ids)} fondos…")
 
+    # ---------- estadísticas
+
+    def statistics(self):
+        cols = self._collections()
+        items = [(c, i) for c in cols for i in c["items"]]
+        win = tk.Toplevel(self.root)
+        win.title("Estadísticas · Aura Signature")
+        win.configure(bg=PALETTE["bg"])
+        win.transient(self.root)
+        frame = tk.Frame(win, bg=PALETTE["bg"], padx=22, pady=18)
+        frame.pack(fill="both", expand=True)
+        dated = sorted((i.get("added", ""), c["title"], i["title"]) for c, i in items if i.get("added"))
+        today = time.strftime("%Y-%m-%d")
+        week_ago = time.strftime("%Y-%m-%d", time.localtime(time.time() - 7 * 86400))
+        this_week = sum(1 for d, _, _ in dated if d >= week_ago)
+
+        def label(text, size=10, color=PALETTE["text"], bold=False, **grid):
+            tk.Label(frame, text=text, bg=PALETTE["bg"], fg=color, anchor="w", justify="left",
+                     font=(UI_FONT, size, "bold" if bold else "normal")).grid(sticky="w", **grid)
+
+        label(f"{len(items)} obras en {len(cols)} colecciones", 18, bold=True, row=0, column=0, columnspan=3)
+        label(f"Esta semana: {this_week} nuevas · hoy: {sum(1 for d, _, _ in dated if d == today)}", 10, PALETTE["muted"],
+              row=1, column=0, columnspan=3, pady=(2, 14))
+
+        label("Por colección", 12, bold=True, row=2, column=0, columnspan=3, pady=(0, 6))
+        biggest = max((len(c["items"]) for c in cols), default=1) or 1
+        row = 3
+        for c in sorted(cols, key=lambda c: -len(c["items"])):
+            label(c["title"][:28], row=row, column=0, padx=(0, 12))
+            bar = tk.Canvas(frame, width=240, height=12, bg=PALETTE["panel"], highlightthickness=0)
+            bar.create_rectangle(0, 0, int(240 * len(c["items"]) / biggest), 12, fill=PALETTE["accent"], width=0)
+            bar.grid(row=row, column=1, sticky="w")
+            label(str(len(c["items"])), row=row, column=2, padx=(10, 0))
+            row += 1
+
+        label("Últimas publicadas", 12, bold=True, row=row, column=0, columnspan=3, pady=(16, 6))
+        row += 1
+        if dated:
+            for d, col, title in reversed(dated[-12:]):
+                label(f"{d[8:10]}/{d[5:7]}   {title}  ·  {col}", 10, row=row, column=0, columnspan=3)
+                row += 1
+        else:
+            label("Las obras que publiques desde ahora van a mostrar su fecha acá.", 10, PALETTE["muted"],
+                  row=row, column=0, columnspan=3)
+            row += 1
+        undated = len(items) - len(dated)
+        if dated and undated:
+            label(f"{undated} obras publicadas antes de esta versión no tienen fecha registrada.", 9, PALETTE["muted"],
+                  row=row, column=0, columnspan=3, pady=(10, 0))
+        ttk.Button(frame, text="Cerrar", command=win.destroy).grid(row=row + 1, column=2, sticky="e", pady=(16, 0))
+
     def settings(self):
         win = tk.Toplevel(self.root)
         win.title("Configuración")
@@ -1109,6 +1202,57 @@ class Viewer:
                 return
             self.index = min(self.index, len(self.items) - 1)
             self.show()
+
+
+class Tray:
+    """Ícono junto al reloj de Windows: abrir, sincronizar ahora o salir. Los clics llegan a la ventana
+    por la cola de eventos (Tk solo se toca desde su propio hilo)."""
+
+    def __init__(self, app: "ManagerApp"):
+        self.app = app
+        image = self._image()
+
+        def send(value):
+            return lambda *_: app.events.put(("tray", value))
+
+        menu = pystray.Menu(
+            pystray.MenuItem("Abrir Aura Signature", send("open"), default=True),
+            pystray.MenuItem("Sincronizar ahora", send("sync")),
+            pystray.Menu.SEPARATOR,
+            pystray.MenuItem("Salir", send("quit")),
+        )
+        self.icon = pystray.Icon("AuraSignature", image, "Aura Signature", menu)
+        try:
+            self.icon.run_detached()
+        except Exception:
+            self.icon = None
+
+    @staticmethod
+    def _image() -> Image.Image:
+        base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
+        for name in ("aura_signature.ico", "tools/aura_signature.ico"):
+            try:
+                return Image.open(base / name).convert("RGBA").resize((64, 64))
+            except Exception:
+                continue
+        im = Image.new("RGBA", (64, 64), PALETTE["bg"])
+        from PIL import ImageDraw
+        ImageDraw.Draw(im).ellipse((10, 10, 54, 54), outline=PALETTE["accent"], width=6)
+        return im
+
+    def notify(self, text: str):
+        try:
+            if self.icon is not None:
+                self.icon.notify(text, APP)
+        except Exception:
+            pass
+
+    def stop(self):
+        try:
+            if self.icon is not None:
+                self.icon.stop()
+        except Exception:
+            pass
 
 
 def dark_title_bar(window) -> None:
