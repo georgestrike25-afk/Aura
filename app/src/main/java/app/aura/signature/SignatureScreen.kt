@@ -50,7 +50,14 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import app.aura.core.signature.SignatureCatalog
+import app.aura.core.signature.GalleryCollection
+import app.aura.core.signature.GalleryWork
+import app.aura.core.signature.Signature
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.Row
 import app.aura.core.signature.SignatureWork
 import app.aura.ui.theme.Aura
 import kotlinx.coroutines.delay
@@ -63,7 +70,36 @@ class SignatureViewModel(app: Application) : AndroidViewModel(app) {
     private val repo = SignatureRepository(app)
 
     private val _catalog = MutableStateFlow(repo.cached())
-    val catalog: StateFlow<Pair<SignatureCatalog, String>?> = _catalog.asStateFlow()
+    val catalog: StateFlow<List<GalleryCollection>> = _catalog.asStateFlow()
+
+    private val _message = MutableStateFlow<String?>(null)
+    val message: StateFlow<String?> = _message.asStateFlow()
+
+    private val _importing = MutableStateFlow(false)
+    val importing: StateFlow<Boolean> = _importing.asStateFlow()
+
+    /** Sube imágenes del teléfono a «Mis obras». */
+    fun import(uris: List<Uri>) = viewModelScope.launch {
+        if (uris.isEmpty() || _importing.value) return@launch
+        _importing.value = true
+        try {
+            val n = repo.importImages(uris)
+            _catalog.value = repo.cached()
+            _message.value = when {
+                n == 0 -> "No se pudo leer ninguna de esas imágenes."
+                n < uris.size -> "Se agregaron $n de ${uris.size} imágenes a «Mis obras»."
+                n == 1 -> "Imagen agregada a «Mis obras»."
+                else -> "Se agregaron $n imágenes a «Mis obras»."
+            }
+        } finally {
+            _importing.value = false
+        }
+    }
+
+    fun deleteMine(id: String) {
+        repo.deleteMine(id)
+        _catalog.value = repo.cached()
+    }
 
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading.asStateFlow()
@@ -92,15 +128,19 @@ class SignatureViewModel(app: Application) : AndroidViewModel(app) {
         try {
             repo.refresh()
                 .onSuccess { _catalog.value = it; _error.value = null }
-                .onFailure { _error.value = if (_catalog.value == null) "No se pudo descargar la galería. Revisá la conexión." else null }
+                .onFailure {
+                    _catalog.value = repo.cached()
+                    _error.value = if (!repo.hasRemoteCache()) "No se pudo descargar la galería. Revisá la conexión." else null
+                }
         } finally {
             _loading.value = false
         }
     }
 
     fun loadThumb(base: String, w: SignatureWork) {
-        if (thumbs.containsKey(w.thumb)) return
-        viewModelScope.launch { repo.thumb(base, w)?.let { bmp: Bitmap -> thumbs[w.thumb] = bmp.asImageBitmap() } }
+        val key = base + w.thumb
+        if (thumbs.containsKey(key)) return
+        viewModelScope.launch { repo.thumb(base, w)?.let { bmp: Bitmap -> thumbs[key] = bmp.asImageBitmap() } }
     }
 
     /** Descarga la obra completa y la entrega como Uri para crear un proyecto de Studio. */
@@ -116,8 +156,9 @@ class SignatureViewModel(app: Application) : AndroidViewModel(app) {
 }
 
 /**
- * Aura Signature: galería de fondos originales pensados para el reloj (espacio libre arriba,
- * protagonistas moderados). Tocar una obra la abre como proyecto nuevo en Studio.
+ * Aura Signature: galería de fondos pensados para el reloj. Junta las obras publicadas (se actualizan
+ * solas mientras la pantalla está abierta) con las que la persona sube desde el teléfono. Tocar una obra
+ * la abre como proyecto nuevo en Studio.
  */
 @Composable
 fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: SignatureViewModel = viewModel()) {
@@ -126,7 +167,7 @@ fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: Sign
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             while (true) {
                 vm.refresh().join()
-                delay(60_000L)
+                delay(REFRESH_EVERY_MS)
             }
         }
     }
@@ -135,35 +176,49 @@ fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: Sign
     val error by vm.error.collectAsStateWithLifecycle()
     val opening by vm.opening.collectAsStateWithLifecycle()
     val favorites by vm.favorites.collectAsStateWithLifecycle()
+    val importing by vm.importing.collectAsStateWithLifecycle()
+    val message by vm.message.collectAsStateWithLifecycle()
     var favoritesOnly by rememberSaveable { mutableStateOf(false) }
-    var previewId by rememberSaveable { mutableStateOf<String?>(null) }
-    val currentCatalog = catalog
-    val selected = currentCatalog?.first?.collections?.asSequence()
-        ?.flatMap { it.items.asSequence() }?.firstOrNull { it.id == previewId }
-    if (selected != null && currentCatalog != null) {
+    var previewKey by rememberSaveable { mutableStateOf<String?>(null) }
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(20)) { uris ->
+        vm.import(uris)
+    }
+    val selected: GalleryWork? = catalog.asSequence().flatMap { it.items.asSequence() }
+        .firstOrNull { it.base + it.work.id == previewKey }
+    if (selected != null) {
+        val w = selected.work
+        val mine = selected.base == Signature.LOCAL_BASE
         AlertDialog(
-            onDismissRequest = { if (opening == null) previewId = null },
-            title = { Text(selected.title) },
+            onDismissRequest = { if (opening == null) previewKey = null },
+            title = { Text(w.title) },
             text = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    vm.thumbs[selected.thumb]?.let {
-                        Image(it, contentDescription = selected.title, contentScale = ContentScale.Fit,
+                    vm.thumbs[selected.base + w.thumb]?.let {
+                        Image(it, contentDescription = w.title, contentScale = ContentScale.Fit,
                             modifier = Modifier.fillMaxWidth().height(320.dp))
                     }
-                    if (opening == selected.id) CircularProgressIndicator(Modifier.padding(12.dp))
+                    if (opening == w.id) CircularProgressIndicator(Modifier.padding(12.dp))
                     error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                    Row {
+                        TextButton(onClick = { vm.toggleFavorite(w.id) }) {
+                            Text(if (w.id in favorites) "Quitar favorito" else "Favorito")
+                        }
+                        if (mine) TextButton(enabled = opening == null, onClick = { vm.deleteMine(w.id); previewKey = null }) {
+                            Text("Borrar")
+                        }
+                    }
                 }
             },
             confirmButton = {
                 TextButton(enabled = opening == null, onClick = {
-                    vm.open(currentCatalog.second, selected) { uri, mask ->
-                        previewId = null
-                        onUse(uri, selected, mask)
+                    vm.open(selected.base, w) { uri, mask ->
+                        previewKey = null
+                        onUse(uri, w, mask)
                     }
                 }) { Text("Abrir en Studio") }
             },
             dismissButton = {
-                TextButton(enabled = opening == null, onClick = { previewId = null }) { Text("Cerrar") }
+                TextButton(enabled = opening == null, onClick = { previewKey = null }) { Text("Cerrar") }
             },
         )
     }
@@ -173,23 +228,32 @@ fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: Sign
             Column(Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
                 Text("Signature", style = MaterialTheme.typography.headlineMedium)
                 Text(
-                    "Obras originales de Aura, pensadas para que el reloj viva dentro de la imagen. Tocá una para abrirla en Studio.",
+                    "Fondos pensados para que el reloj viva dentro de la imagen. Tocá uno para abrirlo en Studio. " +
+                        "Las obras nuevas que se publiquen aparecen solas.",
                     style = MaterialTheme.typography.bodyMedium, color = Aura.tokens.mutedText,
                 )
-                TextButton(enabled = !loading, onClick = { vm.refresh() }) {
-                    Text(if (loading) "Actualizando…" else "Actualizar galería")
-                }
-                TextButton(onClick = { favoritesOnly = !favoritesOnly }) {
-                    Text(if (favoritesOnly) "Ver todas las obras" else "Ver favoritos")
+                Spacer(Modifier.height(10.dp))
+                Button(enabled = !importing, onClick = {
+                    picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                }) { Text(if (importing) "Subiendo…" else "Subir mis imágenes") }
+                message?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText, modifier = Modifier.padding(top = 6.dp)) }
+                Row {
+                    TextButton(enabled = !loading, onClick = { vm.refresh() }) {
+                        Text(if (loading) "Actualizando…" else "Actualizar galería")
+                    }
+                    TextButton(onClick = { favoritesOnly = !favoritesOnly }) {
+                        Text(if (favoritesOnly) "Ver todas" else "Ver favoritos")
+                    }
                 }
             }
         }
-        val c = catalog
-        if (c == null) {
+        if (catalog.isEmpty()) {
             item {
                 Column(Modifier.fillMaxWidth().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     if (loading) CircularProgressIndicator(color = Aura.tokens.accent)
+                    else Text("Todavía no hay obras. Subí las tuyas con el botón de arriba.", style = MaterialTheme.typography.bodyMedium)
                     error?.let {
+                        Spacer(Modifier.height(12.dp))
                         Text(it, style = MaterialTheme.typography.bodyMedium)
                         Spacer(Modifier.height(12.dp))
                         OutlinedButton(onClick = { vm.refresh() }) { Text("Reintentar") }
@@ -198,38 +262,36 @@ fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: Sign
             }
             return@LazyColumn
         }
-        val (cat, base) = c
-        if (cat.collections.isEmpty()) {
-            item { Text("Las colecciones publicadas aparecerán acá automáticamente.", Modifier.padding(20.dp)) }
-        } else if (favoritesOnly && favorites.isEmpty()) {
+        if (favoritesOnly && catalog.none { col -> col.items.any { it.work.id in favorites } }) {
             item { Text("Todavía no guardaste favoritos.", Modifier.padding(20.dp)) }
         }
-        cat.collections.forEach { col ->
-            val works = if (favoritesOnly) col.items.filter { it.id in favorites } else col.items
+        catalog.forEach { col ->
+            val works = if (favoritesOnly) col.items.filter { it.work.id in favorites } else col.items
             if (works.isEmpty()) return@forEach
-            item(key = col.id) {
+            item(key = "col-" + col.id) {
                 Column(Modifier.padding(top = 8.dp, bottom = 12.dp)) {
                     Text(col.title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 20.dp))
                     if (col.description.isNotBlank()) {
                         Text(col.description, style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText, modifier = Modifier.padding(horizontal = 20.dp))
                     }
                     LazyRow(contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 20.dp, vertical = 10.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        items(works, key = { it.id }) { w ->
-                            LaunchedEffect(base, w.thumb) { vm.loadThumb(base, w) }
-                            Column(Modifier.width(150.dp).clickable(enabled = opening == null) { previewId = w.id }) {
+                        items(works, key = { it.base + it.work.id }) { gw ->
+                            val w = gw.work
+                            LaunchedEffect(gw.base, w.thumb) { vm.loadThumb(gw.base, w) }
+                            Column(Modifier.width(150.dp).clickable(enabled = opening == null) { previewKey = gw.base + w.id }) {
                                 Box(
                                     Modifier.fillMaxWidth().aspectRatio(w.width / w.height.toFloat()).clip(RoundedCornerShape(18.dp))
                                         .background(MaterialTheme.colorScheme.surfaceVariant),
                                     contentAlignment = Alignment.Center,
                                 ) {
-                                    vm.thumbs[w.thumb]?.let { Image(it, contentDescription = w.title, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize()) }
+                                    vm.thumbs[gw.base + w.thumb]?.let { Image(it, contentDescription = w.title, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize()) }
                                         ?: CircularProgressIndicator(Modifier.padding(24.dp), color = Aura.tokens.accent, strokeWidth = 2.dp)
                                     if (opening == w.id) CircularProgressIndicator(color = Aura.tokens.accent)
                                 }
-                                Text(w.title, style = MaterialTheme.typography.labelLarge, maxLines = 1, modifier = Modifier.padding(top = 6.dp))
-                                TextButton(onClick = { vm.toggleFavorite(w.id) }) {
-                                    Text(if (w.id in favorites) "Quitar favorito" else "Guardar favorito")
-                                }
+                                Text(
+                                    (if (w.id in favorites) "★ " else "") + w.title,
+                                    style = MaterialTheme.typography.labelLarge, maxLines = 1, modifier = Modifier.padding(top = 6.dp),
+                                )
                             }
                         }
                     }
@@ -238,7 +300,7 @@ fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: Sign
         }
         item {
             Text(
-                cat.license.ifBlank { "Obras originales de Aura" } + ". Se descargan al verlas y quedan guardadas en el teléfono.",
+                "Las obras se descargan al verlas y quedan guardadas en el teléfono. «Mis obras» nunca sale del teléfono.",
                 style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText, modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
             )
             error?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(horizontal = 20.dp)) }
@@ -246,3 +308,5 @@ fun SignatureScreen(onUse: (Uri, SignatureWork, java.io.File?) -> Unit, vm: Sign
     }
 }
 
+/** Cada cuánto se revisa si hay obras nuevas con la pantalla abierta (GitHub cachea ~5 min). */
+private const val REFRESH_EVERY_MS = 5 * 60_000L

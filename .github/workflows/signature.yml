@@ -1,0 +1,34 @@
+name: "Signature: bandeja"
+
+# Cada imagen que se sube a signature/inbox/ se prepara y se publica en la galería de la app.
+on:
+  push:
+    paths:
+      - "signature/inbox/**"
+  workflow_dispatch:
+
+concurrency:
+  group: signature-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet pillow
+      - name: Preparar y registrar las obras
+        run: python3 tools/aura_signature_publish.py --inbox | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Publicar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A signature
+          git diff --cached --quiet && exit 0
+          git commit -m "Signature: obras nuevas desde la bandeja [skip ci]"
+          for i in 1 2 3; do git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && break; sleep 5; done

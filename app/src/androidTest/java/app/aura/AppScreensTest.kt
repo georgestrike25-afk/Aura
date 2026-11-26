@@ -60,7 +60,7 @@ class AppScreensTest {
             device.swipe(device.displayWidth / 2, device.displayHeight * 3 / 4, device.displayWidth / 2, device.displayHeight / 4, 30); shot("forecast_scrolled")
             tap("Widgets"); shot("widgets")
             tap("Studio"); shot("studio")
-            tap("Signature"); shot("signature")
+            tap("Signature"); device.wait(Until.findObject(By.textContains("Sueños quietos")), 20_000); Thread.sleep(3000); shot("signature")
             tap("Ajustes"); shot("settings")
             tap("Widgets")
             device.swipe(device.displayWidth / 2, device.displayHeight * 2 / 3, device.displayWidth / 2, device.displayHeight / 3, 30)

@@ -28,4 +28,16 @@ class SignatureTest {
         val ok = """{"collections":[{"id":"x","title":"X","items":[{"id":"a","title":"A","image":"a.webp","thumb":"thumbs/a.webp"},{"id":"B!","title":"B","image":"b.webp","thumb":"thumbs/b.webp"}]}]}"""
         assertEquals(listOf("a"), Signature.parse(ok)!!.collections[0].items.map { it.id })
     }
+
+    @Test
+    fun `catalogs from several folders merge without duplicates`() {
+        fun cat(vararg ids: String) = Signature.parse(
+            """{"version":2,"collections":[{"id":"x","title":"X","items":[""" +
+                ids.joinToString(",") { """{"id":"$it","title":"$it","image":"$it.webp","thumb":"t/$it.webp"}""" } + "]}]}",
+        )!!
+        val merged = Signature.merge(listOf(cat("a", "b") to "main/", cat("b", "c") to "rama/"))
+        assertEquals(1, merged.size)
+        assertEquals(listOf("a" to "main/", "b" to "main/", "c" to "rama/"), merged[0].items.map { it.work.id to it.base })
+        assertNotNull(Signature.parse("""{"version":2,"collections":[]}"""))
+    }
 }
