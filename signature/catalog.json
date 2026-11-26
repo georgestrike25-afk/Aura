@@ -3,6 +3,30 @@
   "license": "",
   "collections": [
     {
+      "id": "arquitectura-del-alma",
+      "title": "Arquitectura del alma",
+      "items": [
+        {
+          "id": "la-boveda-de-la-duda-066c75781d23",
+          "title": "La bóveda de la duda",
+          "image": "photos/7ef94ee003d86c84ee8251c8.webp",
+          "thumb": "photos/7ef94ee003d86c84ee8251c8-thumb.webp",
+          "dhash": "0930cc136286973d28192b28192b28192a28192a2f1e303524343524342f1f305f4952745e697c656e5f4b55998184ab9194a68b908d747b",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-ventana-interior-79da180ebd62",
+          "title": "La ventana interior",
+          "image": "photos/12133afd96b9503178c635f1.webp",
+          "thumb": "photos/12133afd96b9503178c635f1-thumb.webp",
+          "dhash": "010101870f0f01040c16130f1a17111d1a111d1b131d1a26241a2b2a1f1a2723171d1849311c50371f2026202921183f2b1a533721473626",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "poesia-de-fuego",
       "title": "Poesía de fuego",
       "items": [
