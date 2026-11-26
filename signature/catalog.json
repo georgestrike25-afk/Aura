@@ -3,6 +3,48 @@
   "license": "",
   "collections": [
     {
+      "id": "animales-mitologicos",
+      "title": "Animales mitológicos",
+      "items": [
+        {
+          "id": "el-dragon-de-la-niebla-3ba9b08722eb",
+          "title": "El dragón de la niebla",
+          "image": "photos/28500bec37550bba29752f20.webp",
+          "thumb": "photos/28500bec37550bba29752f20-thumb.webp",
+          "dhash": "3905c68c076767022230302433332333332333332330302b38372e3d3c2432333b4744434e484a58543b4a483c444047504b5864604f5d59",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-grifo-de-las-ruinas-483f2c437287",
+          "title": "El grifo de las ruinas",
+          "image": "photos/36f6d6cb140b2b571f6b8b85.webp",
+          "thumb": "photos/36f6d6cb140b2b571f6b8b85-thumb.webp",
+          "dhash": "999bbbcd8e73d703351c10341a0f31180d30180e3a20154125173e2316331c12683c246238205e372248291b5f311b64351d6737205a2f1b",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-liebre-del-pedernal-7743a677ba67",
+          "title": "La liebre del pedernal",
+          "image": "photos/a7d5812a710afb124c991d2e.webp",
+          "thumb": "photos/a7d5812a710afb124c991d2e-thumb.webp",
+          "dhash": "088854cc0c1c1327101827111828111829111a2c131c2f1c24341b2233141d31242d403a3f4e2b33471f2a4129324637405538435a333e57",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-salamandra-de-las-bras-c5c4a4843fae",
+          "title": "La salamandra de las brasas",
+          "image": "photos/95153661f69087778cc429bc.webp",
+          "thumb": "photos/95153661f69087778cc429bc-thumb.webp",
+          "dhash": "63850d0e3378623b1f14191d131921161e21151d21161c2b1a202e1c2426192039242a341e22321e23362026362227311e222d1c202d1b1f",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "retratos-surrealistas",
       "title": "Retratos surrealistas",
       "items": [
