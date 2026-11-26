@@ -14,6 +14,33 @@
           "dhash": "1f1f1f375b337274251c15412f213022171b1610261d15392b1e34271b231b132f21152e221736291c3a291a392412261b10251b12302014",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-peso-de-la-tinta-88dd8defbcf3",
+          "title": "El peso de la tinta",
+          "image": "photos/149fc3e0e93be28980ef8c65.webp",
+          "thumb": "photos/149fc3e0e93be28980ef8c65-thumb.webp",
+          "dhash": "1f1f0f0f4f77393f2a0707390a0b2e07082406052a0807360b0b31090a25060636130c3b150f340f0c290a085f3925754a30623a245b3320",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-grulla-de-pan-de-oro-db86da870d06",
+          "title": "La grulla de pan de oro",
+          "image": "photos/681c8ecc23b96e50306e12cb.webp",
+          "thumb": "photos/681c8ecc23b96e50306e12cb-thumb.webp",
+          "dhash": "1707071313612727331a233c1f283e2129391e26361d253c22293e222a3b20293b21254026244125293f23274324214828244f2d29412426",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-semilla-del-fulgor-fcb01cabc867",
+          "title": "La semilla del fulgor",
+          "image": "photos/7b2b9ec76d27a8f61d2e50eb.webp",
+          "thumb": "photos/7b2b9ec76d27a8f61d2e50eb-thumb.webp",
+          "dhash": "8e0e0e0e0a0f2e260a18180d1c200d1c200a18180a1919122226101f23091818112121242e2c1d27260d1d1e2b31303838332f312e1e282a",
+          "width": 1440,
+          "height": 3120
         }
       ]
     },
