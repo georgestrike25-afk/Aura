@@ -3,6 +3,48 @@
   "license": "",
   "collections": [
     {
+      "id": "realismo-magico",
+      "title": "Realismo mágico",
+      "items": [
+        {
+          "id": "el-correo-de-los-peces-01c4b8086b7f",
+          "title": "El correo de los peces",
+          "image": "photos/6fa5645151fc4250a3189fc7.webp",
+          "thumb": "photos/6fa5645151fc4250a3189fc7-thumb.webp",
+          "dhash": "00031731694b63632e433c6278748f9a9699a09b304a483e524f5667625e7675263733252e273b463e4d636029332d1d251f353b33464c44",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-campana-de-las-garzas-43c0d5ce1263",
+          "title": "La campana de las garzas",
+          "image": "photos/f0bf75a8aad3ea90f942dbe4.webp",
+          "thumb": "photos/f0bf75a8aad3ea90f942dbe4-thumb.webp",
+          "dhash": "1a0f1f9f0b9c1c1b4523187a40287139244c27214928226838285830264223254727226138294f2d26402221502b2365392c5a312a4b2720",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-vendedora-de-sombra-ae4c1545a363",
+          "title": "La vendedora de sombra",
+          "image": "photos/fa042112994bf97a445b96be.webp",
+          "thumb": "photos/fa042112994bf97a445b96be-thumb.webp",
+          "dhash": "70c8c8c9c494d4754b422a2f24153d2d1c7e65485b4d3740312556402f856c5465492f694b30755437705439815e3e815f3f8e6845946d4a",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-vertiente-del-umbral-7be33914ba76",
+          "title": "La vertiente del umbral",
+          "image": "photos/936de7eee3712ef1348f4d61.webp",
+          "thumb": "photos/936de7eee3712ef1348f4d61-thumb.webp",
+          "dhash": "8e8e8e8e8e260f03411f2a4c25304d263145222d4823305631365530354925315633355e443c5d443c5434376156435e5f495f634c635c49",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "suenos-y-memorias",
       "title": "Sueños y memorias",
       "items": [
