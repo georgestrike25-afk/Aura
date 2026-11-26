@@ -11,10 +11,12 @@ object AutoDesign {
         require(subject == null || subject.size == pixels.size)
         val positions = candidates(pixels, width, height, subject, separate = false)
         val sides = candidates(pixels, width, height, subject, separate = true)
-        val top = positions.filter { it.x == 0.5f && it.y <= 0.34f }.take(4)
+        val top = positions.filter { it.x == 0.5f && it.y <= 0.34f }
         val stacked = positions.filter { it.x != 0.5f && it.y in 0.34f..0.74f }.take(8)
         val materials = listOf(ClockMaterial.GLASS, ClockMaterial.METAL, ClockMaterial.MINIMAL, ClockMaterial.STONE)
-        val first = if (round == 0 && reference != null) reference.material else materials[Math.floorMod(round, materials.size)]
+        val materialOffset = materials.indexOf(reference?.material).coerceAtLeast(0)
+        val first = if (round == 0 && reference != null) reference.material
+            else materials[Math.floorMod(round + materialOffset, materials.size)]
         val alternatives = materials.filterNot { it == first }
         val second = alternatives[Math.floorMod(round, alternatives.size)]
         val third = alternatives[Math.floorMod(round + 1, alternatives.size)]

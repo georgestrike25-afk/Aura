@@ -28,8 +28,6 @@ def encode(image, quality):
 def prepare(path, collection_id):
     with Image.open(path) as source:
         original = ImageOps.exif_transpose(source)
-        if original.width < SIZE[0] or original.height < SIZE[1]:
-            raise ValueError(f"{path.name}: se requiere un original de al menos {SIZE[0]} × {SIZE[1]} píxeles")
         full = ImageOps.fit(original.convert("RGB"), SIZE, Image.Resampling.LANCZOS)
         image = encode(full, 91)
         thumb = encode(full.resize(THUMB, Image.Resampling.LANCZOS), 84)
