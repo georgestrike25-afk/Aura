@@ -120,7 +120,7 @@ class SignatureRepository(context: Context) {
                 val hash = fingerprintOf(bitmap)
                 if (known.any { ContentNames.same(it, hash) }) { repeated++; continue }
                 val small = Bitmap.createScaledBitmap(bitmap, 360, (360f * bitmap.height / bitmap.width).toInt().coerceAtLeast(1), true)
-                val content = ContentNames.classify(PhotoLabeler.labels(small))
+                val content = recognize(bitmap)
                 val hex = hash
                 val id = "mine-" + hash.take(16) + "-" + System.currentTimeMillis().toString(36)
                 val image = "$id.webp"
@@ -141,6 +141,45 @@ class SignatureRepository(context: Context) {
         }
         if (added > 0) saveMine(collections.values.toList())
         ImportResult(added, repeated, failed)
+    }
+
+    /** Qué muestra la foto: etiquetas + caras (en una copia de ~720 px, suficiente y rápida). */
+    private suspend fun recognize(bitmap: Bitmap): ContentNames.Result {
+        val w = minOf(720, bitmap.width)
+        val mid = if (w == bitmap.width) bitmap else Bitmap.createScaledBitmap(bitmap, w, (w.toFloat() * bitmap.height / bitmap.width).toInt().coerceAtLeast(1), true)
+        try {
+            return ContentNames.classify(PhotoLabeler.labels(mid), PhotoLabeler.faceArea(mid))
+        } finally {
+            if (mid !== bitmap) mid.recycle()
+        }
+    }
+
+    /**
+     * Si la forma de clasificar cambió, vuelve a agrupar y nombrar las fotos ya subidas. Devuelve true si
+     * cambió algo.
+     */
+    suspend fun reclassifyIfNeeded(): Boolean = withContext(Dispatchers.IO) {
+        if (prefs.getInt("labels-version", 1) >= ContentNames.VERSION) return@withContext false
+        val items = mineCatalog().collections.flatMap { it.items }.filter { it.dhash != null }
+        val collections = LinkedHashMap<String, SignatureCollection>()
+        val names = mutableListOf<String>()
+        for (item in items) {
+            val file = File(mineDir, item.image)
+            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            BitmapFactory.decodeFile(file.path, bounds)
+            var sample = 1
+            while (bounds.outWidth / (sample * 2) >= 720) sample *= 2
+            val bmp = BitmapFactory.decodeFile(file.path, BitmapFactory.Options().apply { inSampleSize = sample }) ?: continue
+            val content = try { recognize(bmp) } finally { bmp.recycle() }
+            val title = ContentNames.unique(content.name, names)
+            names += title
+            val colId = MINE_PREFIX + content.group.name.lowercase()
+            val col = collections[colId] ?: SignatureCollection(colId, content.group.title)
+            collections[colId] = col.copy(items = col.items + item.copy(title = title))
+        }
+        saveMine(collections.values.toList())
+        prefs.edit().putInt("labels-version", ContentNames.VERSION).apply()
+        true
     }
 
     private fun remoteWorks(): List<SignatureWork> =

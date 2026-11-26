@@ -12,11 +12,16 @@ object ContentNames {
         NATURE("Naturaleza"),
         CITY("Ciudad"),
         ANIMALS("Animales"),
-        PEOPLE("Personas"),
+        PEOPLE("Retratos"),
         VEHICLES("Vehículos"),
         ART("Arte"),
-        OTHER("Otras"),
     }
+
+    /** Versión de la clasificación: si cambia, las fotos guardadas se vuelven a clasificar. */
+    const val VERSION = 2
+
+    /** Una cara que ocupa al menos esta fracción de la foto la convierte en retrato. */
+    const val PORTRAIT_FACE_AREA = 0.004f
 
     /** Etiqueta de ML Kit → (grupo, nombre en español). */
     private val words: Map<String, Pair<Group, String>> = buildMap {
@@ -47,17 +52,28 @@ object ContentNames {
     data class Result(val group: Group, val name: String)
 
     /**
-     * [labels]: (etiqueta en inglés, confianza 0–1). El grupo es el que más confianza suma; el nombre es
-     * la etiqueta más fuerte, más una segunda de otro tema si la hay («Montaña y cielo»).
+     * [labels]: (etiqueta en inglés, confianza 0–1). [faceArea]: fracción de la foto que ocupa la cara más
+     * grande (0 = sin caras). Con una cara es un retrato y el nombre suma el lugar («Retrato y mar»). Si
+     * no, el grupo es el que más confianza suma y el nombre, la etiqueta más fuerte más una segunda de otro
+     * tema («Montaña y cielo»). Lo que no se reconoce va a Arte como «Obra».
      */
-    fun classify(labels: List<Pair<String, Float>>): Result {
+    fun classify(labels: List<Pair<String, Float>>, faceArea: Float = 0f): Result {
+        val portrait = faceArea >= PORTRAIT_FACE_AREA
         val known = labels.filter { it.second >= 0.5f }
             .mapNotNull { (en, c) -> words[en.lowercase()]?.let { Triple(it.first, it.second, c) } }
+            // Los animales se confunden mucho (personas tomadas por pájaros): solo con mucha confianza y sin caras.
+            .filter { it.first != Group.ANIMALS || (!portrait && it.third >= 0.8f) }
             .sortedByDescending { it.third }
-        if (known.isEmpty()) return Result(Group.OTHER, "Mi foto")
-        val group = known.groupBy { it.first }.maxBy { (_, v) -> v.sumOf { it.third.toDouble() } }.key
-        val main = known.first { it.first == group }.second
-        val second = known.firstOrNull { it.first != group && it.second != main }?.second
+        if (portrait) {
+            val place = known.firstOrNull { it.first != Group.PEOPLE && it.first != Group.ART }?.second
+            return Result(Group.PEOPLE, if (place != null) "Retrato y ${place.lowercase()}" else "Retrato")
+        }
+        // Sin cara, las etiquetas de personas no alcanzan para decir que es un retrato.
+        val scene = known.filter { it.first != Group.PEOPLE }
+        if (scene.isEmpty()) return Result(Group.ART, "Obra")
+        val group = scene.groupBy { it.first }.maxBy { (_, v) -> v.sumOf { it.third.toDouble() } }.key
+        val main = scene.first { it.first == group }.second
+        val second = scene.firstOrNull { it.first != group && it.second != main }?.second
         return Result(group, if (second != null) "$main y ${second.lowercase()}" else main)
     }
 

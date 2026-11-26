@@ -2,6 +2,8 @@ package app.aura.signature
 
 import android.graphics.Bitmap
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetectorOptions
 import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -28,4 +30,29 @@ object PhotoLabeler {
             }
         }.getOrDefault(emptyList())
     } ?: emptyList()
+
+    /** Fracción de la foto que ocupa la cara más grande (0 si no hay caras o si el detector no está). */
+    suspend fun faceArea(bitmap: Bitmap): Float = withTimeoutOrNull(8_000L) {
+        runCatching {
+            val detector = FaceDetection.getClient(
+                FaceDetectorOptions.Builder()
+                    .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
+                    .setMinFaceSize(0.05f)
+                    .build(),
+            )
+            try {
+                suspendCancellableCoroutine<Float> { cont ->
+                    detector.process(InputImage.fromBitmap(bitmap, 0))
+                        .addOnSuccessListener { faces ->
+                            val area = bitmap.width.toFloat() * bitmap.height
+                            val biggest = faces.maxOfOrNull { it.boundingBox.width().toFloat() * it.boundingBox.height() } ?: 0f
+                            if (cont.isActive) cont.resume(biggest / area)
+                        }
+                        .addOnFailureListener { if (cont.isActive) cont.resume(0f) }
+                }
+            } finally {
+                detector.close()
+            }
+        }.getOrDefault(0f)
+    } ?: 0f
 }

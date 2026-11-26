@@ -172,7 +172,7 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   sujeto). Cada «Otras propuestas» cambia tipografías, colores y acabado.
 - Se respetan las decisiones de Codex: la app abre en Clima y el catálogo de widgets muestra solo los de clima.
 - **Signature v3 (pedido del usuario)**: se borraron las 12 obras generadas por código. Las fotos propias se
-  agrupan (Montañas, Mar y agua, Cielo y noche, Naturaleza, Ciudad, Animales, Personas, Vehículos, Arte, Otras)
+  agrupan (Montañas, Mar y agua, Cielo y noche, Naturaleza, Ciudad, Animales, Retratos, Vehículos, Arte; con una cara detectada es un retrato)
   y se nombran según lo que muestran (ML Kit Image Labeling de Play Services, en el teléfono). La misma foto no se
   repite aunque tenga otro nombre o tamaño (huella visual dHash; la bandeja de GitHub hace lo mismo). Tocar una
   foto abre un visor a pantalla completa: se desliza para pasar a la siguiente y «Usar en Studio» la abre.

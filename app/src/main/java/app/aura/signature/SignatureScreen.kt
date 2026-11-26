@@ -85,6 +85,24 @@ class SignatureViewModel(app: Application) : AndroidViewModel(app) {
     private val _importing = MutableStateFlow(false)
     val importing: StateFlow<Boolean> = _importing.asStateFlow()
 
+    init {
+        // Fotos subidas con una clasificación anterior: se vuelven a agrupar y nombrar solas.
+        viewModelScope.launch {
+            _importing.value = true
+            _message.value = "Ordenando tus fotos según su contenido…"
+            try {
+                if (repo.reclassifyIfNeeded()) {
+                    _catalog.value = repo.cached()
+                    _message.value = "Tus fotos se volvieron a ordenar según su contenido."
+                } else {
+                    _message.value = null
+                }
+            } finally {
+                _importing.value = false
+            }
+        }
+    }
+
     /** Sube fotos del teléfono: se agrupan y nombran según su contenido, sin repetir. */
     fun import(uris: List<Uri>) = viewModelScope.launch {
         if (uris.isEmpty() || _importing.value) return@launch

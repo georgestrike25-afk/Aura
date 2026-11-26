@@ -18,9 +18,19 @@ class ContentNamesTest {
     }
 
     @Test
-    fun unknownOrWeakLabelsGoToOther() {
-        assertEquals(ContentNames.Group.OTHER, ContentNames.classify(emptyList()).group)
-        assertEquals(ContentNames.Group.OTHER, ContentNames.classify(listOf("Mountain" to 0.2f, "Xyz" to 0.9f)).group)
+    fun unknownOrWeakLabelsGoToArt() {
+        assertEquals(ContentNames.Result(ContentNames.Group.ART, "Obra"), ContentNames.classify(emptyList()))
+        assertEquals(ContentNames.Group.ART, ContentNames.classify(listOf("Mountain" to 0.2f, "Xyz" to 0.9f)).group)
+    }
+
+    @Test
+    fun aFaceMakesItAPortraitNeverABird() {
+        val r = ContentNames.classify(listOf("Bird" to 0.7f, "Sky" to 0.8f, "Sea" to 0.6f), faceArea = 0.05f)
+        assertEquals(ContentNames.Group.PEOPLE, r.group)
+        assertEquals("Retrato y cielo", r.name)
+        // Sin cara, un «pájaro» dudoso tampoco manda.
+        assertEquals(ContentNames.Group.SKY, ContentNames.classify(listOf("Bird" to 0.7f, "Sky" to 0.8f)).group)
+        assertEquals(ContentNames.Group.ANIMALS, ContentNames.classify(listOf("Bird" to 0.95f, "Sky" to 0.6f)).group)
     }
 
     @Test
