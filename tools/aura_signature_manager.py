@@ -302,13 +302,14 @@ class ManagerApp:
         bottom.pack(fill="x")
         self.status = ttk.Label(bottom, text="", style="Muted.TLabel")
         self.status.pack(side="left")
-        self.activity = ttk.Label(bottom, text="", style="Muted.TLabel", width=44)
-        self.activity.pack(side="left", padx=12)
+        # Primero lo de la derecha, así el mensaje ocupa solo el lugar que sobra y no achica los botones.
         self.progress = ttk.Progressbar(bottom, mode="indeterminate", length=90)
         self.progress.pack(side="right")
         ttk.Button(bottom, text="Actividad", command=self._toggle_log).pack(side="right", padx=8)
         self.retry_uploads = ttk.Button(bottom, text="Reintentar", command=self._retry_failed, state="disabled")
         self.retry_uploads.pack(side="right")
+        self.activity = ttk.Label(bottom, text="", style="Muted.TLabel")
+        self.activity.pack(side="left", padx=12, fill="x", expand=True)
         self.log_box = tk.Text(bottom, height=5, bg=PALETTE["panel"], fg=PALETTE["text"], relief="flat", wrap="word",
                                font=(UI_FONT, 9), state="disabled")
         if TkinterDnD is not None and hasattr(self.root, "drop_target_register"):
@@ -485,7 +486,8 @@ class ManagerApp:
     def log(self, text: str):
         if not text:
             return
-        self.activity.configure(text=text.splitlines()[0][:65] if text else "")
+        line = text.splitlines()[0] if text else ""
+        self.activity.configure(text=line if len(line) <= 80 else line[:78].rstrip() + "…")
         self.log_box.configure(state="normal")
         self.log_box.insert("end", time.strftime("%H:%M  ") + text + "\n")
         self.log_box.see("end")
@@ -563,7 +565,9 @@ class ManagerApp:
             tk.Label(self.grid, text=text, bg=PALETTE["bg"], fg=PALETTE["muted"],
                      font=(UI_FONT, 11)).grid(padx=22, pady=44)
         width, height = self.thumb_size
-        per_row = max(1, (self.canvas.winfo_width() - 4) // (width + 18))
+        # Cada tarjeta ocupa el ancho de la miniatura + borde de selección (4) + separación (12); margen extra
+        # para que la última columna nunca quede debajo de la barra de desplazamiento.
+        per_row = max(1, (self.canvas.winfo_width() - 8) // (width + 18))
         for i, item in enumerate(items):
             wid = item["id"]
             cell = tk.Frame(self.grid, bg=PALETTE["bg"], takefocus=True, padx=0, pady=0)
@@ -576,7 +580,10 @@ class ManagerApp:
                 art.create_image(width // 2, height // 2, image=image)
             else:
                 art.create_text(width // 2, height // 2, text="Cargando…", fill=PALETTE["muted"])
-            name = tk.Label(cell, text=item["title"], width=max(8, width // 8), anchor="w",
+            # Ancho mínimo: la tarjeta la define la miniatura (un ancho en caracteres la ensanchaba y la
+            # última columna quedaba debajo de la barra de desplazamiento). Los títulos largos se acortan.
+            title = item["title"] if len(item["title"]) <= width // 8 else item["title"][: width // 8 - 1].rstrip() + "…"
+            name = tk.Label(cell, text=title, width=1, anchor="w",
                             bg=PALETTE["bg"], fg=PALETTE["text"], font=(UI_FONT, 10))
             name.pack(fill="x", pady=(3, 0))
             self.cards[wid] = art
@@ -1104,6 +1111,34 @@ class Viewer:
             self.show()
 
 
+def dark_title_bar(window) -> None:
+    """Barra de título de Windows en grafito (Windows 11: color exacto; Windows 10: modo oscuro)."""
+    if not IS_WINDOWS:
+        return
+    try:
+        import ctypes
+        window.update_idletasks()
+        hwnd = ctypes.windll.user32.GetParent(window.winfo_id()) or window.winfo_id()
+        dwm = ctypes.windll.dwmapi
+
+        def attr(code: int, value: int) -> int:
+            v = ctypes.c_int(value)
+            return dwm.DwmSetWindowAttribute(hwnd, code, ctypes.byref(v), ctypes.sizeof(v))
+
+        if attr(20, 1) != 0:  # DWMWA_USE_IMMERSIVE_DARK_MODE (Windows 10 anteriores usan el 19)
+            attr(19, 1)
+
+        def colorref(hex_color: str) -> int:
+            r, g, b = int(hex_color[1:3], 16), int(hex_color[3:5], 16), int(hex_color[5:7], 16)
+            return (b << 16) | (g << 8) | r
+
+        attr(35, colorref(PALETTE["bg"]))    # DWMWA_CAPTION_COLOR (Windows 11)
+        attr(36, colorref(PALETTE["text"]))  # DWMWA_TEXT_COLOR
+        attr(34, colorref(PALETTE["bg"]))    # DWMWA_BORDER_COLOR
+    except Exception:
+        pass
+
+
 def main():
     if IS_WINDOWS:
         try:
@@ -1112,7 +1147,10 @@ def main():
         except Exception:
             pass
     root = TkinterDnD.Tk() if TkinterDnD is not None else tk.Tk()
+    # Todas las ventanas (la principal, el visor, Configuración y los diálogos) con la barra en grafito.
+    root.bind_class("Toplevel", "<Map>", lambda e: dark_title_bar(e.widget) if e.widget.winfo_class() == "Toplevel" else None, add="+")
     ManagerApp(root, start_minimized="--minimized" in sys.argv)
+    dark_title_bar(root)
     root.mainloop()
 
 
