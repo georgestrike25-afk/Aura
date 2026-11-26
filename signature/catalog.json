@@ -3,6 +3,48 @@
   "license": "",
   "collections": [
     {
+      "id": "poesia-de-fuego",
+      "title": "Poesía de fuego",
+      "items": [
+        {
+          "id": "el-calor-que-queda-ab3417a9b8c2",
+          "title": "El calor que queda",
+          "image": "photos/188a81754b793e9e7d1cb110.webp",
+          "thumb": "photos/188a81754b793e9e7d1cb110-thumb.webp",
+          "dhash": "13170f0c8e96170f1f1f152424182324182021162120152b281a2c291b232217322a1c593a1f613d20382e1e463a2558452c5b462c433825",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-pajaro-de-una-chispa-93ee22e22c7e",
+          "title": "El pájaro de una chispa",
+          "image": "photos/d345e57c4ddfd2adcbe3a9fd.webp",
+          "thumb": "photos/d345e57c4ddfd2adcbe3a9fd-thumb.webp",
+          "dhash": "0f0f1f0e0f1f5fbe2325142a2c18272a171f221223251536362031321e2023133e382275613e5c5135393622484126564a2a463f213a341b",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-brasa-que-flota-b4cadbc0fff7",
+          "title": "La brasa que flota",
+          "image": "photos/35cee8ba9613ae8523fd169e.webp",
+          "thumb": "photos/35cee8ba9613ae8523fd169e-thumb.webp",
+          "dhash": "17170b0f0b0f0d09000915010b1a010a18000713000814080b18080b18000815020d1f1f0d1f260f2403132b040b1b1a0a191c0d1e041228",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-llama-bordadora-b922f14fe142",
+          "title": "La llama bordadora",
+          "image": "photos/1518e8203e085c440ecd4d30.webp",
+          "thumb": "photos/1518e8203e085c440ecd4d30-thumb.webp",
+          "dhash": "03060f0e110f0b0d0f050617070919080a1306080f06061f0b0a200c0b130708140709230d10240f101b0b0e19090b250f112710131c0b0e",
+          "width": 1440,
+          "height": 3120
+        }
+      ]
+    },
+    {
       "id": "metamorfosis",
       "title": "Metamorfosis",
       "items": [
