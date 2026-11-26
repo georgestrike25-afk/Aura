@@ -322,7 +322,7 @@ class StudioFlowTest {
         val pixels = IntArray(72 * 156) { 0xFF253044.toInt() }
         val mask = IntArray(pixels.size) { i -> if (i % 72 in 30..42 && i / 72 >= 47) Color.BLACK else 0 }
         val painter = ClockPainter(StudioFonts.resolver(context))
-        for (proposal in AutoDesign.propose(pixels, 72, 156, mask, 0)) {
+        for (proposal in (0 until 5).flatMap { AutoDesign.propose(pixels, 72, 156, mask, it) }) {
             val d = proposal.design
             for (is24 in listOf(true, false)) {
                 for (minute in 0 until 24 * 60) {
@@ -406,4 +406,40 @@ class StudioFlowTest {
     }
 
     private fun luminance(c: Int) = (0.2126 * Color.red(c) + 0.7152 * Color.green(c) + 0.0722 * Color.blue(c)) / 255.0
+
+    /** Propuestas de AutoDesign sobre una escena tipo bosque con un helecho delante: capturas para revisar. */
+    @Test
+    fun autoDesignProposalsOnForestScene() = runBlocking {
+        val w = 1080
+        val h = 2340
+        val photo = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val c = Canvas(photo)
+        c.drawPaint(Paint().apply { shader = LinearGradient(0f, 0f, 0f, h.toFloat(), intArrayOf(0xFF1F4A50.toInt(), 0xFF173A36.toInt(), 0xFF0C1E1A.toInt()), null, Shader.TileMode.CLAMP) })
+        val glow = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x553FD0C0; maskFilter = android.graphics.BlurMaskFilter(160f, android.graphics.BlurMaskFilter.Blur.NORMAL) }
+        c.drawCircle(w * 0.55f, h * 0.45f, 260f, glow)
+        val fern = android.graphics.Path().apply {
+            moveTo(w * 0.47f, h.toFloat()); cubicTo(w * 0.40f, h * 0.7f, w * 0.62f, h * 0.55f, w * 0.50f, h * 0.36f)
+            cubicTo(w * 0.44f, h * 0.30f, w * 0.58f, h * 0.28f, w * 0.56f, h * 0.33f)
+            cubicTo(w * 0.66f, h * 0.5f, w * 0.50f, h * 0.7f, w * 0.56f, h.toFloat()); close()
+        }
+        c.drawPath(fern, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFF5FAE6A.toInt() })
+        val mask = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        Canvas(mask).drawPath(fern, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.BLACK })
+        val small = Bitmap.createScaledBitmap(photo, 72, 156, true)
+        val smallMask = Bitmap.createScaledBitmap(mask, 72, 156, true)
+        val pixels = IntArray(72 * 156).also { small.getPixels(it, 0, 72, 0, 0, 72, 156) }
+        val subject = IntArray(72 * 156).also { smallMask.getPixels(it, 0, 72, 0, 0, 72, 156) }
+        val compositor = StudioCompositor(ClockPainter(StudioFonts.resolver(context)))
+        val project = context.aura.studio.create(syntheticPhoto(), "AutoDesign")
+        val alpha = mask.extractAlpha()
+        for (round in 0 until 3) {
+            AutoDesign.propose(pixels, 72, 156, subject, round).forEachIndexed { i, p ->
+                println("AURA_AUTODESIGN r$round ${p.title} ${p.design.customFont} ${p.design.material} #${Integer.toHexString(p.design.color)} #${Integer.toHexString(p.design.accentColor)} cam=${p.design.chameleon}")
+                val out = Bitmap.createBitmap(w / 2, h / 2, Bitmap.Config.ARGB_8888)
+                compositor.render(out, photo, alpha, project.copy(design = p.design, hasMask = true), ClockExtras("15", ":37", null))
+                save("autodesign_r${round}_${i}_${p.title.lowercase()}", out)
+                out.recycle()
+            }
+        }
+    }
 }

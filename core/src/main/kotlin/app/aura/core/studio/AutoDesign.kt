@@ -2,108 +2,311 @@ package app.aura.core.studio
 
 import app.aura.core.time.HourFormat
 import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.random.Random
 
 /**
- * Aura AutoDesign: mira la foto (y el sujeto, si hay máscara) y arma tres relojes bien distintos, al
- * estilo de los fondos con profundidad: solo la hora, grande, con tipografías condensadas y, cuando hay
- * sujeto, metida detrás de él.
+ * Aura AutoDesign: mira la foto (paleta, luz, zonas tranquilas y, si hay máscara, el protagonista) y arma
+ * tres relojes distintos, solo con la hora (nunca fecha ni clima).
  *
- *  1. «Monumento»: una línea que ocupa casi todo el ancho, arriba, con el sujeto tapando la base.
- *  2. «Apilado»: horas arriba y minutos abajo, del lado libre de la foto, con los minutos en el color de acento.
- *  3. «Gigante»: cifras altísimas detrás del sujeto, en vidrio o en el material que sugiere la foto.
+ * - **Estilos**: seis composiciones (Monumento, Apilado, Gigante, Editorial, Separado, Lateral); en cada
+ *   tanda salen tres distintas al azar.
+ * - **Tipografía**: cada estilo elige al azar entre las fuentes que le quedan bien (de las 61 de Aura), con
+ *   tamaños calculados con sus medidas reales para que siempre entren.
+ * - **Color**: sale de la paleta de la foto (tono, acento, monocromo o contraste suave), con contraste
+ *   controlado contra la zona del reloj para que se lea.
+ * - **Integración**: camaleón suave, el material que sugiere la foto (Elements) y la luz de la escena.
  *
- * Cada vuelta («Otras propuestas») cambia tipografías, colores y acabados. Nunca agrega fecha ni clima.
+ * «Generar alternativas» (otra vuelta) cambia estilos, fuentes, colores y acabados.
  */
 object AutoDesign {
     data class Proposal(val title: String, val design: ClockDesign)
 
-    /** Medidas de las cifras de cada fuente (en em): avance medio y altura de las cifras. */
-    private data class Face(val id: String, val advance: Float, val cap: Float)
+    enum class Style(val title: String) {
+        MONUMENT("Monumento"), STACKED("Apilado"), GIANT("Gigante"),
+        EDITORIAL("Editorial"), SEPARATED("Separado"), LATERAL("Lateral"),
+    }
 
-    private val BEBAS = Face("clock_bebas", 0.40f, 0.72f)
-    private val ANTON = Face("clock_anton", 0.494f, 0.875f)
-    private val OSWALD = Face("clock_oswald", 0.514f, 0.832f)
-    private val FJALLA = Face("clock_fjallaone", 0.512f, 0.849f)
-    private val STAATLICHES = Face("clock_staatliches", 0.461f, 0.717f)
-    private val TEKO = Face("clock_teko", 0.408f, 0.631f)
+    // Fuentes que quedan bien en cada estilo (todas con medidas en FontMetrics).
+    private val condensed = listOf(
+        "clock_anton", "clock_bebas", "clock_fjallaone", "clock_oswald", "clock_staatliches", "clock_teko",
+        "clock_russo", "clock_bodonimoda", "clock_dmserifdisplay", "clock_abril", "clock_cinzel",
+    )
+    private val giant = listOf(
+        "clock_anton", "clock_bebas", "clock_oswald", "clock_teko", "clock_sixcaps", "clock_fjallaone",
+        "clock_bodonimoda", "clock_staatliches", "clock_italiana", "clock_poiret",
+    )
+    private val stacked = listOf(
+        "clock_anton", "clock_bebas", "clock_oswald", "clock_fjallaone", "clock_archivoblack", "clock_bowlbyone",
+        "clock_russo", "clock_righteous", "clock_bungee", "clock_abril", "clock_alfaslabone", "clock_dmserifdisplay",
+        "clock_playfair", "clock_cinzel", "clock_limelight", "clock_orbitron", "clock_audiowide", "clock_yesevaone",
+    )
+    private val editorial = listOf(
+        "clock_playfair", "clock_bodonimoda", "clock_dmserifdisplay", "clock_italiana", "clock_marcellus",
+        "clock_cinzel", "clock_yesevaone", "clock_abril", "clock_poiret", "clock_juliussansone", "clock_gruppo",
+        "clock_quicksand", "clock_comfortaa", "clock_parisienne", "clock_allura", "clock_greatvibes",
+        "clock_lobster", "clock_monoton", "clock_limelight",
+    )
+    private val wide = listOf(
+        "clock_michroma", "clock_orbitron", "clock_zendots", "clock_audiowide", "clock_chakrapetch", "clock_sharetech",
+        "clock_unicaone", "clock_nixieone", "clock_oswald", "clock_anton", "clock_bebas", "clock_cinzel",
+        "clock_playfair", "clock_righteous", "clock_megrim",
+    )
 
-    private val monumentFaces = listOf(BEBAS, ANTON, STAATLICHES, OSWALD)
-    private val stackedFaces = listOf(ANTON, FJALLA, BEBAS, OSWALD)
-    private val giantFaces = listOf(OSWALD, BEBAS, TEKO, ANTON)
-
-    /** Hueco que queda entre horas y minutos sin los dos puntos (en em). */
-    private const val GAP = 0.22f
+    /** Hueco entre horas y minutos (sin dos puntos) o el ancho de los dos puntos, en em. */
+    private const val GAP = 0.25f
 
     fun propose(pixels: IntArray, width: Int, height: Int, subject: IntArray?, round: Int, reference: ClockDesign? = null): List<Proposal> {
         require(width > 0 && height > 0 && pixels.size == width * height)
         require(subject == null || subject.size == pixels.size)
-        val aspect = height / width.toFloat()
-        val r = Math.floorMod(round, 1 shl 20)
-        val scene = Scene.read(subject, width, height)
-        val hourFormat = reference?.hourFormat ?: HourFormat.SYSTEM
-        val behind = scene != null
-
-        // 1) Monumento: una línea de ~88 % del ancho.
-        val f1 = monumentFaces[r % monumentFaces.size]
-        val stretch1 = listOf(1.45f, 1.7f, 1.3f, 1.55f)[r % 4]
-        val size1 = fitWidth(f1, digitsPerLine = 4, target = 0.88f, stretchX = 1f)
-        val h1 = f1.cap * size1 * stretch1 / aspect // alto de las cifras en fracción del alto de pantalla
-        val y1 = if (scene != null) {
-            // Que el sujeto tape el tercio inferior de las cifras.
-            (scene.top - h1 * 0.18f).coerceIn(0.12f + h1 / 2f, 0.5f)
-        } else {
-            freeRow(pixels, width, height, 0.5f, 0.44f, h1, 0.12f + h1 / 2f, 0.40f)
+        val ctx = Context(pixels, width, height, Scene.read(subject, width, height), reference?.hourFormat ?: HourFormat.SYSTEM)
+        // Misma foto y misma vuelta → mismas propuestas; otra vuelta → otras.
+        val rnd = Random(fingerprint(pixels) * 31 + round)
+        val styles = Style.entries.shuffled(rnd).take(3)
+        val usedFonts = mutableSetOf<String>()
+        val schemes = Scheme.entries.shuffled(rnd)
+        return styles.mapIndexed { i, style ->
+            val design = build(style, ctx, rnd, schemes[i % schemes.size], usedFonts).copy(hourFormat = ctx.hourFormat)
+            usedFonts += design.customFont.orEmpty()
+            Proposal(style.title, design)
         }
-        val monument = base(pixels, width, height, 0.5f, y1, 0.44f, h1, ClockMaterial.MINIMAL).copy(
-            customFont = f1.id, size = size1, stretchX = 1f, stretchY = stretch1,
-            letterSpacing = -0.02f, shadow = 34, behindSubject = behind, hourFormat = hourFormat,
-        )
-
-        // 2) Apilado: dos líneas del lado libre, minutos en el color de acento.
-        val f2 = stackedFaces[r % stackedFaces.size]
-        val side = scene?.freeSide ?: if (r % 2 == 0) -1 else 1
-        val x2 = 0.5f + side * 0.2f
-        val size2 = fitWidth(f2, digitsPerLine = 2, target = 0.52f, stretchX = 1f, max = 0.46f)
-        val stretch2 = 1f
-        val h2 = (0.86f + f2.cap) * size2 * stretch2 / aspect
-        val y2 = if (scene != null) (scene.top + h2 * 0.25f).coerceIn(0.14f + h2 / 2f, 0.62f)
-            else freeRow(pixels, width, height, x2, 0.26f, h2, 0.14f + h2 / 2f, 0.5f)
-        var stacked = base(pixels, width, height, x2, y2, 0.26f, h2, ClockMaterial.MINIMAL).copy(
-            customFont = f2.id, layout = ClockLayout.VERTICAL, size = size2, stretchX = 1f, stretchY = stretch2,
-            letterSpacing = -0.03f, shadow = 40, behindSubject = behind, hourFormat = hourFormat,
-        )
-        if (r % 3 != 2) {
-            val accent = vivid(stacked.accentColor, stacked.color)
-            stacked = stacked.copy(artistic = stacked.artistic.edit(DigitGroup.MINUTES.slots) { it.copy(color = accent) })
-        }
-
-        // 3) Gigante: cifras muy altas detrás del sujeto.
-        val f3 = giantFaces[r % giantFaces.size]
-        val stretchX3 = 0.86f
-        val size3 = fitWidth(f3, digitsPerLine = 4, target = 0.92f, stretchX = stretchX3)
-        val stretch3 = (0.40f * aspect / (f3.cap * size3)).coerceIn(1.6f, ClockDesign.MAX_STRETCH)
-        val h3 = f3.cap * size3 * stretch3 / aspect
-        val y3 = if (scene != null) scene.top.coerceIn(0.1f + h3 / 2f, 0.6f)
-            else freeRow(pixels, width, height, 0.5f, 0.46f, h3, 0.1f + h3 / 2f, 0.5f)
-        val harmony = harmony(pixels, width, height, 0.5f, y3, 0.46f, h3)
-        val material3 = if (r % 2 == 0) ClockMaterial.GLASS else harmony.material
-        val giant = base(pixels, width, height, 0.5f, y3, 0.46f, h3, material3).copy(
-            customFont = f3.id, size = size3, stretchX = stretchX3, stretchY = stretch3,
-            letterSpacing = -0.01f, opacity = 92, behindSubject = behind, hourFormat = hourFormat,
-        )
-
-        return listOf(
-            Proposal("Monumento", monument),
-            Proposal("Apilado", stacked),
-            Proposal("Gigante", giant),
-        )
     }
 
-    /** Tamaño (alto del em / ancho del lienzo) para que una línea ocupe [target] del ancho. */
-    private fun fitWidth(f: Face, digitsPerLine: Int, target: Float, stretchX: Float, max: Float = ClockDesign.MAX_SIZE): Float {
-        val em = digitsPerLine * f.advance + if (digitsPerLine == 4) GAP else 0f
+    // ------------------------------------------------------------------ estilos
+
+    private class Context(
+        val px: IntArray, val w: Int, val h: Int, val scene: Scene?, val hourFormat: HourFormat,
+    ) {
+        val aspect = h / w.toFloat()
+        val traits = Fusion.analyze(px, w, h, floatArrayOf(0f, 0f, 1f, 1f))
+    }
+
+    private fun pick(pool: List<String>, rnd: Random, used: Set<String>): Pair<String, Pair<Float, Float>> {
+        val options = pool.filter { it !in used && it in FontMetrics.digits }.ifEmpty { pool.filter { it in FontMetrics.digits } }
+        val id = options.random(rnd)
+        return id to FontMetrics.digits.getValue(id)
+    }
+
+    /** Tamaño (alto del em / ancho del lienzo) para que [digits] cifras ocupen [target] del ancho. */
+    private fun fit(advance: Float, digits: Int, target: Float, stretchX: Float, max: Float = ClockDesign.MAX_SIZE): Float {
+        val em = digits * advance + if (digits == 4) GAP else 0f
         return (target / (em * stretchX)).coerceIn(ClockDesign.MIN_SIZE, max)
     }
+
+    private fun build(style: Style, c: Context, rnd: Random, scheme: Scheme, used: Set<String>): ClockDesign {
+        val scene = c.scene
+        val behind = scene != null
+        return when (style) {
+            Style.MONUMENT -> {
+                val (font, m) = pick(condensed, rnd, used)
+                val stretchY = rnd.range(1.2f, 1.7f)
+                val size = fit(m.first, 4, rnd.range(0.80f, 0.90f), 1f)
+                val bandH = m.second * size * stretchY / c.aspect
+                val y = if (scene != null) (scene.top - bandH * 0.18f).coerceIn(0.10f + bandH / 2, 0.5f)
+                else freeRow(c, 0.5f, 0.44f, bandH, 0.10f + bandH / 2, 0.38f)
+                finish(c, rnd, scheme, 0.5f, y, 0.44f, bandH, behind).copy(
+                    customFont = font, size = size, stretchY = stretchY,
+                )
+            }
+            Style.GIANT -> {
+                val (font, m) = pick(giant, rnd, used)
+                val stretchX = rnd.range(0.8f, 0.95f)
+                val size = fit(m.first, 4, 0.92f, stretchX)
+                val stretchY = (rnd.range(0.36f, 0.44f) * c.aspect / (m.second * size)).coerceIn(1.3f, ClockDesign.MAX_STRETCH)
+                val bandH = m.second * size * stretchY / c.aspect
+                val y = if (scene != null) scene.top.coerceIn(0.08f + bandH / 2, 0.6f)
+                else freeRow(c, 0.5f, 0.46f, bandH, 0.08f + bandH / 2, 0.5f)
+                finish(c, rnd, scheme, 0.5f, y, 0.46f, bandH, behind, preferMaterial = true).copy(
+                    customFont = font, size = size, stretchX = stretchX, stretchY = stretchY,
+                )
+            }
+            Style.STACKED -> {
+                val (font, m) = pick(stacked, rnd, used)
+                val side = scene?.freeSide ?: if (rnd.nextBoolean()) -1 else 1
+                val x = 0.5f + side * rnd.range(0.12f, 0.2f)
+                val size = fit(m.first, 2, rnd.range(0.44f, 0.54f), 1f, max = 0.46f)
+                val bandH = (0.86f + m.second) * size / c.aspect
+                val y = if (scene != null) (scene.top + bandH * 0.2f).coerceIn(0.12f + bandH / 2, 0.62f)
+                else freeRow(c, x, 0.26f, bandH, 0.12f + bandH / 2, 0.5f)
+                val d = finish(c, rnd, scheme, x, y, 0.26f, bandH, behind).copy(
+                    customFont = font, layout = ClockLayout.VERTICAL, size = size,
+                )
+                // Un grupo con el acento de la foto (minutos u horas), o los dos iguales.
+                when (rnd.nextInt(3)) {
+                    0 -> d.copy(artistic = d.artistic.edit(DigitGroup.MINUTES.slots) { it.copy(color = d.accentColor) })
+                    1 -> d.copy(artistic = d.artistic.edit(DigitGroup.HOURS.slots) { it.copy(color = d.accentColor) })
+                    else -> d
+                }
+            }
+            Style.EDITORIAL -> {
+                val (font, m) = pick(editorial, rnd, used)
+                val size = fit(m.first + 0.06f, 4, rnd.range(0.56f, 0.70f), 1f)
+                val bandH = m.second * size / c.aspect
+                val y = if (scene != null) (scene.top - bandH * 0.9f).coerceIn(0.10f + bandH / 2, 0.36f)
+                else freeRow(c, 0.5f, 0.36f, bandH, 0.10f + bandH / 2, 0.32f)
+                finish(c, rnd, scheme, 0.5f, y, 0.36f, bandH, behind = false, preferMaterial = false).copy(
+                    customFont = font, size = size, letterSpacing = 0.06f, showColon = true,
+                    shadow = 18,
+                )
+            }
+            Style.SEPARATED -> {
+                val (font, m) = pick(wide, rnd, used)
+                val size = fit(m.first, 2, rnd.range(0.26f, 0.32f), 1f, max = 0.40f)
+                val stretchY = rnd.range(1.0f, 1.5f)
+                val bandH = m.second * size * stretchY / c.aspect
+                val y = if (scene != null) (scene.top + bandH * 0.3f).coerceIn(0.12f + bandH / 2, 0.55f)
+                else freeRow(c, 0.5f, 0.46f, bandH, 0.12f + bandH / 2, 0.45f)
+                finish(c, rnd, scheme, 0.5f, y, 0.46f, bandH, behind).copy(
+                    customFont = font, size = size, stretchY = stretchY, spread = rnd.range(0.55f, 0.8f),
+                )
+            }
+            Style.LATERAL -> {
+                val (font, m) = pick(condensed, rnd, used)
+                val side = scene?.freeSide ?: if (rnd.nextBoolean()) -1 else 1
+                val x = 0.5f + side * 0.27f
+                val size = fit(m.first, 2, 0.30f, 1f, max = 0.34f)
+                val stretchY = rnd.range(1.2f, 1.6f)
+                val bandH = (0.86f + m.second) * size * stretchY / c.aspect
+                val y = if (scene != null) (scene.top + bandH * 0.1f).coerceIn(0.10f + bandH / 2, 0.6f)
+                else freeRow(c, x, 0.18f, bandH, 0.10f + bandH / 2, 0.55f)
+                finish(c, rnd, scheme, x, y, 0.18f, bandH, behind).copy(
+                    customFont = font, layout = ClockLayout.VERTICAL, size = size, stretchY = stretchY,
+                )
+            }
+        }
+    }
+
+    /** Color, acabado e integración con la foto en la zona donde va el reloj. */
+    private fun finish(
+        c: Context, rnd: Random, scheme: Scheme, x: Float, y: Float, halfW: Float, bandH: Float,
+        behind: Boolean, preferMaterial: Boolean = rnd.nextBoolean(),
+    ): ClockDesign {
+        val region = floatArrayOf(
+            (x - halfW).coerceIn(0f, 1f), (y - bandH / 2f).coerceIn(0f, 1f),
+            (x + halfW).coerceIn(0f, 1f), (y + bandH / 2f).coerceIn(0f, 1f),
+        )
+        val local = Fusion.analyze(c.px, c.w, c.h, region)
+        val harmony = Fusion.harmonize(local)
+        val (main, accent) = colors(c.traits, local.regionBrightness, scheme)
+        val material = when {
+            preferMaterial && harmony.material.isElement -> harmony.material
+            preferMaterial -> listOf(ClockMaterial.GLASS, ClockMaterial.METAL).random(rnd)
+            else -> ClockMaterial.MINIMAL
+        }
+        var d = ClockDesign(
+            boldHours = false,
+            color = main,
+            accentColor = accent,
+            lightAngle = harmony.lightAngle,
+            centerX = x,
+            centerY = y,
+            showColon = false,
+            informationMode = ClockInformationMode.PURE,
+            showDate = false,
+            showWeather = false,
+            behindSubject = behind,
+            artistic = ArtisticClock(enabled = true),
+        ).withMaterial(material)
+        if (material.isElement) d = d.copy(elementIntensity = rnd.nextInt(45, 75), textureScale = rnd.nextInt(30, 70))
+        // Camaleón suave: las cifras toman algo de la foto que tienen detrás (siempre legibles por el «lift»).
+        if (material == ClockMaterial.MINIMAL && rnd.nextInt(3) == 0) {
+            d = d.copy(chameleon = rnd.nextInt(20, 45), chameleonLift = if (local.regionBrightness < 0.5f) 45 else -45)
+        }
+        // Escena nocturna: un resplandor leve del color de acento.
+        if (c.traits.brightness < 0.25f && material == ClockMaterial.MINIMAL) d = d.copy(glow = rnd.nextInt(15, 35))
+        return d.copy(shadow = if (local.contrast > 0.22f) 45 else 30)
+    }
+
+    // ------------------------------------------------------------------ color
+
+    enum class Scheme { TINT, ACCENT, MONO, SOFT_COMPLEMENT }
+
+    /**
+     * (color principal, acento) tomados de la foto. El principal siempre con contraste ≥ 3:1 contra la zona
+     * del reloj; el acento, el color más vivo de la imagen ajustado para que se distinga.
+     */
+    internal fun colors(t: ImageTraits, regionBrightness: Float, scheme: Scheme): Pair<Int, Int> {
+        val light = regionBrightness < 0.55f
+        val weighted = t.palette.zip(t.weights)
+        val dominant = weighted.filter { it.second > 0.08f }.maxByOrNull { hsl(it.first)[1] * (0.5f + it.second) }?.first
+            ?: t.palette.firstOrNull() ?: 0xFF808080.toInt()
+        val vivid = t.palette.maxByOrNull { hsl(it)[1] * (0.3f + hsl(it)[2]) } ?: dominant
+        val (h, s, _) = hsl(dominant).let { Triple(it[0], it[1], it[2]) }
+        val vh = hsl(vivid)[0]
+        val mainL = if (light) 0.93f else 0.12f
+        val main = when (scheme) {
+            Scheme.TINT -> fromHsl(h, min(0.35f, s * 0.6f + 0.1f), mainL)
+            Scheme.ACCENT -> fromHsl(h, 0.12f, if (light) 0.95f else 0.10f)
+            Scheme.MONO -> fromHsl(vh, min(0.55f, hsl(vivid)[1]), if (light) 0.84f else 0.18f)
+            Scheme.SOFT_COMPLEMENT -> fromHsl(h, 0.18f, mainL)
+        }
+        val accent = when (scheme) {
+            Scheme.TINT -> fromHsl(h, max(0.45f, s), if (light) 0.66f else 0.38f)
+            Scheme.ACCENT -> fromHsl(vh, max(0.55f, hsl(vivid)[1]), if (light) 0.62f else 0.40f)
+            Scheme.MONO -> fromHsl(vh, max(0.5f, hsl(vivid)[1]), if (light) 0.66f else 0.32f)
+            Scheme.SOFT_COMPLEMENT -> fromHsl((h + 165f) % 360f, 0.42f, if (light) 0.70f else 0.35f)
+        }
+        return legible(main, regionBrightness) to legible(accent, regionBrightness, minRatio = 2.2f)
+    }
+
+    /** Aclara u oscurece [color] (sin cambiar su tono) hasta que se lea sobre la zona del reloj. */
+    private fun legible(color: Int, regionBrightness: Float, minRatio: Float = 3f): Int {
+        val hslC = hsl(color)
+        var l = hslC[2]
+        val up = regionBrightness < 0.55f
+        repeat(20) {
+            val c = fromHsl(hslC[0], hslC[1], l)
+            if (Fusion.contrastRatio(Fusion.luminance(c), regionBrightness) >= minRatio) return c
+            l = (l + if (up) 0.04f else -0.04f).coerceIn(0f, 1f)
+        }
+        return fromHsl(hslC[0], hslC[1], l)
+    }
+
+    internal fun hsl(c: Int): FloatArray {
+        val r = (c shr 16 and 0xFF) / 255f
+        val g = (c shr 8 and 0xFF) / 255f
+        val b = (c and 0xFF) / 255f
+        val mx = max(r, max(g, b))
+        val mn = min(r, min(g, b))
+        val l = (mx + mn) / 2f
+        val d = mx - mn
+        if (d < 1e-4f) return floatArrayOf(0f, 0f, l)
+        val s = d / (1f - abs(2f * l - 1f))
+        val h = when (mx) {
+            r -> ((g - b) / d).let { if (it < 0) it + 6f else it }
+            g -> (b - r) / d + 2f
+            else -> (r - g) / d + 4f
+        } * 60f
+        return floatArrayOf(h, s.coerceIn(0f, 1f), l)
+    }
+
+    internal fun fromHsl(h: Float, s: Float, l: Float): Int {
+        val cc = (1f - abs(2f * l - 1f)) * s
+        val x = cc * (1f - abs((h / 60f) % 2f - 1f))
+        val m = l - cc / 2f
+        val (r, g, b) = when ((((h % 360f) + 360f) % 360f).toInt() / 60) {
+            0 -> Triple(cc, x, 0f)
+            1 -> Triple(x, cc, 0f)
+            2 -> Triple(0f, cc, x)
+            3 -> Triple(0f, x, cc)
+            4 -> Triple(x, 0f, cc)
+            else -> Triple(cc, 0f, x)
+        }
+        fun ch(v: Float) = ((v + m) * 255f).toInt().coerceIn(0, 255)
+        return (0xFF shl 24) or (ch(r) shl 16) or (ch(g) shl 8) or ch(b)
+    }
+
+    // ------------------------------------------------------------------ escena
+
+    private fun fingerprint(px: IntArray): Int {
+        var acc = 17
+        var i = 0
+        while (i < px.size) { acc = acc * 31 + (px[i] and 0xF0F0F0); i += maxOf(1, px.size / 64) }
+        return acc
+    }
+
+    private fun Random.range(a: Float, b: Float) = a + nextFloat() * (b - a)
 
     /** Lo que se sabe del sujeto: dónde empieza (arriba) y de qué lado queda más lugar libre. */
     private data class Scene(val top: Float, val freeSide: Int) {
@@ -132,65 +335,28 @@ object AutoDesign {
     }
 
     /** Fila más tranquila de la foto (poco detalle) para la franja de alto [bandH], entre [minY] y [maxY]. */
-    private fun freeRow(px: IntArray, w: Int, h: Int, x: Float, halfW: Float, bandH: Float, minY: Float, maxY: Float): Float {
+    private fun freeRow(c: Context, x: Float, halfW: Float, bandH: Float, minY: Float, maxY: Float): Float {
         if (maxY <= minY) return minY
-        val light = FloatArray(px.size) { Fusion.luminance(px[it]) }
+        val light = FloatArray(c.px.size) { Fusion.luminance(c.px[it]) }
         var best = minY
         var bestScore = Float.MAX_VALUE
         var y = minY
         while (y <= maxY + 1e-4f) {
-            val y0 = ((y - bandH / 2f) * h).toInt().coerceIn(0, h - 1)
-            val y1 = ((y + bandH / 2f) * h).toInt().coerceIn(y0 + 1, h)
-            val x0 = ((x - halfW) * w).toInt().coerceIn(1, w - 1)
-            val x1 = ((x + halfW) * w).toInt().coerceIn(x0 + 1, w)
+            val y0 = ((y - bandH / 2f) * c.h).toInt().coerceIn(0, c.h - 1)
+            val y1 = ((y + bandH / 2f) * c.h).toInt().coerceIn(y0 + 1, c.h)
+            val x0 = ((x - halfW) * c.w).toInt().coerceIn(1, c.w - 1)
+            val x1 = ((x + halfW) * c.w).toInt().coerceIn(x0 + 1, c.w)
             var detail = 0f
             var n = 0
             for (row in y0 until y1) for (col in x0 until x1) {
-                val i = row * w + col
+                val i = row * c.w + col
                 detail += abs(light[i] - light[i - 1])
                 n++
             }
-            // Preferir arriba: ahí se ve el reloj en la pantalla de bloqueo.
             val score = detail / n.coerceAtLeast(1) + (y - minY) * 0.04f
             if (score < bestScore) { bestScore = score; best = y }
             y += 0.02f
         }
         return best
-    }
-
-    private fun harmony(px: IntArray, w: Int, h: Int, x: Float, y: Float, halfW: Float, bandH: Float): Harmony {
-        val region = floatArrayOf(
-            (x - halfW).coerceIn(0f, 1f), (y - bandH / 2f).coerceIn(0f, 1f),
-            (x + halfW).coerceIn(0f, 1f), (y + bandH / 2f).coerceIn(0f, 1f),
-        )
-        return Fusion.harmonize(Fusion.analyze(px, w, h, region))
-    }
-
-    private fun base(
-        px: IntArray, w: Int, h: Int, x: Float, y: Float, halfW: Float, bandH: Float, material: ClockMaterial,
-    ): ClockDesign {
-        val harmony = harmony(px, w, h, x, y, halfW, bandH)
-        return ClockDesign(
-            boldHours = false,
-            color = harmony.color,
-            accentColor = harmony.accentColor,
-            lightAngle = harmony.lightAngle,
-            centerX = x,
-            centerY = y,
-            showColon = false,
-            informationMode = ClockInformationMode.PURE,
-            showDate = false,
-            showWeather = false,
-            artistic = ArtisticClock(enabled = true),
-        ).withMaterial(material)
-    }
-
-    /** Acento bien visible y distinto del color principal (si la foto no da uno, un naranja cálido). */
-    private fun vivid(accent: Int, main: Int): Int {
-        fun ch(c: Int, s: Int) = (c shr s) and 0xFF
-        val diff = abs(ch(accent, 16) - ch(main, 16)) + abs(ch(accent, 8) - ch(main, 8)) + abs(ch(accent, 0) - ch(main, 0))
-        val max = maxOf(ch(accent, 16), ch(accent, 8), ch(accent, 0))
-        val min = minOf(ch(accent, 16), ch(accent, 8), ch(accent, 0))
-        return if (diff > 160 && max - min > 90) accent else 0xFFE8572A.toInt()
     }
 }
