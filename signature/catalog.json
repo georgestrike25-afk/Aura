@@ -909,6 +909,46 @@
           "dhash": "050f0f0d6131270d2e13203817263918273215242b141e361c243c1e262e15203f161e3c1823441b2548182046161c511920571b234c181e",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-abrigo-de-la-ternura-6ab33e50322a",
+          "title": "El abrigo de la ternura",
+          "image": "photos/e076233aa22168c86f2cf199.webp",
+          "thumb": "photos/e076233aa22168c86f2cf199-thumb.webp",
+          "dhash": "5ffddf5b7c4bcd6146382d312e2b202221171918382b21423225261f191315143f25173120162b1b112017121d171222160e2e1c0f251a12",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-pulso-de-la-calma-a1d878bf9976",
+          "title": "El pulso de la calma",
+          "image": "photos/68bd66ce02cead2ee01eb9f7.webp",
+          "thumb": "photos/68bd66ce02cead2ee01eb9f7-thumb.webp",
+          "dhash": "3b1020254545d15957596b5d60725b5f725c5f7144495a4c4a545f596061606e3f3f484641475c5154625b5e3a393d3130343d383f4c474a",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-calle-que-vuelve-93b7e2aee126",
+          "title": "La calle que vuelve",
+          "image": "photos/dc13583706db7d4bb6f7edd5.webp",
+          "thumb": "photos/dc13583706db7d4bb6f7edd5-thumb.webp",
+          "dhash": "0f0727647260490f222f312f3e4334444a26383f2733362b2e2d3636332e33313b3f3d2a28243a3128443e3432373650534a665b4862533e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-envidia-del-color-1e5f92498796",
+          "title": "La envidia del color",
+          "image": "photos/943f45e391bdebb7ee0b3e9b.webp",
+          "thumb": "photos/943f45e391bdebb7ee0b3e9b-thumb.webp",
+          "dhash": "000127263307241b151f191d261d2930232732251b241c29261b3a301f21281e28221a32241a3323182c1c17321d153b2117461816441213",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
         }
       ]
     },
