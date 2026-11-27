@@ -3,6 +3,32 @@
   "license": "",
   "collections": [
     {
+      "id": "arboles-de-la-vida-tercera-edicion",
+      "title": "Árboles de la vida - Tercera edición",
+      "items": [
+        {
+          "id": "el-alcornoque-que-renace-4843407d8e2d",
+          "title": "El alcornoque que renace",
+          "image": "photos/89bc840627ba0bc6ddce6238.webp",
+          "thumb": "photos/89bc840627ba0bc6ddce6238-thumb.webp",
+          "dhash": "030f726333b2921d848c898d93908c928f878d8a767f7a6d72646e72636e787343483549412c544b34505743332e133b2d1541331b3e361c",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-ginkgo-de-las-dos-oril-845bed3c3790",
+          "title": "El ginkgo de las dos orillas",
+          "image": "photos/b8049d611aaa9e77dcec15a2.webp",
+          "thumb": "photos/b8049d611aaa9e77dcec15a2-thumb.webp",
+          "dhash": "0f0f67611733e2477e91a28a9cac8c9dae8294a67688947a8b8c85939c8092a24750525059595e68685d6b702b2c282e2f254042393d3f3b",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        }
+      ]
+    },
+    {
       "id": "arboles-de-la-vida-segunda-edicion",
       "title": "Árboles de la vida - Segunda edición",
       "items": [
