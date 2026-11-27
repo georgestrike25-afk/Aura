@@ -614,6 +614,26 @@
           "dhash": "8e0e0e0e0a0f2e260a18180d1c200d1c200a18180a1919122226101f23091818112121242e2c1d27260d1d1e2b31303838332f312e1e282a",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "la-garza-de-tinta-53ff9a7f08d1",
+          "title": "La garza de tinta",
+          "image": "photos/15098b235d0715d261f93864.webp",
+          "thumb": "photos/15098b235d0715d261f93864-thumb.webp",
+          "dhash": "0000001727241501485e5e4c6261506664546765596a665d6c6764706a6c736b45483b464e47525c545b61582e2b1f31352c36403a394642",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-pluma-sumergida-2cdb6b289806",
+          "title": "La pluma sumergida",
+          "image": "photos/3b0f192380c67608b01ddebd.webp",
+          "thumb": "photos/3b0f192380c67608b01ddebd-thumb.webp",
+          "dhash": "3f1f2f4b5bcb68691d2c331e2e3416272d0e1e252d383a343b3826313318272e413c35493d2d302e271c272b3c332930282021211f1b2022",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
