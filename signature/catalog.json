@@ -779,6 +779,46 @@
           "dhash": "0f030e480c840b0f0c0f0f131b201920231114150d1011181a1d1a1b1e1215150f131717191e1c1c21191a1c151c20212d38282e36202024",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-custodio-de-la-erosion-0741a496aa96",
+          "title": "El custodio de la erosión",
+          "image": "photos/127f8c2d05541abbd9274d84.webp",
+          "thumb": "photos/127f8c2d05541abbd9274d84-thumb.webp",
+          "dhash": "1f120f2573cb23662a1f2b3223302f222e2a202b3c28303f2a2d472f31432b324a2b2640271f4f3024562f283e221843271a4c2b1d402219",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-guardian-del-relevo-343266975286",
+          "title": "El guardián del relevo",
+          "image": "photos/3b6012c7304e57487916642f.webp",
+          "thumb": "photos/3b6012c7304e57487916642f-thumb.webp",
+          "dhash": "03030f3733d24d07141d1a1b252325312e202a27151e1c1b25221f292517211e19201d191d191d211d1b23201a1e1a2a241b322c22212420",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-tejedora-de-las-horas-d03020f5df34",
+          "title": "La tejedora de las horas",
+          "image": "photos/1e474091b11ce83f1e40ddda.webp",
+          "thumb": "photos/1e474091b11ce83f1e40ddda-thumb.webp",
+          "dhash": "9b378f9fed31172311130e1016110c1511091210362a1a2f271b1d1d160a1412533b22422f1c2d2214231e14372e1e43362343352031291a",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-vigia-del-ocaso-a371ba06b789",
+          "title": "La vigía del ocaso",
+          "image": "photos/515fff5f2356823e036fb110.webp",
+          "thumb": "photos/515fff5f2356823e036fb110-thumb.webp",
+          "dhash": "3b3f0b1918bcf31e283f442e454a223a4019303821353a2a3a3d1f2d301b303738352e3b3b36131a1b16232626221a21211d1118180c1417",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
