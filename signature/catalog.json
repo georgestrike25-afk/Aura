@@ -152,6 +152,46 @@
           "dhash": "21230f0f0fbd0e165d4c6c6f5878806181806281544764705e7d70607e524965585c7461647c5b5c714b4c5f39343e433a4342373e342d33",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-alerce-de-la-turbera-c65dac2ee1b7",
+          "title": "El alerce de la turbera",
+          "image": "photos/55a5f329deafe384c76c5c7c.webp",
+          "thumb": "photos/55a5f329deafe384c76c5c7c-thumb.webp",
+          "dhash": "0f030f171331031624393a263c3d273c3d23383a3346443e4d483f4f493647453634283c382649412d4f4532322310382d1a3f3825382e19",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-arco-de-la-quebrada-80ec1207abbd",
+          "title": "El arco de la quebrada",
+          "image": "photos/309dbaab6c15035e7e5f8aec.webp",
+          "thumb": "photos/309dbaab6c15035e7e5f8aec-thumb.webp",
+          "dhash": "010111494b271b4335253c36263e37273e37263e4e35485737465a3948593a4c4d2d285d332965362a5e332a3f241e4e2b20562e23502a20",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-ladera-encendida-74ce0c09fccc",
+          "title": "La ladera encendida",
+          "image": "photos/2882abd3934b3192fed8a2ec.webp",
+          "thumb": "photos/2882abd3934b3192fed8a2ec-thumb.webp",
+          "dhash": "090b1773098f2331212b37242e3a242e3b232d392a2e3931303a36323c2f313d161921261e232620261e1f2711141a15151a18181e1c1b21",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-veta-del-salar-4801a90f2f64",
+          "title": "La veta del salar",
+          "image": "photos/63c889fca99f1210e8f8be6f.webp",
+          "thumb": "photos/63c889fca99f1210e8f8be6f-thumb.webp",
+          "dhash": "1f3f0f0f2769c3075b4f4d5a51514e4b4e4343465c4444634d4d5a4a4c493a3f9170697c776c7d766d73605e646b635c786a7c8b7c867f75",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
         }
       ]
     },
