@@ -715,6 +715,36 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "el-barquero-de-la-bruma-8c59fe411feb",
+          "title": "El barquero de la bruma",
+          "image": "photos/4fd19bd91494f78c59fdd9bf.webp",
+          "thumb": "photos/4fd19bd91494f78c59fdd9bf-thumb.webp",
+          "dhash": "100240f020e0d0727b7c6884846d928e739f9779756f5d776b58846e569c82625651434442396155437a6a523c342728261e3f37295c5441",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-ciervo-del-deshielo-e999323ac3de",
+          "title": "El ciervo del deshielo",
+          "image": "photos/a5c9a7b8f189abbfbfd9efeb.webp",
+          "thumb": "photos/a5c9a7b8f189abbfbfd9efeb-thumb.webp",
+          "dhash": "00000121202400097a6a7583717c8c7882947e876a545a7b6062896e71927679544a4a5b4e4e6457597065694a4142554b4c5f525566585a",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-mensajera-del-estuario-c236f43ded69",
+          "title": "La mensajera del estuario",
+          "image": "photos/774426b7d9c7fef60e770917.webp",
+          "thumb": "photos/774426b7d9c7fef60e770917-thumb.webp",
+          "dhash": "040000ad218124c835454f3e4c554a565d5f6466504e51595454696360746c6947403d483e395c4c4469534a473e3a4d3d375d443a614a42",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
