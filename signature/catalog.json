@@ -1737,6 +1737,16 @@
           "dhash": "3288307239f372c1797c7b787b7a797a797d7d7aab927a8a725a987f66be9b78a17144885c35825932a87036764d2362421e63421a694313",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "la-guardiana-de-las-semil-a9d0c6482500",
+          "title": "La guardiana de las semillas",
+          "image": "photos/92323626a4e1c8d082057187.webp",
+          "thumb": "photos/92323626a4e1c8d082057187-thumb.webp",
+          "dhash": "01010c307069f0177f99c1829bc3849dc4849dc49bacca949aaea0a5b9aeb6cd797c876c52457c64598a90a1674c31634029654c34665e52",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
