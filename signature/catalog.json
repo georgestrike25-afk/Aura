@@ -7,15 +7,6 @@
       "title": "Retratos de animales",
       "items": [
         {
-          "id": "caballo-y-cielo-38ce83a68657",
-          "title": "Caballo y cielo",
-          "image": "photos/683927b2e65ac7cd627df270.webp",
-          "thumb": "photos/683927b2e65ac7cd627df270-thumb.webp",
-          "dhash": "0002ceb03059139e788b90909d9fabb0acc0bdb2ada89eb1aa9db5ada0b6b3abbe9773b89573ad8d6fc4a589956b46a37a549d724a926c49",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "gato-42e707241137",
           "title": "Gato",
           "image": "photos/3db7da6a04a0347fefa28fe3.webp",
@@ -32,15 +23,6 @@
           "dhash": "82c40e2713173e1f8462708666729c74809f7582b07474bd8076ca8e7ac7877b8057559a675b9364536f4c47794f537f565761474932292d",
           "width": 1440,
           "height": 3120
-        },
-        {
-          "id": "pajaro-y-cielo-d78db3ec6a96",
-          "title": "Pájaro y cielo",
-          "image": "photos/c280d44e9f6f694a74613485.webp",
-          "thumb": "photos/c280d44e9f6f694a74613485-thumb.webp",
-          "dhash": "0300030f45071b0310464b11565a17666914676b1d656b36777a3b8486257b8019565937686636817f2271730c323526504f30726e115959",
-          "width": 1440,
-          "height": 3120
         }
       ]
     },
@@ -48,33 +30,6 @@
       "id": "paisajes-naturales",
       "title": "Paisajes naturales",
       "items": [
-        {
-          "id": "bosque-y-cielo-1ebc9996f682",
-          "title": "Bosque y cielo",
-          "image": "photos/0ec22bd6be1c08d6658d121e.webp",
-          "thumb": "photos/0ec22bd6be1c08d6658d121e-thumb.webp",
-          "dhash": "4218343623639b5839412c52583265683e837a59545843797e5d807e588b7f565e6340626b43737144686343424820494b1c3f421e41401d",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "lago-y-montana-18e33620a0aa",
-          "title": "Lago y montaña",
-          "image": "photos/567d20c8b5100fda7a052671.webp",
-          "thumb": "photos/567d20c8b5100fda7a052671-thumb.webp",
-          "dhash": "004000800a102019212d4225334a2e3a533b435b3e3b4548424c5d4d527759561e1b1a302b2d3e3436513e3b1a191c2422242222272b292e",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-salto-entre-las-rocas-591626417d2a",
-          "title": "El salto entre las rocas",
-          "image": "photos/4b0e6ccfd64571940dc3e456.webp",
-          "thumb": "photos/4b0e6ccfd64571940dc3e456-thumb.webp",
-          "dhash": "07170f0f68cc29f0365026728a7583998f3a51361121122c42302f46341222151b2f1622392a21392b1c341b2e41192a3f1b293d2531432d",
-          "width": 1440,
-          "height": 3120
-        },
         {
           "id": "la-aguja-de-la-costa-d20e7e8ee993",
           "title": "La aguja de la costa",
@@ -123,15 +78,6 @@
           "image": "photos/e0c4b4f2de92f7e2bbd4a3c6.webp",
           "thumb": "photos/e0c4b4f2de92f7e2bbd4a3c6-thumb.webp",
           "dhash": "ffffb77371b8eb13c9c9c9c1c1c1b6b6b6acacacbfbfbf919191929292a6a6a66363633434342f2f2f4c4c4c1d1d1d1a1a1a191919191919",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "cielo-y-campo-c2df057f03a9",
-          "title": "Cielo y campo",
-          "image": "photos/bef2823b5db156c95e86b509.webp",
-          "thumb": "photos/bef2823b5db156c95e86b509-thumb.webp",
-          "dhash": "0101d2231313282e021421011522051a29071c2d1c32431d34453647543648553d4347504d4a6a5e5473655a16170f201d10242011201f14",
           "width": 1440,
           "height": 3120
         },
