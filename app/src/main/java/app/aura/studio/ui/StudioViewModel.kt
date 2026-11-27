@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
+import android.graphics.Rect
 import android.net.Uri
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -18,6 +19,7 @@ import app.aura.core.studio.AutoDesign
 import app.aura.core.studio.ArtisticClock
 import app.aura.core.studio.ClockDesign
 import app.aura.core.studio.Fusion
+import app.aura.core.studio.EdgeSelection
 import app.aura.core.studio.Harmony
 import app.aura.core.studio.ImageTraits
 import app.aura.core.studio.DigitSlot
@@ -35,6 +37,7 @@ import app.aura.studio.render.StudioCompositor
 import app.aura.studio.render.StudioFonts
 import app.aura.studio.wallpaper.WallpaperApplier
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -550,6 +553,57 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
 
     fun addStroke(stroke: MaskStroke) = edit { it.copy(strokes = it.strokes + stroke, hasMask = true) }
 
+    fun refineStroke(stroke: MaskStroke) {
+        val project = current ?: return
+        if (_busy.value != null) return
+        viewModelScope.launch {
+            _busy.value = "Buscando bordes…"
+            try {
+                val selection = withContext(Dispatchers.Default) {
+                    val sample = renderLock.withLock {
+                        val source = photo ?: return@withLock null
+                        val k = minOf(1f, 448f / maxOf(source.width, source.height))
+                        val w = (source.width * k).roundToInt().coerceAtLeast(1)
+                        val h = (source.height * k).roundToInt().coerceAtLeast(1)
+                        val buffer = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+                        try {
+                            val canvas = Canvas(buffer)
+                            val rect = Rect(0, 0, w, h)
+                            val filter = Paint(Paint.FILTER_BITMAP_FLAG)
+                            fun read(): IntArray = IntArray(w * h).also { buffer.getPixels(it, 0, w, 0, 0, w, h) }
+                            canvas.drawBitmap(source, null, rect, filter)
+                            val pixels = read()
+                            buffer.eraseColor(Color.TRANSPARENT)
+                            MaskRenderer.drawStroke(canvas, stroke, w, h)
+                            val seedPixels = read()
+                            val seeds = BooleanArray(seedPixels.size) { (seedPixels[it] ushr 24) >= 140 }
+                            val subject = baseMask?.let {
+                                buffer.eraseColor(Color.TRANSPARENT)
+                                canvas.drawBitmap(it, null, rect, filter)
+                                read().apply { for (i in indices) this[i] = this[i] ushr 24 }
+                            }
+                            SelectionSample(w, h, pixels, seeds, subject)
+                        } finally {
+                            buffer.recycle()
+                        }
+                    }
+                    sample?.let { EdgeSelection.refine(it.pixels, it.seeds, it.width, it.height, it.subject) }
+                }
+                if (current == project) addStroke(stroke.copy(selection = selection))
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                if (current == project) addStroke(stroke)
+            } finally {
+                _busy.value = null
+            }
+        }
+    }
+
+    private data class SelectionSample(
+        val width: Int, val height: Int, val pixels: IntArray, val seeds: BooleanArray, val subject: IntArray?,
+    )
+
     fun clearMask() {
         val p = current ?: return
         viewModelScope.launch {
@@ -689,7 +743,11 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     override fun onCleared() {
-        releaseBitmaps()
+        // A canceled render can still be returning from native Canvas code.
+        // Wait for its lock off the main thread before recycling its input.
+        CoroutineScope(Dispatchers.Default).launch {
+            renderLock.withLock { releaseBitmaps() }
+        }
     }
 
     companion object {

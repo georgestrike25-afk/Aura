@@ -1,5 +1,6 @@
 package app.aura
 
+import android.app.Application
 import android.app.WallpaperManager
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,6 +12,8 @@ import android.graphics.Paint
 import android.graphics.Shader
 import android.net.Uri
 import android.service.wallpaper.WallpaperService
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
@@ -26,7 +29,12 @@ import app.aura.studio.mask.SubjectSegmenter
 import app.aura.studio.render.ClockExtras
 import app.aura.studio.render.StudioCompositor
 import app.aura.studio.wallpaper.WallpaperApplier
+import app.aura.studio.ui.StudioViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
@@ -58,8 +66,12 @@ class StudioFlowTest {
         c.drawCircle(w / 2f, 640f, 150f, subject)
         c.drawRoundRect(w / 2f - 300f, 450f, w / 2f + 300f, h.toFloat() + 100f, 220f, 220f, subject)
         val f = File(context.cacheDir, "studio_test_photo.jpg")
-        f.outputStream().use { bmp.compress(Bitmap.CompressFormat.JPEG, 95, it) }
-        return Uri.fromFile(f)
+        try {
+            f.outputStream().use { bmp.compress(Bitmap.CompressFormat.JPEG, 95, it) }
+            return Uri.fromFile(f)
+        } finally {
+            bmp.recycle()
+        }
     }
 
     private fun save(name: String, bmp: Bitmap) {
@@ -314,6 +326,60 @@ class StudioFlowTest {
         save("studio_depth_one_front", oneFront)
         assertTrue("un dígito adelante debe verse distinto", diff(allBehind, oneFront) > 10)
         listOf(plain, moved, metal, rain, allBehind, oneFront, mask, photo).forEach { it.recycle() }
+    }
+
+    @Test
+    fun assistedMaskInStudioFollowsPhotoEdgesAndSurvivesUndoRedoAndSave() = runBlocking {
+        val width = 320
+        val height = 640
+        val photo = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val backgroundColor = Color.rgb(81, 105, 113)
+        val subjectColor = Color.rgb(91, 100, 122)
+        Canvas(photo).apply {
+            drawColor(backgroundColor)
+            drawOval(90f, 140f, 230f, 370f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = subjectColor })
+        }
+        val file = File(context.cacheDir, "studio_edge_selection.png")
+        file.outputStream().use { photo.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        val repo = context.aura.studio
+        val project = repo.create(Uri.fromFile(file), "Selección inteligente").copy(autoMask = true)
+        repo.save(project)
+        val store = ViewModelStore()
+        val model = withContext(Dispatchers.Main) {
+            val factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
+            ViewModelProvider.create(store, factory)[StudioViewModel::class].also { it.open(project.id) }
+        }
+        try {
+            withTimeout(20_000) { while (model.history.value?.current?.id != project.id) delay(20) }
+            withContext(Dispatchers.Main) {
+                model.refineStroke(MaskStroke(listOf(0.5f, 0.37f, 0.5f, 0.43f), 0.018f, erase = false))
+            }
+            withTimeout(20_000) { while (model.history.value?.current?.strokes.isNullOrEmpty()) delay(20) }
+            val refined = model.history.value!!.current
+            assertNotNull("la pincelada debe producir una región refinada", refined.strokes.single().selection)
+            val mask = MaskRenderer.render(null, refined.strokes, width, height)
+            assertTrue("llega al borde interior", Color.alpha(mask.getPixel(160, 150)) > 200)
+            assertTrue("deja el fondo fuera", Color.alpha(mask.getPixel(60, 230)) < 20)
+            val overlay = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            Canvas(overlay).apply {
+                drawBitmap(photo, 0f, 0f, null)
+                drawBitmap(mask, 0f, 0f, Paint().apply { color = Color.argb(150, 229, 128, 107) })
+            }
+            save("studio_smart_mask", overlay)
+            mask.recycle()
+            overlay.recycle()
+            withContext(Dispatchers.Main) {
+                model.undo()
+                assertTrue(model.current!!.strokes.isEmpty())
+                model.redo()
+                assertEquals(refined.strokes, model.current!!.strokes)
+            }
+            repo.save(refined)
+            assertEquals(refined.strokes, repo.load(project.id)?.strokes)
+        } finally {
+            withContext(Dispatchers.Main) { store.clear() }
+            photo.recycle()
+        }
     }
 
     /** Columnas con tinta (alfa visible) entre las filas indicadas. */

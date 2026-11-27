@@ -5,13 +5,18 @@ import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.sin
+import kotlin.math.sqrt
 
 /**
- * Texturas paramétricas de Aura Elements, generadas en el teléfono (sin imágenes descargadas):
- * cuadrados ARGB que se repiten sin costuras (ruido periódico). Las usa el pintor del reloj como
- * relleno de los números; la intensidad y la escala se aplican al dibujar.
+ * Superficies paramétricas del reloj, generadas localmente como teselas ARGB.
+ * El pintor las reutiliza y ajusta su intensidad y escala al dibujar.
  */
 object ElementTexture {
+    private val fireColors = intArrayOf(
+        0x260E0705, 0xAA461007.toInt(), 0xEDAC2708.toInt(),
+        0xFFFF6B13.toInt(), 0xFFFFC347.toInt(), 0xFFFFF1C6.toInt(),
+    )
+
     /** Colores característicos de cada material: [cara clara, cara oscura, brillo]. */
     fun palette(m: ClockMaterial): IntArray = when (m) {
         ClockMaterial.AQUA -> intArrayOf(0xFF59D2E8.toInt(), 0xFF0E5E78.toInt(), 0xFF9EF2FF.toInt())
@@ -25,9 +30,8 @@ object ElementTexture {
         else -> intArrayOf(0xFFFFFFFF.toInt(), 0xFF888888.toInt(), 0xFFFFFFFF.toInt())
     }
 
-    /** Tesela [size]×[size] del material (vacía para los materiales clásicos). */
+    /** Superficie ARGB; Ignis se repite en horizontal y se ajusta a la altura del glifo. */
     fun generate(m: ClockMaterial, size: Int = 256, seed: Int = 7): IntArray {
-        if (!m.isElement) return IntArray(0)
         val out = IntArray(size * size)
         val n = Noise(seed + m.ordinal * 101)
         val p = palette(m)
@@ -35,63 +39,130 @@ object ElementTexture {
             val u = x / size.toFloat()
             val v = y / size.toFloat()
             out[y * size + x] = when (m) {
-                ClockMaterial.AQUA -> {
-                    val f = n.fbm(u, v, 4, 4)
-                    val wave = sin(2 * PI * (3 * v + 0.35 * f)).toFloat()
-                    val caustic = (1f - abs(wave)).pow(8) * 0.7f
-                    lighten(mix(p[1], p[0], 0.25f + 0.75f * f), caustic)
+                ClockMaterial.AQUA -> water(n, u, v)
+                ClockMaterial.IGNIS -> fire(n, u, v)
+                ClockMaterial.MINIMAL -> {
+                    val grain = n.value(u, v, 96) - 0.5f
+                    withAlpha(if (grain > 0f) -1 else 0, (abs(grain) * 19).toInt())
                 }
-                ClockMaterial.IGNIS -> {
-                    val f = n.fbm(u, v, 5, 4).pow(1.4f)
-                    val base = ramp(f, intArrayOf(0xFF2A0603.toInt(), p[1], p[2], p[0], 0xFFFFE6A0.toInt()))
-                    if (n.hash(x, y) > 0.9975f) 0xFFFFE9B0.toInt() else base // brasas sueltas
+                ClockMaterial.NEON -> {
+                    val phosphor = n.value(u, v, 20, 64)
+                    val glow = n.value(u, v, 6, 11)
+                    withAlpha(0xFFF8FCFF.toInt(), (glow * 37 + phosphor * 23).toInt())
                 }
-                ClockMaterial.VENTUS -> {
-                    val f = n.fbm(u + 0.3f * n.fbm(v, u, 2, 2), v, 5, 3)
-                    withAlpha(mix(p[1], p[0], f), (110 + 145 * f).toInt())
+                ClockMaterial.METAL -> {
+                    val line = n.value(u, v, 8, 112) * 0.8f + n.value(u, v, 18, 56) * 0.2f
+                    val shade = line - 0.5f
+                    withAlpha(if (shade > 0f) -1 else 0, (abs(shade) * 150).toInt())
                 }
-                ClockMaterial.LUX -> {
-                    val f = n.fbm(u, v, 3, 3)
-                    val streak = (1f - abs(sin(2 * PI * (2 * u + v + 0.2 * f)).toFloat())).pow(12) * 0.6f
-                    lighten(mix(p[1], p[0], 0.4f + 0.6f * f), streak)
+                ClockMaterial.GLASS -> {
+                    val swirls = n.fbm(u + 0.25f * n.value(u, v, 4), v, 3, 5)
+                    val streak = (1f - abs(sin(2 * PI * (2 * u - 3 * v + swirls * 0.65f)).toFloat())).pow(18)
+                    withAlpha(0xFFF0FAFF.toInt(), (swirls * 24 + streak * 48).toInt())
                 }
-                ClockMaterial.TERRA -> {
-                    val f = n.fbm(u, v, 4, 4)
-                    val ring = 0.5f + 0.5f * sin(2 * PI * (8 * v + 1.6 * f)).toFloat()
-                    val wood = mix(p[1], p[0], 0.3f + 0.7f * ring)
-                    val moss = n.fbm(u + 0.5f, v, 4, 3)
-                    if (moss > 0.62f) mix(wood, mix(0xFF3F6A2E.toInt(), p[2], (moss - 0.62f) * 2.6f), 0.85f) else wood
+                ClockMaterial.STONE -> {
+                    val mineral = n.fbm(u, v, 5, 5)
+                    val grain = n.hash(x, y)
+                    val vein = (1f - abs(sin(2 * PI * (u + 2 * v + mineral * 1.45f)).toFloat())).pow(10)
+                    val body = mix(0xFF504944.toInt(), 0xFFD0C1AF.toInt(), mineral * 0.85f + grain * 0.22f)
+                    val seams = mix(body, 0xFFE5D9C7.toInt(), vein * mineral * 0.7f)
+                    if (grain < 0.06f) mix(seams, 0xFF242022.toInt(), 0.50f) else seams
                 }
-                ClockMaterial.AETHER -> {
-                    val a = n.fbm(u, v, 5, 3)
-                    val b = n.fbm(u + 0.37f, v + 0.11f, 4, 4)
-                    val nebula = mix(mix(p[1], p[0], a), p[2], (b - 0.45f).coerceIn(0f, 1f) * 1.4f)
-                    if (n.hash(x, y) > 0.996f) 0xFFFFFFFF.toInt() else nebula // estrellas
-                }
-                ClockMaterial.GLACIUS -> {
-                    val f = n.fbm(u, v, 4, 4)
-                    val crack = n.ridge(u, v, 4, 3)
-                    val ice = mix(p[1], p[0], 0.35f + 0.65f * f)
-                    when {
-                        crack > 0.965f -> 0xFFFFFFFF.toInt()
-                        n.hash(x, y) > 0.985f -> lighten(ice, 0.6f) // escarcha
-                        else -> ice
-                    }
-                }
-                ClockMaterial.KINTSUGI -> {
-                    val f = n.fbm(u, v, 3, 3)
-                    val vein = n.ridge(u, v, 3, 2)
-                    val ceramic = mix(p[1], p[0], 0.55f + 0.45f * f)
-                    when {
-                        vein > 0.95f -> lighten(p[2], (vein - 0.95f) * 8f)
-                        vein > 0.92f -> p[2]
-                        else -> ceramic
-                    }
-                }
-                else -> 0
+                ClockMaterial.VENTUS -> wind(n, u, v, p)
+                ClockMaterial.LUX -> light(n, u, v, p)
+                ClockMaterial.TERRA -> earth(n, u, v, p)
+                ClockMaterial.AETHER -> nebula(n, u, v, p)
+                ClockMaterial.GLACIUS -> ice(n, u, v, p)
+                ClockMaterial.KINTSUGI -> ceramic(n, u, v, p)
             }
         }
         return out
+    }
+
+    private fun water(n: Noise, u: Float, v: Float): Int {
+        val swell = n.fbm(u, v, 3, 3)
+        val x = u + (n.value(u, v, 6) - 0.5f) * 0.16f + (n.value(u, v, 13) - 0.5f) * 0.045f
+        val y = v + (n.value(u + 0.31f, v + 0.17f, 6) - 0.5f) * 0.16f
+        val sparkle = n.value(u, v, 21)
+        val distance = n.cellEdge(x, y, 7)
+        val caustic = (1f - distance * (7f + sparkle * 7f)).coerceAtLeast(0f).pow(2)
+        val scattered = (1f - distance * 3.5f).coerceAtLeast(0f).pow(3)
+        val tint = mix(0x7F06364F, 0xCC34AEBB.toInt(), (swell * 1.45f - 0.2f))
+        return mix(tint, 0xF2D7FCFF.toInt(), ((0.39f + sparkle * 0.40f) * caustic + 0.26f * scattered))
+    }
+
+    private fun fire(n: Noise, u: Float, v: Float): Int {
+        val turbulence = n.fbm(u, v * 0.39f, 4, 5)
+        val x = u + (turbulence - 0.5f) * (0.19f - v * 0.08f)
+        val tongues = n.fbm(x, v * 0.21f, 3, 10)
+        val heat = (v - 0.13f) * 0.64f + (tongues - 0.33f) * 1.63f + (turbulence - 0.5f) * 0.40f
+        val flame = ramp(heat, fireColors)
+        val embers = n.value(u + 0.18f * (1f - v), v * 1.28f, 48)
+        val spark = ((embers - 0.94f) * 14f).coerceIn(0f, 1f) * (1f - v)
+        return mix(flame, 0xFFFFD883.toInt(), spark)
+    }
+
+    private fun wind(n: Noise, u: Float, v: Float, p: IntArray): Int {
+        val curl = n.fbm(u, v, 3, 3) - 0.5f
+        val flow = v + curl * 0.43f
+        val filament = n.value(u, flow, 5, 29)
+        val mist = n.fbm(u + 0.23f, v + curl * 0.21f, 4, 4)
+        val density = (0.58f * filament + 0.72f * mist - 0.26f).coerceIn(0f, 1f)
+        return withAlpha(mix(p[1], p[0], density), (44 + 191 * density).toInt())
+    }
+
+    private fun light(n: Noise, u: Float, v: Float, p: IntArray): Int {
+        val haze = n.fbm(u, v, 3, 4)
+        val shafts = n.value(u - v, v, 12, 3)
+        val broad = n.value(u - v + 0.21f, v, 4, 2)
+        val beam = (shafts * shafts * 0.7f + broad * 0.46f + haze * 0.2f - 0.09f).coerceIn(0f, 1f)
+        val gold = mix(p[1], p[0], beam)
+        return lighten(gold, beam * beam * 0.58f)
+    }
+
+    private fun earth(n: Noise, u: Float, v: Float, p: IntArray): Int {
+        val knot = n.fbm(u, v, 4, 3) - 0.5f
+        val board = n.value(u, v + knot * 0.36f, 4, 28)
+        val fiber = n.value(u, v + knot * 0.31f, 8, 88)
+        val pores = n.value(u, v + knot * 0.26f, 13, 53)
+        val bark = mix(p[1], 0xFFBB8D63.toInt(), board * 0.65f + fiber * 0.28f - pores.pow(5) * 0.27f)
+        val growth = n.fbm(u + 0.5f, v + 0.11f, 4, 6)
+        val moss = mix(0xFF33462B.toInt(), p[2], n.value(u, v, 42))
+        return mix(bark, moss, ((growth - 0.54f) * 5.5f).coerceIn(0f, 0.85f))
+    }
+
+    private fun nebula(n: Noise, u: Float, v: Float, p: IntArray): Int {
+        val fold = n.fbm(u, v, 3, 3) - 0.5f
+        val dust = n.fbm(u + 0.52f * fold, v - 0.35f * fold, 5, 4)
+        val light = n.fbm(u + 0.34f, v + 0.12f, 3, 3)
+        val plum = mix(0xFF10112D.toInt(), p[0], ((dust - 0.22f) * 1.73f).coerceIn(0f, 1f))
+        val cloud = mix(plum, p[2], ((light - 0.49f) * dust * 2.6f).coerceIn(0f, 0.70f))
+        val star = n.value(u, v, 72)
+        return lighten(cloud, ((star - 0.92f) * 18f).coerceIn(0f, 0.92f))
+    }
+
+    private fun ice(n: Noise, u: Float, v: Float, p: IntArray): Int {
+        val depth = n.fbm(u, v, 4, 5)
+        val seam = n.cellEdge(u, v, 6)
+        val fracture = (1f - seam * 19f).coerceAtLeast(0f)
+        val chips = n.ridge(u, v, 3, 9)
+        val facets = 0.5f + 0.5f * sin(2 * PI * (3 * u - 2 * v + depth * 0.6f)).toFloat()
+        val ice = mix(0xFF1D5880.toInt(), p[0], (0.71f * depth + 0.30f * facets + 0.1f))
+        val frost = n.value(u, v, 96).pow(5) * depth * 0.65f
+        val microcracks = ((chips - 0.96f) * 11f).coerceIn(0f, 0.25f)
+        return lighten(ice, fracture * 0.82f + microcracks + frost)
+    }
+
+    private fun ceramic(n: Noise, u: Float, v: Float, p: IntArray): Int {
+        val body = n.fbm(u, v, 4, 4)
+        val glaze = n.value(u, v, 80)
+        val x = u + (body - 0.5f) * 0.15f
+        val y = v + (n.value(u + 0.31f, v + 0.13f, 5) - 0.5f) * 0.08f
+        val seam = n.cellEdge(x, y, 4)
+        val plate = mix(p[1], p[0], 0.24f + 0.70f * body + (glaze - 0.5f) * 0.19f)
+        val groove = mix(plate, 0xFF684221.toInt(), (1f - seam * 15f).coerceIn(0f, 0.82f))
+        val gold = mix(0xFFA46827.toInt(), 0xFFFFDEA0.toInt(), 0.19f + n.value(u, v, 19) * 0.69f)
+        return mix(groove, gold, (1f - seam * (22f + glaze * 11f)).coerceIn(0f, 1f))
     }
 
     // ------------------------------------------------------------------ color
@@ -124,17 +195,41 @@ class Noise(private val seed: Int) {
     private fun smooth(t: Float) = t * t * (3 - 2 * t)
 
     /** Ruido en [0,1] para coordenadas en [0,1), periódico con [period] celdas. */
-    fun value(u: Float, v: Float, period: Int): Float {
+    fun value(u: Float, v: Float, period: Int, periodY: Int = period): Float {
         val x = u * period
-        val y = v * period
+        val y = v * periodY
         val x0 = floor(x).toInt()
         val y0 = floor(y).toInt()
         val fx = smooth(x - x0)
         val fy = smooth(y - y0)
-        fun h(i: Int, j: Int) = hash(Math.floorMod(i, period), Math.floorMod(j, period))
+        fun h(i: Int, j: Int) = hash(Math.floorMod(i, period), Math.floorMod(j, periodY))
         val a = h(x0, y0) + (h(x0 + 1, y0) - h(x0, y0)) * fx
         val b = h(x0, y0 + 1) + (h(x0 + 1, y0 + 1) - h(x0, y0 + 1)) * fx
         return a + (b - a) * fy
+    }
+
+    /** Distancia relativa a las aristas de celdas irregulares, para la red de cáusticas. */
+    fun cellEdge(u: Float, v: Float, period: Int): Float {
+        val x = u * period
+        val y = v * period
+        val ix = floor(x).toInt()
+        val iy = floor(y).toInt()
+        var closest = Float.MAX_VALUE
+        var next = Float.MAX_VALUE
+        for (j in iy - 1..iy + 1) for (i in ix - 1..ix + 1) {
+            val cx = Math.floorMod(i, period)
+            val cy = Math.floorMod(j, period)
+            val dx = i + 0.12f + 0.76f * hash(cx, cy) - x
+            val dy = j + 0.12f + 0.76f * hash(cx + period, cy) - y
+            val d = dx * dx + dy * dy
+            if (d < closest) {
+                next = closest
+                closest = d
+            } else if (d < next) {
+                next = d
+            }
+        }
+        return sqrt(next) - sqrt(closest)
     }
 
     /** Suma de octavas (fBm) normalizada a [0,1]. */

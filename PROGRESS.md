@@ -190,3 +190,39 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   OFL. AutoDesign detecta escenas de fuego o agua por la paleta y la primera propuesta usa esa fuente con Ignis o
   Aqua; las fuentes importadas cuyo nombre sugiere fuego/agua («Burn», «Water Splash») tienen prioridad. Las de la
   persona no se incluyen en el APK (Burn: solo uso personal; Water Splash: versión demo con logo en los números).
+
+## Aura Studio · materiales y selección de bordes (26/11/2026)
+
+- Rama de prueba `aura-studio-materials`, a partir de `c88aeb9`. Aqua usa una red irregular de
+  cáusticas translúcidas. Ignis combina lenguas ascendentes, una base incandescente y brasas dispersas.
+  Metal, Cristal y Piedra suman grano, reflejos y vetas según el acabado. El control Textura cambia
+  su escala. La vista previa, la exportación y el fondo animado usan el mismo pintor y caché.
+- Capas → Editar con mano abre en Inteligente. Una marca dentro del objeto se ajusta con bordes locales
+  de color y textura. Si la marca cae sobre una máscara automática disponible, sirve de referencia.
+  La operación es local y entra al historial como un solo trazo. Pincel y Borrador permiten ajustes
+  precisos. En una zona uniforme sin referencia se conserva el trazo original.
+- Pruebas agregadas para contornos con colores de luminosidad similar, referencia automática,
+  compatibilidad al guardar trazos anteriores, translucidez de Aqua y calor en la base de Ignis.
+  La instrumentación valida el refinado, deshacer, rehacer y persistencia sobre una foto de prueba.
+- Verificado en `ef2616c` con la [CI Android](https://github.com/georgestrike25-afk/Aura/actions/runs/45909278947):
+  101 pruebas unitarias, lint y 35 pruebas en emulador API 34. El
+  [APK de prueba](https://github.com/georgestrike25-afk/Aura/releases/download/aura-studio-materials-test/Aura.apk)
+  conserva el paquete `app.aura` y la firma original. Capturas de Aqua, Ignis, Metal, Cristal, Piedra y
+  selección inteligente en `docs/capturas/` (`8b297d6`), producidas con imágenes de prueba.
+  La comprobación visual en un Galaxy S24+ físico queda pendiente.
+
+### Segunda pasada de acabados
+
+- Ventus usa filamentos curvos con densidad variable. Lux combina haces y luz difusa. Terra incorpora
+  fibras, poros y musgo irregular. Aether suma nubes de polvo y estrellas. Glacius tiene facetas,
+  fisuras y escarcha. Kintsugi modela la cerámica esmaltada y la sombra junto a la unión dorada.
+- Aqua tiene reflejos más curvos y suaves. Mínimo suma grano mate tenue. Neón tiene un núcleo claro
+  con grano y un borde teñido por el color de acento. Textura queda disponible para todos los acabados.
+- El pintor filtra el muestreo de texturas. Ventus, Aqua, Lux, Aether e Ignis repiten su desplazamiento
+  por ciclos completos, con el mismo intervalo de actualización del fondo.
+- Se validaron localmente las teselas de todos los materiales, incluidas sus uniones horizontales y
+  verticales. Compilación de prueba y capturas del emulador en curso.
+- En la CI de `186d056` pasaron las pruebas de renderizado de Aura Elements y selección inteligente.
+  La suite se interrumpió dos veces al comenzar la comprobación exhaustiva de AutoDesign, por cierre
+  del proceso durante la instrumentación. Se corrigió la liberación de bitmaps al destruir Studio para
+  que espere el bloqueo de renderizado. Se liberan también las imágenes temporales de las pruebas.

@@ -23,7 +23,6 @@ import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.math.sin
-import kotlin.random.Random
 
 /** Texto que acompaña a la hora (fecha y clima en caché), ya formateado por quien llama. */
 data class ClockExtras(val hours: String, val minutes: String, val subtitle: String?, val information: List<Pair<ClockInformationField, String>> = emptyList())
@@ -40,7 +39,6 @@ class Backdrop(val bitmap: Bitmap, val matrix: android.graphics.Matrix)
  */
 class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.SUBPIXEL_TEXT_FLAG)
-    private var stoneTexture: Bitmap? = null
 
     /** Qué partes dibujar respecto del sujeto de la foto (para poner dígitos delante o detrás). */
     enum class Pass { ALL, BEHIND, FRONT }
@@ -194,7 +192,8 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
         paint.reset(textSize, r.face, d.letterSpacing)
         if (element) {
             // Textura Elements con la intensidad elegida; el resto es el color del reloj.
-            paint.shader = elementShader(d, textSize, phase)
+            paint.shader = surfaceShader(d, textSize, phase, top, bottom)
+            paint.isFilterBitmap = true
             canvas.drawText(r.text, px, baseline, paint)
             if (d.elementIntensity < 100) {
                 paint.reset(textSize, r.face, d.letterSpacing)
@@ -203,8 +202,21 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
             }
             elementOverlay(canvas, r, d, textSize, top, bottom)
         } else {
-            applyFace(paint, d, top, bottom, px, r.width)
+            applyFace(paint, d, top, bottom)
+            if (d.material == ClockMaterial.STONE) {
+                paint.shader = surfaceShader(d, textSize)
+                paint.isFilterBitmap = true
+                paint.colorFilter = android.graphics.PorterDuffColorFilter(
+                    mix(Color.WHITE, d.color, 0.45f), android.graphics.PorterDuff.Mode.MULTIPLY,
+                )
+            }
             canvas.drawText(r.text, px, baseline, paint)
+            if (d.material != ClockMaterial.STONE) {
+                paint.reset(textSize, r.face, d.letterSpacing)
+                paint.shader = surfaceShader(d, textSize)
+                paint.isFilterBitmap = true
+                canvas.drawText(r.text, px, baseline, paint)
+            }
         }
         if (d.chameleon > 0 && backdrop != null) {
             val m = android.graphics.Matrix(full)
@@ -249,21 +261,29 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
         canvas.restoreToCount(saved)
     }
 
-    /** Textura Elements repetida; la escala sigue al tamaño de los números y [phase] la desplaza. */
-    private fun elementShader(d: ClockDesign, textSize: Float, phase: Float): Shader {
+    /** La escala sigue al tamaño del reloj. En Ignis la base de las llamas sigue el glifo. */
+    private fun surfaceShader(
+        d: ClockDesign, textSize: Float, phase: Float = 0f, top: Float = 0f, bottom: Float = textSize,
+    ): Shader {
         val tile = ElementTextures.tile(d.material)
-        val k = textSize * (0.35f + 1.3f * d.textureScale / 100f) / tile.width
-        val drift = when (d.material) {
-            ClockMaterial.IGNIS -> floatArrayOf(0f, -1f)   // el fuego sube
-            ClockMaterial.VENTUS -> floatArrayOf(1f, 0f)   // el humo va de costado
-            ClockMaterial.AQUA -> floatArrayOf(0.4f, 0.3f)
-            else -> floatArrayOf(0.3f, 0.15f)
+        val scale = textSize * (0.35f + 1.3f * d.textureScale / 100f) / tile.width
+        val fire = d.material == ClockMaterial.IGNIS
+        val matrix = android.graphics.Matrix().apply {
+            if (fire) {
+                setScale(scale, (bottom - top) / tile.height)
+                postTranslate(phase * tile.width * scale, top)
+            } else {
+                setScale(scale, scale)
+                when (d.material) {
+                    ClockMaterial.VENTUS -> postTranslate(phase * tile.width * scale, 0f)
+                    ClockMaterial.AQUA -> postTranslate(phase * tile.width * scale, phase * tile.height * scale)
+                    ClockMaterial.LUX, ClockMaterial.AETHER -> postTranslate(0f, phase * tile.height * scale)
+                    else -> Unit
+                }
+            }
         }
-        val m = android.graphics.Matrix().apply {
-            setScale(k, k)
-            postTranslate(drift[0] * phase * tile.width * k, drift[1] * phase * tile.width * k)
-        }
-        return BitmapShader(tile, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT).apply { setLocalMatrix(m) }
+        return BitmapShader(tile, Shader.TileMode.REPEAT, if (fire) Shader.TileMode.CLAMP else Shader.TileMode.REPEAT)
+            .apply { setLocalMatrix(matrix) }
     }
 
     /** Detalles propios de cada elemento sobre la cara: luz interna, musgo al pie, escarcha, etc. */
@@ -272,28 +292,32 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
         val k = d.elementIntensity / 100f
         paint.reset(textSize, r.face, d.letterSpacing)
         paint.shader = when (d.material) {
-            // Agua y hielo: más claros arriba (refracción), más profundos abajo.
-            ClockMaterial.AQUA, ClockMaterial.GLACIUS -> LinearGradient(
+            ClockMaterial.AQUA -> LinearGradient(
                 0f, top, 0f, bottom,
-                intArrayOf(withAlpha(Color.WHITE, (110 * k).roundToInt()), Color.TRANSPARENT, withAlpha(pal[1], (120 * k).roundToInt())),
+                intArrayOf(withAlpha(pal[2], (65 * k).roundToInt()), Color.TRANSPARENT, withAlpha(pal[1], (78 * k).roundToInt())),
+                floatArrayOf(0f, 0.32f, 1f), Shader.TileMode.CLAMP,
+            )
+            ClockMaterial.GLACIUS -> LinearGradient(
+                0f, top, 0f, bottom,
+                intArrayOf(withAlpha(Color.WHITE, (63 * k).roundToInt()), Color.TRANSPARENT, withAlpha(pal[1], (78 * k).roundToInt())),
                 floatArrayOf(0f, 0.45f, 1f), Shader.TileMode.CLAMP,
             )
             // Fuego: base incandescente.
             ClockMaterial.IGNIS -> LinearGradient(
                 0f, top, 0f, bottom,
-                intArrayOf(Color.TRANSPARENT, withAlpha(0xFFFFE08A.toInt(), (150 * k).roundToInt())),
+                intArrayOf(Color.TRANSPARENT, withAlpha(0xFFFFE08A.toInt(), (59 * k).roundToInt())),
                 null, Shader.TileMode.CLAMP,
             )
             // Tierra: musgo que crece desde abajo.
             ClockMaterial.TERRA -> LinearGradient(
                 0f, top, 0f, bottom,
-                intArrayOf(Color.TRANSPARENT, Color.TRANSPARENT, withAlpha(pal[2], (170 * k).roundToInt())),
+                intArrayOf(Color.TRANSPARENT, Color.TRANSPARENT, withAlpha(pal[2], (52 * k).roundToInt())),
                 floatArrayOf(0f, 0.65f, 1f), Shader.TileMode.CLAMP,
             )
             // Luz: núcleo casi blanco.
             ClockMaterial.LUX -> LinearGradient(
                 0f, top, 0f, bottom,
-                intArrayOf(withAlpha(Color.WHITE, (160 * k).roundToInt()), withAlpha(pal[1], (60 * k).roundToInt())),
+                intArrayOf(withAlpha(Color.WHITE, (56 * k).roundToInt()), withAlpha(pal[1], (32 * k).roundToInt())),
                 null, Shader.TileMode.CLAMP,
             )
             else -> null
@@ -558,7 +582,7 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
         return Color.rgb(r / 64, g / 64, bl / 64)
     }
 
-    private fun applyFace(p: Paint, d: ClockDesign, top: Float, bottom: Float, left: Float, width: Float) {
+    private fun applyFace(p: Paint, d: ClockDesign, top: Float, bottom: Float) {
         when (d.material) {
             ClockMaterial.MINIMAL -> p.color = d.color
             ClockMaterial.METAL -> {
@@ -576,10 +600,12 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
                     null, Shader.TileMode.CLAMP,
                 )
             }
-            ClockMaterial.NEON -> p.color = mix(Color.WHITE, d.accentColor, 0.25f)
-            ClockMaterial.STONE -> {
-                p.shader = BitmapShader(stone(), Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
-                p.colorFilter = android.graphics.PorterDuffColorFilter(withAlpha(d.color, 90), android.graphics.PorterDuff.Mode.MULTIPLY)
+            ClockMaterial.NEON -> {
+                p.shader = LinearGradient(
+                    0f, top, 0f, bottom,
+                    intArrayOf(lighten(d.accentColor, 0.64f), lighten(d.accentColor, 0.91f), lighten(d.accentColor, 0.39f)),
+                    floatArrayOf(0f, 0.36f, 1f), Shader.TileMode.CLAMP,
+                )
             }
             else -> p.color = d.color
         }
@@ -592,19 +618,6 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
         ClockMaterial.STONE -> 0xFF4E4A46.toInt()
         ClockMaterial.MINIMAL -> shade(d.color, 0.55f)
         else -> shade(ElementTexture.palette(d.material)[1], 0.8f)
-    }
-
-    /** Textura de granito procedural (sin imágenes externas), generada una sola vez. */
-    private fun stone(): Bitmap = stoneTexture ?: Bitmap.createBitmap(STONE_SIZE, STONE_SIZE, Bitmap.Config.ARGB_8888).also { bmp ->
-        val rnd = Random(42)
-        val px = IntArray(STONE_SIZE * STONE_SIZE) {
-            val v = 150 + rnd.nextInt(70)
-            val fleck = if (rnd.nextInt(40) == 0) -70 else 0
-            val g = (v + fleck).coerceIn(0, 255)
-            Color.rgb(g, (g * 0.97f).toInt(), (g * 0.92f).toInt())
-        }
-        bmp.setPixels(px, 0, STONE_SIZE, 0, 0, STONE_SIZE, STONE_SIZE)
-        stoneTexture = bmp
     }
 
     /**
@@ -626,8 +639,6 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
     private class Layout(val runs: List<Run>, val box: RectF, val textSize: Float, val transform: android.graphics.Matrix, val lastBaseline: Float)
 
     companion object {
-        private const val STONE_SIZE = 128
-
         private fun Paint.reset(size: Float, face: Typeface, spacing: Float) {
             reset()
             isAntiAlias = true
