@@ -106,19 +106,20 @@ class AutoDesignTest {
     private val sea = IntArray(width * height) { i -> if (i / width > 80) 0xFF1F7FA8.toInt() else 0xFF2A9CC7.toInt() }
 
     @Test
-    fun fireSceneUsesAFireFontWithIgnis() {
-        for (round in listOf(0, 2, 4)) {
+    fun fireSceneUsesAFireFontWithoutIgnisMaterial() {
+        for (round in listOf(0, 4, 8)) {
             val first = AutoDesign.propose(fire, width, height, null, round).first().design
             assertEquals("clock_rubikburned", first.customFont)
-            assertEquals(app.aura.core.studio.ClockMaterial.IGNIS, first.material)
         }
+        // Ni Aqua ni Ignis se eligen solos en ninguna tanda.
+        val all = (0 until 12).flatMap { AutoDesign.propose(fire, width, height, null, it) + AutoDesign.propose(sea, width, height, null, it) }
+        assertTrue(all.none { it.design.material == app.aura.core.studio.ClockMaterial.IGNIS || it.design.material == app.aura.core.studio.ClockMaterial.AQUA })
     }
 
     @Test
-    fun waterSceneUsesAWaterFontWithAqua() {
+    fun waterSceneUsesAWaterFont() {
         val first = AutoDesign.propose(sea, width, height, null, 0).first().design
         assertTrue(first.customFont in setOf("clock_rubikwetpaint", "clock_rubikpuddles"))
-        assertEquals(app.aura.core.studio.ClockMaterial.AQUA, first.material)
     }
 
     @Test

@@ -89,6 +89,8 @@ object AutoDesign {
         "clock_playfair", "clock_righteous", "clock_megrim",
     )
 
+    private val AUTO_EXCLUDED = setOf(ClockMaterial.AQUA, ClockMaterial.IGNIS)
+
     private val THEMED_STYLES = listOf(Style.MONUMENT, Style.GIANT, Style.STACKED)
 
     /** Hueco entre horas y minutos (sin dos puntos) o el ancho de los dos puntos, en em. */
@@ -117,8 +119,8 @@ object AutoDesign {
         val schemes = List(3) { weighted.random(rnd) }
         // Escena de fuego o agua: la primera propuesta lleva la fuente temática (primero las de la persona) y su material.
         val theme = themeOf(ctx.traits)
-        // En una de cada dos tandas (la primera incluida), para que no se repita siempre la misma fuente temática.
-        val themed = theme?.takeIf { round % 2 == 0 }?.let { th -> (userFonts.filter { it.theme == th }.shuffled(rnd) + builtInThemed.filter { it.theme == th }.shuffled(rnd)).firstOrNull() }
+        // En una de cada cuatro tandas (la primera incluida), para que no se repita la fuente temática.
+        val themed = theme?.takeIf { round % 4 == 0 }?.let { th -> (userFonts.filter { it.theme == th }.shuffled(rnd) + builtInThemed.filter { it.theme == th }.shuffled(rnd)).firstOrNull() }
         if (themed != null && styles.first() !in THEMED_STYLES) {
             val s0 = THEMED_STYLES.filter { it !in styles }.random(rnd)
             styles = listOf(s0) + styles.drop(1)
@@ -162,10 +164,8 @@ object AutoDesign {
             d = d.copy(artistic = d.artistic.edit(slot) { it.copy(depth = DigitDepth.IN_FRONT_OF_SUBJECT) })
         }
         // Con fuente temática, el material del elemento (Ignis o Aqua) bien presente.
-        return if (forced == null) d else d.withMaterial(forced.theme.material).copy(
-            elementIntensity = rnd.nextInt(60, 85), textureScale = rnd.nextInt(35, 65), chameleon = 0,
-            color = d.color, accentColor = d.accentColor,
-        )
+        // La fuente temática va con los colores de la foto, sin el material Aqua/Ignis encima (no quedaba bien).
+        return d
     }
 
     private fun buildStyle(style: Style, c: Context, rnd: Random, scheme: Scheme, choose: (List<String>) -> Pair<String, Pair<Float, Float>>): ClockDesign {
@@ -191,7 +191,7 @@ object AutoDesign {
                 val bandH = m.second * size * stretchY / c.aspect
                 val y = if (scene != null) scene.top.coerceIn(0.08f + bandH / 2, 0.6f)
                 else freeRow(c, 0.5f, 0.46f, bandH, 0.08f + bandH / 2, 0.5f)
-                finish(c, rnd, scheme, 0.5f, y, 0.46f, bandH, behind, preferMaterial = true).copy(
+                finish(c, rnd, scheme, 0.5f, y, 0.46f, bandH, behind).copy(
                     customFont = font, size = size, stretchX = stretchX, stretchY = stretchY,
                 )
             }
@@ -264,7 +264,8 @@ object AutoDesign {
         val harmony = Fusion.harmonize(local)
         val (main, accent) = colors(c.traits, local.regionBrightness, scheme, local)
         val material = when {
-            preferMaterial && harmony.material.isElement -> harmony.material
+            // Aqua e Ignis no se eligen solos (llamaban demasiado la atención); quedan para elegir a mano en Studio.
+            preferMaterial && harmony.material.isElement && harmony.material !in AUTO_EXCLUDED -> harmony.material
             preferMaterial -> listOf(ClockMaterial.GLASS, ClockMaterial.METAL).random(rnd)
             else -> ClockMaterial.MINIMAL
         }
