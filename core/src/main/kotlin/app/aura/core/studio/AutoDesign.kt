@@ -170,7 +170,7 @@ object AutoDesign {
                 val bandH = m.second * size * stretchY / c.aspect
                 val y = if (scene != null) (scene.top - bandH * 0.18f).coerceIn(0.10f + bandH / 2, 0.5f)
                 else freeRow(c, 0.5f, 0.44f, bandH, 0.10f + bandH / 2, 0.38f)
-                finish(c, rnd, scheme, 0.5f, y, 0.44f, bandH, behind).copy(
+                finish(c, rnd, scheme, 0.5f, y, 0.44f, bandH, behind, tilt = true).copy(
                     customFont = font, size = size, stretchY = stretchY,
                 )
             }
@@ -210,7 +210,7 @@ object AutoDesign {
                 val bandH = m.second * size / c.aspect
                 val y = if (scene != null) (scene.top - bandH * 0.9f).coerceIn(0.10f + bandH / 2, 0.36f)
                 else freeRow(c, 0.5f, 0.36f, bandH, 0.10f + bandH / 2, 0.32f)
-                finish(c, rnd, scheme, 0.5f, y, 0.36f, bandH, behind = false, preferMaterial = false).copy(
+                finish(c, rnd, scheme, 0.5f, y, 0.36f, bandH, behind = false, preferMaterial = false, tilt = true).copy(
                     customFont = font, size = size, letterSpacing = 0.06f, showColon = true,
                     shadow = 18,
                 )
@@ -245,7 +245,7 @@ object AutoDesign {
     /** Color, acabado e integración con la foto en la zona donde va el reloj. */
     private fun finish(
         c: Context, rnd: Random, scheme: Scheme, x: Float, y: Float, halfW: Float, bandH: Float,
-        behind: Boolean, preferMaterial: Boolean = rnd.nextBoolean(),
+        behind: Boolean, preferMaterial: Boolean = rnd.nextBoolean(), tilt: Boolean = false,
     ): ClockDesign {
         val region = floatArrayOf(
             (x - halfW).coerceIn(0f, 1f), (y - bandH / 2f).coerceIn(0f, 1f),
@@ -282,11 +282,12 @@ object AutoDesign {
         // Escena nocturna: a veces un resplandor leve del color de acento.
         if (c.traits.brightness < 0.25f && material == ClockMaterial.MINIMAL && rnd.nextBoolean()) d = d.copy(glow = rnd.nextInt(10, 25))
         // Un leve giro en algunas propuestas horizontales, siguiendo la luz de la escena.
-        val tilt = if (rnd.nextInt(4) == 0) (if (rnd.nextBoolean()) 1 else -1) * rnd.range(2.5f, 7f) else 0f
+        // (Solo en estilos que no llegan a los bordes: un Gigante girado se saldría de la pantalla.)
+        val angle = if (tilt && rnd.nextInt(4) == 0) (if (rnd.nextBoolean()) 1 else -1) * rnd.range(2.5f, 6f) else 0f
         return d.copy(
             shadow = rnd.nextInt(10, if (local.contrast > 0.22f) 32 else 24),
             opacity = rnd.nextInt(74, 93),
-            rotation = tilt,
+            rotation = angle,
         )
     }
 
