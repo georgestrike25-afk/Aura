@@ -276,6 +276,26 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "la-cabra-del-filo-6ec185e57aed",
+          "title": "La cabra del filo",
+          "image": "photos/40179c8feea6de20d51b009f.webp",
+          "thumb": "photos/40179c8feea6de20d51b009f-thumb.webp",
+          "dhash": "2f7f4739d1d331b2a7b6c7a5b4c8a2b2c79fafc4c1c4cbbfc1c6b9bbc0b7bec984878b7f77728382858695a76a593f6e5a416f6255787571",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-liebre-del-ultimo-sol-339af1b522b5",
+          "title": "La liebre del último sol",
+          "image": "photos/f04fc3850c63642d02716d15.webp",
+          "thumb": "photos/f04fc3850c63642d02716d15-thumb.webp",
+          "dhash": "ffffefb3b3b3b853a07baf9b79af9475ad8e72abcc94b0bb89a4b084a5af87b3b48081ae7665996f6e9c74857a574a7856487355487a5749",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
