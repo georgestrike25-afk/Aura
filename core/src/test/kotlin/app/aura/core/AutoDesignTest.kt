@@ -68,7 +68,7 @@ class AutoDesignTest {
                 assertNotEquals(0xFFFFFFFF.toInt(), d.color)
                 assertNotEquals(0xFFE8572A.toInt(), d.accentColor)
                 // Sobre una foto oscura, cifras claras con buen contraste.
-                assertTrue("${p.title}: ${Integer.toHexString(d.color)}", Fusion.contrastRatio(Fusion.luminance(d.color), 0.05f) >= 2.2f)
+                assertTrue("${p.title}: ${Integer.toHexString(d.color)}", Fusion.contrastRatio(Fusion.luminance(d.color), 0.05f) >= 1.9f)
             }
         }
         // El esquema «tono» usa el color de la foto.
@@ -149,7 +149,8 @@ class AutoDesignTest {
     @Test
     fun designsBlendIntoThePhoto() {
         val all = (0 until 10).flatMap { AutoDesign.propose(forest, width, height, null, it, salt = 5) }.map { it.design }
-        assertTrue(all.all { it.opacity in 74..92 && it.shadow <= 32 })
-        assertTrue("camaleón en varias", all.count { it.chameleon > 0 } >= 6)
+        assertTrue(all.all { it.opacity in 66..88 && it.shadow <= 20 && it.glow == 0 })
+        assertTrue("nunca cruzado", all.all { it.rotation == 0f })
+        assertTrue("camaleón en la mayoría", all.count { it.chameleon > 0 } >= all.size / 2)
     }
 }

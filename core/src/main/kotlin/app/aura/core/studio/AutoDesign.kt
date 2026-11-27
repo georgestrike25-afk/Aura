@@ -111,7 +111,10 @@ object AutoDesign {
         // Al azar, pero primero los estilos que no se vieron hace poco.
         var styles = Style.entries.shuffled(rnd).sortedBy { it in recentStyles }.take(3)
         val usedFonts = avoidFonts.toMutableSet()
-        val schemes = Scheme.entries.shuffled(rnd)
+        // Tono sobre tono es lo más común; el acento de la foto, lo menos (es lo que más resalta).
+        val weighted = listOf(Scheme.TONAL, Scheme.TONAL, Scheme.TONAL, Scheme.TONAL, Scheme.TINT, Scheme.TINT, Scheme.TINT,
+            Scheme.MONO, Scheme.MONO, Scheme.ACCENT)
+        val schemes = List(3) { weighted.random(rnd) }
         // Escena de fuego o agua: la primera propuesta lleva la fuente temática (primero las de la persona) y su material.
         val theme = themeOf(ctx.traits)
         // En una de cada dos tandas (la primera incluida), para que no se repita siempre la misma fuente temática.
@@ -152,7 +155,12 @@ object AutoDesign {
 
     private fun build(style: Style, c: Context, rnd: Random, scheme: Scheme, used: Set<String>, forced: ThemedFont? = null): ClockDesign {
         fun choose(pool: List<String>) = forced?.let { it.id to (it.advance to it.cap) } ?: pick(pool, rnd, used)
-        val d = buildStyle(style, c, rnd, scheme, ::choose)
+        var d = buildStyle(style, c, rnd, scheme, ::choose)
+        // Con sujeto, a veces una cifra pasa por delante y las otras por detrás: el reloj se mete en la foto.
+        if (d.behindSubject && rnd.nextInt(10) < 3) {
+            val slot = listOf(DigitSlot.HOUR_TENS, DigitSlot.MINUTE_UNITS).random(rnd)
+            d = d.copy(artistic = d.artistic.edit(slot) { it.copy(depth = DigitDepth.IN_FRONT_OF_SUBJECT) })
+        }
         // Con fuente temática, el material del elemento (Ignis o Aqua) bien presente.
         return if (forced == null) d else d.withMaterial(forced.theme.material).copy(
             elementIntensity = rnd.nextInt(60, 85), textureScale = rnd.nextInt(35, 65), chameleon = 0,
@@ -246,7 +254,7 @@ object AutoDesign {
     /** Color, acabado e integración con la foto en la zona donde va el reloj. */
     private fun finish(
         c: Context, rnd: Random, scheme: Scheme, x: Float, y: Float, halfW: Float, bandH: Float,
-        behind: Boolean, preferMaterial: Boolean = rnd.nextBoolean(), tilt: Boolean = false,
+        behind: Boolean, preferMaterial: Boolean = rnd.nextInt(3) == 0, tilt: Boolean = false,
     ): ClockDesign {
         val region = floatArrayOf(
             (x - halfW).coerceIn(0f, 1f), (y - bandH / 2f).coerceIn(0f, 1f),
@@ -274,21 +282,18 @@ object AutoDesign {
             behindSubject = behind,
             artistic = ArtisticClock(enabled = true),
         ).withMaterial(material)
-        if (material.isElement) d = d.copy(elementIntensity = rnd.nextInt(40, 70), textureScale = rnd.nextInt(30, 70))
-        // Integrado a la foto: camaleón (las cifras toman la textura y el color de lo que tienen detrás, con un
-        // «lift» para que se sigan leyendo), algo de transparencia y sombras suaves. Nada de cifras «pegadas».
-        if (!material.isElement && rnd.nextInt(5) < 3) {
-            d = d.copy(chameleon = rnd.nextInt(35, 65), chameleonLift = if (local.regionBrightness < 0.5f) rnd.nextInt(30, 55) else -rnd.nextInt(30, 55))
+        if (material.isElement) d = d.copy(elementIntensity = rnd.nextInt(30, 56), textureScale = rnd.nextInt(30, 70))
+        // Integrado a la foto: camaleón casi siempre (las cifras toman la textura y el color de lo que tienen
+        // detrás, con un «lift» suave para que se sigan leyendo), transparencia y sombras mínimas. Sin brillos.
+        if (!material.isElement && rnd.nextInt(20) < 17) {
+            d = d.copy(chameleon = rnd.nextInt(40, 71), chameleonLift = if (local.regionBrightness < 0.5f) rnd.nextInt(20, 41) else -rnd.nextInt(20, 41))
         }
-        // Escena nocturna: a veces un resplandor leve del color de acento.
-        if (c.traits.brightness < 0.25f && material == ClockMaterial.MINIMAL && rnd.nextBoolean()) d = d.copy(glow = rnd.nextInt(10, 25))
-        // Un leve giro en algunas propuestas horizontales, siguiendo la luz de la escena.
-        // (Solo en Editorial: Monumento y Gigante ocupan casi todo el ancho y girados se saldrían de la pantalla.)
-        val angle = if (tilt && rnd.nextInt(4) == 0) (if (rnd.nextBoolean()) 1 else -1) * rnd.range(2.5f, 6f) else 0f
+        // El reloj siempre derecho (nada de giros: se veía «cruzado»).
         return d.copy(
-            shadow = rnd.nextInt(10, if (local.contrast > 0.22f) 32 else 24),
-            opacity = rnd.nextInt(74, 93),
-            rotation = angle,
+            shadow = rnd.nextInt(6, 21),
+            opacity = rnd.nextInt(66, 89),
+            rotation = 0f,
+            glow = 0,
         )
     }
 
@@ -329,7 +334,7 @@ object AutoDesign {
             Scheme.TONAL -> fromHsl(vh, max(0.45f, hsl(vivid)[1]), if (light) 0.64f else 0.36f)
         }
         // Contraste suficiente para leer la hora, sin que resalte de más (antes 3:1).
-        return legible(main, regionBrightness, minRatio = 2.2f) to legible(accent, regionBrightness, minRatio = 1.7f)
+        return legible(main, regionBrightness, minRatio = 1.9f) to legible(accent, regionBrightness, minRatio = 1.5f)
     }
 
     /** Aclara u oscurece [color] (sin cambiar su tono) hasta que se lea sobre la zona del reloj. */
