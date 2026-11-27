@@ -2066,6 +2066,46 @@
           "dhash": "24002371b1215ed24e535a6a686895897eab9a897e746c87705aab8a67bfa4877c66507a5e438a6a4a9b7d5f46311647311a412f1b3b2d1b",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-agave-del-pedregal-5c81e1db60f2",
+          "title": "El agave del pedregal",
+          "image": "photos/936e1115a22ced494822cb58.webp",
+          "thumb": "photos/936e1115a22ced494822cb58-thumb.webp",
+          "dhash": "090b19e7f46c797119262919292c18292d17272c3234372a3234263033242e325c453d3f3932282f2a2d3131482e2231261e1d1f1b20201e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-olivo-del-ultimo-sol-9bd3aef5f78e",
+          "title": "El olivo del último sol",
+          "image": "photos/478eac91a8ebbb70033951da.webp",
+          "thumb": "photos/478eac91a8ebbb70033951da-thumb.webp",
+          "dhash": "0701114a0810701d231a25251b27251c28241b26241a252a1f282f212a30212c2a2123382a28452f2d613e3e2e221b3628203629233b2d28",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-cala-del-agua-negra-bd6c6b2be6f4",
+          "title": "La cala del agua negra",
+          "image": "photos/11cf029f2593fd97add1d145.webp",
+          "thumb": "photos/11cf029f2593fd97add1d145-thumb.webp",
+          "dhash": "3f3f27cdcbb7db791a28271829281020200b19191b252327302a1c27240c1a1a34362930352a1e2822111d19282c231924220e1b190d1713",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-dedalera-del-claro-61b2d8b5895e",
+          "title": "La dedalera del claro",
+          "image": "photos/16f3ce1dc6b497d447f6eeb3.webp",
+          "thumb": "photos/16f3ce1dc6b497d447f6eeb3-thumb.webp",
+          "dhash": "c084080c0524260311170f111810141c13191f15131a131b1f152624192a281a1b1f152f281c5033284a361e1f21132c26143d2c1c302715",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
