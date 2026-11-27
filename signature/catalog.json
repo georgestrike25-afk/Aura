@@ -3,21 +3,6 @@
   "license": "",
   "collections": [
     {
-      "id": "retratos-de-mar",
-      "title": "Retratos de Mar",
-      "items": [
-        {
-          "id": "la-casa-del-ermitano-b1825c1ae82d",
-          "title": "La casa del ermitaño",
-          "image": "photos/7aa5c193712878f9c1430ddd.webp",
-          "thumb": "photos/7aa5c193712878f9c1430ddd-thumb.webp",
-          "dhash": "070743190e866e0d162829182a2c192b2c17292b1b292927312d1f2d2c19292a3b382856462c423c2b232a242c2a1c3b33213b3829303328",
-          "width": 1440,
-          "height": 3120
-        }
-      ]
-    },
-    {
       "id": "anatomia-secreta",
       "title": "Anatomía secreta",
       "items": [
@@ -1979,6 +1964,15 @@
           "image": "photos/8eb41e471f890777477b32cd.webp",
           "thumb": "photos/8eb41e471f890777477b32cd-thumb.webp",
           "dhash": "80a60d4d600470c2192d241430281934292837260d2924182f261a3126112e261d3529243427263426283727453a233f3722413b254a4226",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-casa-del-ermitano-b1825c1ae82d",
+          "title": "La casa del ermitaño",
+          "image": "photos/7aa5c193712878f9c1430ddd.webp",
+          "thumb": "photos/7aa5c193712878f9c1430ddd-thumb.webp",
+          "dhash": "070743190e866e0d162829182a2c192b2c17292b1b292927312d1f2d2c19292a3b382856462c423c2b232a242c2a1c3b33213b3829303328",
           "width": 1440,
           "height": 3120
         }
