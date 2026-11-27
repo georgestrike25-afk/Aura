@@ -634,6 +634,26 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "la-vasija-del-trazo-197f97dfd9c8",
+          "title": "La vasija del trazo",
+          "image": "photos/57306f92075bf587e3841ddd.webp",
+          "thumb": "photos/57306f92075bf587e3841ddd-thumb.webp",
+          "dhash": "00000034253501183d2425412828452b2a4c2e2c4d32304f34305a3b336a44383d201d3c241d4e2f245834292a130f351e144126174f2d1b",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-veta-del-papel-6a02024cd1f4",
+          "title": "La veta del papel",
+          "image": "photos/6bcc5a81bfc956bd6ede54f1.webp",
+          "thumb": "photos/6bcc5a81bfc956bd6ede54f1-thumb.webp",
+          "dhash": "ffbfffd35b19fd9c9268378a6334805a2f78552ca779429f733f936a398c6434916b3e9872457c5c377e5b338e6f4d8a694561482c5c4327",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
