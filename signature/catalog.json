@@ -1371,6 +1371,46 @@
           "dhash": "8e8e8e8e8e260f03411f2a4c25304d263145222d4823305631365530354925315633355e443c5d443c5434376156435e5f495f634c635c49",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-perro-de-los-brotes-0d3eba5fc019",
+          "title": "El perro de los brotes",
+          "image": "photos/688963a4b31b924c7d756486.webp",
+          "thumb": "photos/688963a4b31b924c7d756486-thumb.webp",
+          "dhash": "00060e07429805211f362e35493d4d5745565641233830494c3c54513c323c2f333f3249493960523b62533a2e33283c3f324543364f4430",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-pozo-de-las-voces-de0926f96b62",
+          "title": "El pozo de las voces",
+          "image": "photos/fbbb71722f173c3f95da1e4b.webp",
+          "thumb": "photos/fbbb71722f173c3f95da1e4b-thumb.webp",
+          "dhash": "3fffff5766fe7c774c45493c3e452b2f361f22275443423c35362a2b2e212325543d323127232320201f1f205e43393b2e2c282425222224",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-escoba-de-las-lucierna-4a1150274175",
+          "title": "La escoba de las luciérnagas",
+          "image": "photos/88c751f913e11a582a6e8a8a.webp",
+          "thumb": "photos/88c751f913e11a582a6e8a8a-thumb.webp",
+          "dhash": "3a62623365c84e6f2e363119211f131916262016424d4a273331292d26362e22373e3a2b2e28282820272a233d3e38362f222e24161b1d17",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-panadera-del-alba-bcbd69382e97",
+          "title": "La panadera del alba",
+          "image": "photos/24d9db4dd6b046db2479aa4a.webp",
+          "thumb": "photos/24d9db4dd6b046db2479aa4a-thumb.webp",
+          "dhash": "1f0f1bcf6d2b9e230d181c1e292c1a25280d181c302f2d3f3227342a221d1f1d4d38284a2b193820172f2118493224644029563927473223",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
