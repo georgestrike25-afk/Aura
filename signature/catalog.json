@@ -1586,6 +1586,16 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "la-costurera-de-la-lluvia-1e341fa83d01",
+          "title": "La costurera de la lluvia",
+          "image": "photos/1eddac8f2b3d9be286ad61c8.webp",
+          "thumb": "photos/1eddac8f2b3d9be286ad61c8-thumb.webp",
+          "dhash": "0f1c65c199cc6641757e6a828d7f7e8a817881786e6e5e716455777365797c6f5148375d48385b473a4e4d415b5e465a59495f61595d635b",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
