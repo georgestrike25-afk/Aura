@@ -227,6 +227,46 @@
           "dhash": "4d84e8688d6d3f4a2326112428122226101b21102025122729152427142127124b4424584b2b4840263e3a1b5148265d4a2656452b493f28",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-guante-de-la-abuela-69bec3137e74",
+          "title": "El guante de la abuela",
+          "image": "photos/63ed0dc353ef11d96ef6c425.webp",
+          "thumb": "photos/63ed0dc353ef11d96ef6c425-thumb.webp",
+          "dhash": "1f1f9f574f3edc4d16241f2233272028201d1918222217302a1a2b241715181447301950351d4129172417114a351a4831173a2510331f13",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-sobre-de-la-primera-he-8ea7efea3ec6",
+          "title": "El sobre de la primera helada",
+          "image": "photos/31cbc09b5d070dc6f25a4157.webp",
+          "thumb": "photos/31cbc09b5d070dc6f25a4157-thumb.webp",
+          "dhash": "010307044546033317304429455d4a5d734f5c70263747414a56595a6350505d3f36385e524f8a6b62664a48392929493938564441443534",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-campanilla-del-regreso-23bab8311934",
+          "title": "La campanilla del regreso",
+          "image": "photos/214c10377f4de1e1a87eca7f.webp",
+          "thumb": "photos/214c10377f4de1e1a87eca7f-thumb.webp",
+          "dhash": "050b0313214343291c1b27262737273141242b3a22202931292e3d333a3a3039251e1834261b4c342a4a352c2219113020123d2a203c2a23",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-tijera-de-los-veranos-22f6d1d4e26b",
+          "title": "La tijera de los veranos",
+          "image": "photos/2ae52ef781599222624f1103.webp",
+          "thumb": "photos/2ae52ef781599222624f1103-thumb.webp",
+          "dhash": "39070e095744a2131b3b4226474e20424a133741152d3325393b333f3e2536392d2c22332e224235254235262d28173c2e1c432f1e3b2c1e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
         }
       ]
     },
@@ -1373,6 +1413,46 @@
           "dhash": "03832f6363d363630f2a341539492d5567274c5e22475522414f3753612e53622b484d293f43495f643558622736361a2f324055582b4a53",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "la-esfinge-del-viento-sec-8d2b64a940a6",
+          "title": "La esfinge del viento seco",
+          "image": "photos/a8e09fff92aa1be3e2f99490.webp",
+          "thumb": "photos/a8e09fff92aa1be3e2f99490-thumb.webp",
+          "dhash": "1b1f1161670105c31a2e2d344944273e3d23353333403a3c433b575546666350373127423526634c345c503d28211935281c4d3522563b25",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-fenix-de-las-cenizas-f-d0b91aac28a0",
+          "title": "El fénix de las cenizas frías",
+          "image": "photos/483a87a403e041593a34a58d.webp",
+          "thumb": "photos/483a87a403e041593a34a58d-thumb.webp",
+          "dhash": "0303012527254503051e240e2c31183338202e2f202f30333834554c3f694a351d201f2724203c2e24372e251111111814121e1714171715",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-hipocampo-de-la-tormen-c456d6a8c40c",
+          "title": "El hipocampo de la tormenta",
+          "image": "photos/f1f917fe277388c172a2113a.webp",
+          "thumb": "photos/f1f917fe277388c172a2113a-thumb.webp",
+          "dhash": "3b1f076145373104112a2e1e3d4116363c102a2e1b313428373746493f4844372c35333b3b3359473360462f232a262b342f2f373337372f",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-unicornio-del-salitral-4e87690396f0",
+          "title": "El unicornio del salitral",
+          "image": "photos/792335f20e7d4bbd3fc808de.webp",
+          "thumb": "photos/792335f20e7d4bbd3fc808de-thumb.webp",
+          "dhash": "0f071b3373c3c3432224303834423234441a25355141494e41473739462931426e504c45373340393e48424e684d474a3b3856484a56494d",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
         }
       ]
     },
