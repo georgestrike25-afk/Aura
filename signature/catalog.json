@@ -705,6 +705,16 @@
           "dhash": "000c3212171717275162735869795d6d7e606f7f89939e91969d989ba19da3ac6d70718381808986857b7b7c2c2e233c3c3440403931312a",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "la-pastora-del-valle-0bb7953b7241",
+          "title": "La pastora del valle",
+          "image": "photos/63eb120fa49eba021f26ab3b.webp",
+          "thumb": "photos/63eb120fa49eba021f26ab3b-thumb.webp",
+          "dhash": "070cb03273603020676d666c70687273697573686e71696560557064558475645e554744372a513c2a625849453b2b4035244a3b2861523c",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
