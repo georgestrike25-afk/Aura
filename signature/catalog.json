@@ -821,132 +821,6 @@
       ]
     },
     {
-      "id": "la-ciudad-en-pausa-ii",
-      "title": "La ciudad en pausa II",
-      "items": [
-        {
-          "id": "el-ascensor-de-la-niebla-928154bb0e48",
-          "title": "El ascensor de la niebla",
-          "image": "photos/6e113248091ebfb5912764e8.webp",
-          "thumb": "photos/6e113248091ebfb5912764e8-thumb.webp",
-          "dhash": "230f03cece0bcbcf130f1317131919151d1813191e1518241b20281e261c151c3b2423432d30523645382330332020472e2d583a42362332",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-kiosco-sin-voz-e3aa11570727",
-          "title": "El kiosco sin voz",
-          "image": "photos/dd1334d0cf43359666285d82.webp",
-          "thumb": "photos/dd1334d0cf43359666285d82-thumb.webp",
-          "dhash": "0f1b0bce4e4123232b1c2733202f311f2e291b292e1e2933242c36262e2c1d294b30374c32395c3d45603e4a432b32462d3a5d3e4f604151",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-bicicleta-dormida-e7aca1bfcc96",
-          "title": "La bicicleta dormida",
-          "image": "photos/f731feb7baaef607092054d2.webp",
-          "thumb": "photos/f731feb7baaef607092054d2-thumb.webp",
-          "dhash": "1f8f0f23656323073f2d3a56405a543d583f2d434f363e523c4c583f544d384d5d3e435d3e406e494a64445057394268434683524e694450",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-escalera-del-ultimo-pi-ab2bf4486a87",
-          "title": "La escalera del último piso",
-          "image": "photos/aca73853cc63e3dfb7486188.webp",
-          "thumb": "photos/aca73853cc63e3dfb7486188-thumb.webp",
-          "dhash": "1a1d1f9f37363632141623191a291618261416241a1b2a2d2636222131181a293327363c2c382d263521203047314350344438293c2f273b",
-          "width": 1440,
-          "height": 3120
-        }
-      ]
-    },
-    {
-      "id": "retratos-surrealistas-ii",
-      "title": "Retratos surrealistas II",
-      "items": [
-        {
-          "id": "el-hombre-de-los-parpados-d9cf0f2f6179",
-          "title": "El hombre de los párpados dorados",
-          "image": "photos/47422fb1691b6f7d790b0090.webp",
-          "thumb": "photos/47422fb1691b6f7d790b0090-thumb.webp",
-          "dhash": "1b134d1d4ccd272c2122122526142425142123132021123e321e3129161f2112262516372e1c3229172322132924142c26162b2515211e11",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-perfil-de-lluvia-8ab172bdfbc4",
-          "title": "El perfil de lluvia",
-          "image": "photos/505f325d73120ef8ad2e5977.webp",
-          "thumb": "photos/505f325d73120ef8ad2e5977-thumb.webp",
-          "dhash": "03031d662f2fe3a1101f21122226122428112025122124182426242f3015242814272c1e303526343614252a0d1d210e1d220f20260e2025",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-retrato-que-se-borra-c889227b6a71",
-          "title": "El retrato que se borra",
-          "image": "photos/c5768333e1b134251c7f4cea.webp",
-          "thumb": "photos/c5768333e1b134251c7f4cea-thumb.webp",
-          "dhash": "23330d0d4d49132e221d23231e25262028241e25231e24362f353c343b231f252a232d423a42433b442f28322a242b322b333029322b252d",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-mano-de-la-sombra-b96ac7cb944c",
-          "title": "La mano de la sombra",
-          "image": "photos/7900a93c399e26d16b1104f3.webp",
-          "thumb": "photos/7900a93c399e26d16b1104f3-thumb.webp",
-          "dhash": "0f0f0b194cf88c8e6233296e392d6937315f3231743d2c8b4f3b874a368046346d372d6c353062322f6b3b315b2d2d633130562d2d462729",
-          "width": 1440,
-          "height": 3120
-        }
-      ]
-    },
-    {
-      "id": "retratos-del-mar-ii",
-      "title": "Retratos del mar II",
-      "items": [
-        {
-          "id": "el-caballito-de-la-marea-b388d47b306d",
-          "title": "El caballito de la marea",
-          "image": "photos/8eb41e471f890777477b32cd.webp",
-          "thumb": "photos/8eb41e471f890777477b32cd-thumb.webp",
-          "dhash": "80a60d4d600470c2192d241430281934292837260d2924182f261a3126112e261d3529243427263426283727453a233f3722413b254a4226",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-casa-del-ermitano-b1825c1ae82d",
-          "title": "La casa del ermitaño",
-          "image": "photos/7aa5c193712878f9c1430ddd.webp",
-          "thumb": "photos/7aa5c193712878f9c1430ddd-thumb.webp",
-          "dhash": "070743190e866e0d162829182a2c192b2c17292b1b292927312d1f2d2c19292a3b382856462c423c2b232a242c2a1c3b33213b3829303328",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-pulso-de-la-medusa-6f001edcf7a7",
-          "title": "El pulso de la medusa",
-          "image": "photos/d93e3d3b283804de4dd84c17.webp",
-          "thumb": "photos/d93e3d3b283804de4dd84c17-thumb.webp",
-          "dhash": "41734f4d498b130d071b2c041c2c091c2e0e1a2e0418270f22320f20310517260f1c3016253814293c1022371e2a3f27324529334828293f",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-vigia-de-la-espuma-567fc0dd138d",
-          "title": "El vigía de la espuma",
-          "image": "photos/f72ea82a177cf88585df7cb7.webp",
-          "thumb": "photos/f72ea82a177cf88585df7cb7-thumb.webp",
-          "dhash": "03000510302663631d35352942403f534c46574f2a3f3c2d403c3548423d4f482f413b29322a3f43354b51422b3932242a203d3e2e454c3e",
-          "width": 1440,
-          "height": 3120
-        }
-      ]
-    },
-    {
       "id": "mundos-imposibles",
       "title": "Mundos imposibles",
       "items": [
@@ -1127,6 +1001,46 @@
           "dhash": "1e1f1b0e0e360e9f4a20205424214c2120431d204a251e6634255a2f2440201f683828864e327a462d4f28207f41279e5835914f306d3624",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-bronce-bajo-la-marea-4df473ae4070",
+          "title": "El bronce bajo la marea",
+          "image": "photos/17c7e2dd531a3d0bbff0a7e0.webp",
+          "thumb": "photos/17c7e2dd531a3d0bbff0a7e0-thumb.webp",
+          "dhash": "f8fffd1f37dd5c193743411323250a1a1d0917193244462f3d3b1726250b1a1c3d474346473a252c241925233e3e344b4331312f24313229",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-estela-que-guarda-la-l-86383a61aede",
+          "title": "La estela que guarda la lluvia",
+          "image": "photos/2a6618448fcd11f47dc7abe6.webp",
+          "thumb": "photos/2a6618448fcd11f47dc7abe6-thumb.webp",
+          "dhash": "671f1f0b13130f13323d4a3b48563244521f324027354138434f34404c24334041424c544b5050484e3f434e38302f483a37473a383e3535",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-seda-del-primer-viento-73bf6935c9f5",
+          "title": "La seda del primer viento",
+          "image": "photos/eb15850635648fc77036b3f9.webp",
+          "thumb": "photos/eb15850635648fc77036b3f9-thumb.webp",
+          "dhash": "632390ccb9233d391c1b24181e291c1f2b211923352c2d2b262b2423292d26275d463a5c423643342b3f31275f493a7154403c2e25362a20",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-tesela-del-regreso-5e08855162bc",
+          "title": "La tesela del regreso",
+          "image": "photos/2e935f911ee62fc119a1f50d.webp",
+          "thumb": "photos/2e935f911ee62fc119a1f50d-thumb.webp",
+          "dhash": "f2f2caad3c782537352410201a0f1c170f1b160f3f291535241424190f1c170f67402055341a301c0f3a26166d3f20724522644121613d1f",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
         }
       ]
     },
@@ -1801,6 +1715,42 @@
           "dhash": "05d084e6e463600c14242a17242b19262c1b2b304629244c171375271d633530774636652f1b97492aa4624a68392a6e3e29824d33996c51",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-hombre-de-los-parpados-d9cf0f2f6179",
+          "title": "El hombre de los párpados dorados",
+          "image": "photos/47422fb1691b6f7d790b0090.webp",
+          "thumb": "photos/47422fb1691b6f7d790b0090-thumb.webp",
+          "dhash": "1b134d1d4ccd272c2122122526142425142123132021123e321e3129161f2112262516372e1c3229172322132924142c26162b2515211e11",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-perfil-de-lluvia-8ab172bdfbc4",
+          "title": "El perfil de lluvia",
+          "image": "photos/505f325d73120ef8ad2e5977.webp",
+          "thumb": "photos/505f325d73120ef8ad2e5977-thumb.webp",
+          "dhash": "03031d662f2fe3a1101f21122226122428112025122124182426242f3015242814272c1e303526343614252a0d1d210e1d220f20260e2025",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-retrato-que-se-borra-c889227b6a71",
+          "title": "El retrato que se borra",
+          "image": "photos/c5768333e1b134251c7f4cea.webp",
+          "thumb": "photos/c5768333e1b134251c7f4cea-thumb.webp",
+          "dhash": "23330d0d4d49132e221d23231e25262028241e25231e24362f353c343b231f252a232d423a42433b442f28322a242b322b333029322b252d",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-mano-de-la-sombra-b96ac7cb944c",
+          "title": "La mano de la sombra",
+          "image": "photos/7900a93c399e26d16b1104f3.webp",
+          "thumb": "photos/7900a93c399e26d16b1104f3-thumb.webp",
+          "dhash": "0f0f0b194cf88c8e6233296e392d6937315f3231743d2c8b4f3b874a368046346d372d6c353062322f6b3b315b2d2d633130562d2d462729",
+          "width": 1440,
+          "height": 3120
         }
       ]
     },
@@ -2015,6 +1965,42 @@
           "image": "photos/2c6f69a47f4405c4109506d5.webp",
           "thumb": "photos/2c6f69a47f4405c4109506d5-thumb.webp",
           "dhash": "7c3fff77737c76f296729c8a6d9a726193655b8dd58f8bbd7e86996f867f6480b779757a4f484b393e45384055414a392d31241e1e191618",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-caballito-de-la-marea-b388d47b306d",
+          "title": "El caballito de la marea",
+          "image": "photos/8eb41e471f890777477b32cd.webp",
+          "thumb": "photos/8eb41e471f890777477b32cd-thumb.webp",
+          "dhash": "80a60d4d600470c2192d241430281934292837260d2924182f261a3126112e261d3529243427263426283727453a233f3722413b254a4226",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "la-casa-del-ermitano-b1825c1ae82d",
+          "title": "La casa del ermitaño",
+          "image": "photos/7aa5c193712878f9c1430ddd.webp",
+          "thumb": "photos/7aa5c193712878f9c1430ddd-thumb.webp",
+          "dhash": "070743190e866e0d162829182a2c192b2c17292b1b292927312d1f2d2c19292a3b382856462c423c2b232a242c2a1c3b33213b3829303328",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-pulso-de-la-medusa-6f001edcf7a7",
+          "title": "El pulso de la medusa",
+          "image": "photos/d93e3d3b283804de4dd84c17.webp",
+          "thumb": "photos/d93e3d3b283804de4dd84c17-thumb.webp",
+          "dhash": "41734f4d498b130d071b2c041c2c091c2e0e1a2e0418270f22320f20310517260f1c3016253814293c1022371e2a3f27324529334828293f",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-vigia-de-la-espuma-567fc0dd138d",
+          "title": "El vigía de la espuma",
+          "image": "photos/f72ea82a177cf88585df7cb7.webp",
+          "thumb": "photos/f72ea82a177cf88585df7cb7-thumb.webp",
+          "dhash": "03000510302663631d35352942403f534c46574f2a3f3c2d403c3548423d4f482f413b29322a3f43354b51422b3932242a203d3e2e454c3e",
           "width": 1440,
           "height": 3120
         }
