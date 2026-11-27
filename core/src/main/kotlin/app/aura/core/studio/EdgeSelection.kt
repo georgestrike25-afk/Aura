@@ -132,3 +132,57 @@ object EdgeSelection {
 
     private data class Visit(val index: Int, val cost: Float)
 }
+
+/**
+ * Selección asistida por un modelo de sujetos (ML Kit) en la zona del trazo: de todo lo que el modelo
+ * reconoce en el recorte, se queda solo con las partes que el dedo tocó.
+ */
+object SubjectPick {
+    /**
+     * [alpha]: confianza 0–255 del modelo en el recorte de [w]×[h]; [seeds]: píxeles que pintó el trazo.
+     * Devuelve las regiones conectadas (alpha ≥ [threshold]) que toca el trazo, o null si no toca ninguna.
+     */
+    fun touched(alpha: IntArray, seeds: BooleanArray, w: Int, h: Int, threshold: Int = 128): BooleanArray? {
+        require(alpha.size == w * h && seeds.size == w * h)
+        val out = BooleanArray(w * h)
+        val stack = IntArray(w * h)
+        var top = 0
+        var touchedSeeds = 0
+        for (s in seeds.indices) {
+            if (!seeds[s] || out[s] || alpha[s] < threshold) continue
+            touchedSeeds++
+            out[s] = true
+            stack[top++] = s
+            while (top > 0) {
+                val i = stack[--top]
+                val x = i % w
+                fun push(j: Int) {
+                    if (!out[j] && alpha[j] >= threshold) { out[j] = true; stack[top++] = j }
+                }
+                if (x > 0) push(i - 1)
+                if (x < w - 1) push(i + 1)
+                if (i >= w) push(i - w)
+                if (i < w * (h - 1)) push(i + w)
+            }
+        }
+        // Si el trazo casi no toca nada del modelo, el objeto que se quiso marcar no es el que vio el modelo.
+        val seedCount = seeds.count { it }
+        return out.takeIf { touchedSeeds > 0 && seeds.indices.count { seeds[it] && out[it] } * 5 >= seedCount }
+    }
+
+    /** Convierte una selección del recorte a tramos de [MaskRegion] en la grilla completa ([gridW]×[gridH]). */
+    fun toRegion(selected: BooleanArray, w: Int, h: Int, offsetX: Int, offsetY: Int, gridW: Int, gridH: Int): MaskRegion? {
+        val runs = buildList {
+            for (y in 0 until h) {
+                var x = 0
+                while (x < w) {
+                    if (!selected[y * w + x]) { x++; continue }
+                    val start = x
+                    while (x < w && selected[y * w + x]) x++
+                    add(y + offsetY); add(start + offsetX); add(x + offsetX)
+                }
+            }
+        }
+        return runs.takeIf { it.isNotEmpty() }?.let { MaskRegion(gridW, gridH, it) }
+    }
+}

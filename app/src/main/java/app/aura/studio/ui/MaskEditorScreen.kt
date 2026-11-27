@@ -70,7 +70,7 @@ fun MaskEditorScreen(viewModel: StudioViewModel, onDone: () -> Unit) {
     val project = history?.current
 
     var tool by remember { mutableStateOf(MaskTool.SMART) }
-    val erase = tool == MaskTool.ERASE
+    val erase = tool == MaskTool.ERASE || tool == MaskTool.SMART_ERASE
     val handlingStroke by rememberUpdatedState(busy != null)
     var brushDp by remember { mutableFloatStateOf(28f) }
     var zoom by remember { mutableFloatStateOf(1f) }
@@ -135,8 +135,8 @@ fun MaskEditorScreen(viewModel: StudioViewModel, onDone: () -> Unit) {
                                 if (start.x in 0f..1f && start.y in 0f..1f) {
                                     val pts = live.flatMap { val q = toImage(it); listOf(q.x, q.y) }
                                     val radius = (brushDp * density / (fitScale() * zoom)) / maxOf(imgW, imgH)
-                                    val stroke = MaskStroke(pts, radius, tool == MaskTool.ERASE)
-                                    if (tool == MaskTool.SMART) viewModel.refineStroke(stroke) else viewModel.addStroke(stroke)
+                                    val stroke = MaskStroke(pts, radius, erase)
+                                    if (tool == MaskTool.SMART || tool == MaskTool.SMART_ERASE) viewModel.refineStroke(stroke) else viewModel.addStroke(stroke)
                                 }
                             }
                             live.clear()
@@ -190,12 +190,17 @@ fun MaskEditorScreen(viewModel: StudioViewModel, onDone: () -> Unit) {
                     colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Aura.tokens.accent.copy(alpha = 0.25f)),
                 )
                 FilterChip(
+                    selected = tool == MaskTool.SMART_ERASE, enabled = busy == null,
+                    onClick = { tool = MaskTool.SMART_ERASE }, label = { Text("Quitar") },
+                    leadingIcon = { Icon(painterResource(R.drawable.ic_ui_auto), null, Modifier.size(16.dp)) },
+                )
+                FilterChip(
                     selected = tool == MaskTool.BRUSH, enabled = busy == null,
                     onClick = { tool = MaskTool.BRUSH }, label = { Text("Pincel") },
                     leadingIcon = { Icon(painterResource(R.drawable.ic_ui_brush), null, Modifier.size(16.dp)) },
                 )
                 FilterChip(
-                    selected = erase, enabled = busy == null,
+                    selected = tool == MaskTool.ERASE, enabled = busy == null,
                     onClick = { tool = MaskTool.ERASE }, label = { Text("Borrador") },
                 )
             }
@@ -226,14 +231,15 @@ fun MaskEditorScreen(viewModel: StudioViewModel, onDone: () -> Unit) {
                 Spacer(Modifier.weight(1f))
                 Button(onClick = onDone, enabled = busy == null) { Text("Listo") }
             }
-            val hint = if (tool == MaskTool.SMART) {
-                "Marcá por dentro del objeto. El rojo queda delante del reloj."
-            } else {
-                "El rojo queda delante del reloj. Usá dos dedos para acercar o mover la foto."
+            val hint = when (tool) {
+                MaskTool.SMART -> "Pasá el dedo por el objeto: se selecciona entero, con su borde. El rojo queda delante del reloj."
+                MaskTool.SMART_ERASE -> "Pasá el dedo por lo que sobra (fondo, un hueco entre brazos): se quita con su borde."
+                else ->
+                    "El rojo queda delante del reloj. Usá dos dedos para acercar o mover la foto."
             }
             Text(hint, style = MaterialTheme.typography.labelSmall, color = Aura.tokens.mutedText)
         }
     }
 }
 
-private enum class MaskTool { SMART, BRUSH, ERASE }
+private enum class MaskTool { SMART, SMART_ERASE, BRUSH, ERASE }

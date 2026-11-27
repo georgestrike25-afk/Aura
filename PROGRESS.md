@@ -226,3 +226,7 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   La suite se interrumpió dos veces al comenzar la comprobación exhaustiva de AutoDesign, por cierre
   del proceso durante la instrumentación. Se corrigió la liberación de bitmaps al destruir Studio para
   que espere el bloqueo de renderizado. Se liberan también las imágenes temporales de las pruebas.
+- **Selección inteligente 2**: el trazo «Inteligente» recorta la foto alrededor del dedo (grilla de la máscara,
+  hasta 1600 px) y usa el modelo de sujetos de ML Kit en ese recorte; se queda con lo que tocó el dedo
+  (`core/studio/EdgeSelection.kt` · `SubjectPick`). Nuevo «Quitar» inteligente (lo que no es sujeto bajo el dedo).
+  Si el modelo no está o no ve nada ahí, se usa la selección por bordes de Codex sobre el recorte ampliado.

@@ -20,6 +20,7 @@ import app.aura.core.studio.ArtisticClock
 import app.aura.core.studio.ClockDesign
 import app.aura.core.studio.Fusion
 import app.aura.core.studio.EdgeSelection
+import app.aura.core.studio.SubjectPick
 import app.aura.core.studio.Harmony
 import app.aura.core.studio.ImageTraits
 import app.aura.core.studio.DigitSlot
@@ -553,41 +554,29 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
 
     fun addStroke(stroke: MaskStroke) = edit { it.copy(strokes = it.strokes + stroke, hasMask = true) }
 
+    /**
+     * Selección inteligente (para agregar o, con un trazo de borrar, para quitar): recorta la foto alrededor del
+     * trazo, busca el objeto con el modelo de sujetos (ML Kit, en el teléfono) a buena resolución y se queda con lo
+     * que tocó el dedo. Si el modelo no ve nada ahí, ajusta a los bordes de color y textura del recorte ampliado.
+     */
     fun refineStroke(stroke: MaskStroke) {
         val project = current ?: return
         if (_busy.value != null) return
         viewModelScope.launch {
-            _busy.value = "Buscando bordes…"
+            _busy.value = if (stroke.erase) "Buscando qué quitar…" else "Buscando el objeto…"
             try {
                 val selection = withContext(Dispatchers.Default) {
-                    val sample = renderLock.withLock {
+                    val crop = renderLock.withLock {
                         val source = photo ?: return@withLock null
-                        val k = minOf(1f, 448f / maxOf(source.width, source.height))
-                        val w = (source.width * k).roundToInt().coerceAtLeast(1)
-                        val h = (source.height * k).roundToInt().coerceAtLeast(1)
-                        val buffer = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-                        try {
-                            val canvas = Canvas(buffer)
-                            val rect = Rect(0, 0, w, h)
-                            val filter = Paint(Paint.FILTER_BITMAP_FLAG)
-                            fun read(): IntArray = IntArray(w * h).also { buffer.getPixels(it, 0, w, 0, 0, w, h) }
-                            canvas.drawBitmap(source, null, rect, filter)
-                            val pixels = read()
-                            buffer.eraseColor(Color.TRANSPARENT)
-                            MaskRenderer.drawStroke(canvas, stroke, w, h)
-                            val seedPixels = read()
-                            val seeds = BooleanArray(seedPixels.size) { (seedPixels[it] ushr 24) >= 140 }
-                            val subject = baseMask?.let {
-                                buffer.eraseColor(Color.TRANSPARENT)
-                                canvas.drawBitmap(it, null, rect, filter)
-                                read().apply { for (i in indices) this[i] = this[i] ushr 24 }
-                            }
-                            SelectionSample(w, h, pixels, seeds, subject)
-                        } finally {
-                            buffer.recycle()
-                        }
+                        cropAround(source, stroke, baseMask)
+                    } ?: return@withContext null
+                    try {
+                        val picked = pickWithModel(crop, stroke.erase)
+                            ?: pickByEdges(crop)
+                        picked?.let { SubjectPick.toRegion(it, crop.w, crop.h, crop.left, crop.top, crop.gridW, crop.gridH) }
+                    } finally {
+                        crop.bitmap.recycle()
                     }
-                    sample?.let { EdgeSelection.refine(it.pixels, it.seeds, it.width, it.height, it.subject) }
                 }
                 if (current == project) addStroke(stroke.copy(selection = selection))
             } catch (e: CancellationException) {
@@ -600,9 +589,102 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    private data class SelectionSample(
-        val width: Int, val height: Int, val pixels: IntArray, val seeds: BooleanArray, val subject: IntArray?,
+    /** Recorte de la foto alrededor del trazo, en la grilla de trabajo de la máscara (lado mayor ≤ 1600). */
+    private class Crop(
+        val bitmap: Bitmap, val left: Int, val top: Int, val w: Int, val h: Int, val gridW: Int, val gridH: Int,
+        val seeds: BooleanArray, val subject: IntArray?,
     )
+
+    private fun cropAround(source: Bitmap, stroke: MaskStroke, base: Bitmap?): Crop? {
+        val (gw, gh) = MaskRenderer.workingSize(source.width, source.height)
+        val xs = stroke.points.filterIndexed { i, _ -> i % 2 == 0 }
+        val ys = stroke.points.filterIndexed { i, _ -> i % 2 == 1 }
+        if (xs.isEmpty()) return null
+        val r = stroke.radius * maxOf(gw, gh)
+        val bx0 = xs.min() * gw - r
+        val bx1 = xs.max() * gw + r
+        val by0 = ys.min() * gh - r
+        val by1 = ys.max() * gh + r
+        // Margen amplio: el objeto suele ser bastante más grande que el trazo.
+        // (El respaldo por bordes toma el contorno del recorte como fondo: tiene que quedar fuera del objeto.)
+        val margin = maxOf(maxOf(bx1 - bx0, by1 - by0) * 1.2f, minOf(gw, gh) * 0.33f)
+        val left = (bx0 - margin).roundToInt().coerceIn(0, gw - 1)
+        val top = (by0 - margin).roundToInt().coerceIn(0, gh - 1)
+        val right = (bx1 + margin).roundToInt().coerceIn(left + 1, gw)
+        val bottom = (by1 + margin).roundToInt().coerceIn(top + 1, gh)
+        val w = right - left
+        val h = bottom - top
+        if (w < 8 || h < 8) return null
+        val kx = source.width / gw.toFloat()
+        val ky = source.height / gh.toFloat()
+        val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bmp)
+        canvas.drawBitmap(
+            source,
+            Rect((left * kx).roundToInt(), (top * ky).roundToInt(), (right * kx).roundToInt(), (bottom * ky).roundToInt()),
+            Rect(0, 0, w, h), Paint(Paint.FILTER_BITMAP_FLAG),
+        )
+        // Trazo y máscara automática en el mismo recorte (otra capa, para no tocar la foto).
+        val layer = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        try {
+            val lc = Canvas(layer)
+            lc.translate(-left.toFloat(), -top.toFloat())
+            MaskRenderer.drawStroke(lc, stroke.copy(erase = false, selection = null), gw, gh)
+            val px = IntArray(w * h).also { layer.getPixels(it, 0, w, 0, 0, w, h) }
+            val seeds = BooleanArray(px.size) { (px[it] ushr 24) >= 140 }
+            val subject = base?.let { m ->
+                layer.eraseColor(Color.TRANSPARENT)
+                val c2 = Canvas(layer)
+                c2.drawBitmap(
+                    m,
+                    Rect((left * m.width / gw.toFloat()).roundToInt(), (top * m.height / gh.toFloat()).roundToInt(),
+                        (right * m.width / gw.toFloat()).roundToInt(), (bottom * m.height / gh.toFloat()).roundToInt()),
+                    Rect(0, 0, w, h), Paint(Paint.FILTER_BITMAP_FLAG),
+                )
+                IntArray(w * h).also { layer.getPixels(it, 0, w, 0, 0, w, h); for (i in it.indices) it[i] = it[i] ushr 24 }
+            }
+            return Crop(bmp, left, top, w, h, gw, gh, seeds, subject)
+        } finally {
+            layer.recycle()
+        }
+    }
+
+    /** El modelo de sujetos sobre el recorte; para quitar, se busca lo que NO es sujeto bajo el dedo. */
+    private suspend fun pickWithModel(crop: Crop, erase: Boolean): BooleanArray? {
+        val result = SubjectSegmenter().segment(crop.bitmap, 0.5f) as? SubjectSegmenter.Result.Mask ?: return null
+        val alpha = try {
+            val scaled = Bitmap.createScaledBitmap(result.alpha, crop.w, crop.h, true)
+            try {
+                val bytes = ByteArray(scaled.rowBytes * scaled.height)
+                scaled.copyPixelsToBuffer(java.nio.ByteBuffer.wrap(bytes))
+                IntArray(crop.w * crop.h) { i ->
+                    val v = bytes[(i / crop.w) * scaled.rowBytes + i % crop.w].toInt() and 0xFF
+                    if (erase) 255 - v else v
+                }
+            } finally {
+                if (scaled !== result.alpha) scaled.recycle()
+            }
+        } finally {
+            result.alpha.recycle()
+        }
+        return SubjectPick.touched(alpha, crop.seeds, crop.w, crop.h)
+    }
+
+    /** Respaldo sin modelo: bordes de color y textura, sobre el recorte (mucho más detalle que la foto entera). */
+    private fun pickByEdges(crop: Crop): BooleanArray? {
+        val k = minOf(1f, 640f / maxOf(crop.w, crop.h))
+        val sw = (crop.w * k).roundToInt().coerceAtLeast(1)
+        val sh = (crop.h * k).roundToInt().coerceAtLeast(1)
+        fun down(values: IntArray?): IntArray? = values?.let { v -> IntArray(sw * sh) { i -> v[((i / sw) / k).toInt().coerceAtMost(crop.h - 1) * crop.w + ((i % sw) / k).toInt().coerceAtMost(crop.w - 1)] } }
+        val small = Bitmap.createScaledBitmap(crop.bitmap, sw, sh, true)
+        val pixels = IntArray(sw * sh).also { small.getPixels(it, 0, sw, 0, 0, sw, sh) }
+        if (small !== crop.bitmap) small.recycle()
+        val seeds = BooleanArray(sw * sh) { i -> crop.seeds[((i / sw) / k).toInt().coerceAtMost(crop.h - 1) * crop.w + ((i % sw) / k).toInt().coerceAtMost(crop.w - 1)] }
+        val region = EdgeSelection.refine(pixels, seeds, sw, sh, down(crop.subject)) ?: return null
+        val smallMask = BooleanArray(sw * sh)
+        for (i in region.runs.indices step 3) for (x in region.runs[i + 1] until region.runs[i + 2]) smallMask[region.runs[i] * sw + x] = true
+        return BooleanArray(crop.w * crop.h) { i -> smallMask[((i / crop.w) * k).toInt().coerceAtMost(sh - 1) * sw + ((i % crop.w) * k).toInt().coerceAtMost(sw - 1)] }
+    }
 
     fun clearMask() {
         val p = current ?: return
