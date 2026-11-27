@@ -1747,6 +1747,36 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "el-puente-de-las-raices-8fbb4fc0ef1e",
+          "title": "El puente de las raíces",
+          "image": "photos/d46ab8f3ee6ce519f75b5081.webp",
+          "thumb": "photos/d46ab8f3ee6ce519f75b5081-thumb.webp",
+          "dhash": "01013533072f26e6a3a99da9aea2afb3a5b1b4a6949988949886989b89989d8a5d5f396c6f556a6e575455374b4c235552355b5b493c3b25",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-tejedor-de-mareas-c40502d68a26",
+          "title": "El tejedor de mareas",
+          "image": "photos/9e5e6d57c156995903d28308.webp",
+          "thumb": "photos/9e5e6d57c156995903d28308-thumb.webp",
+          "dhash": "112752b23333b3519cafc49cafc59cb0c59cafc4a4b2c2999eaa9b9ea9a5b3c37e817e6d5b5576615585847c5d532f5d4b3162553f635d4b",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-nieve-que-escucha-230b171136c3",
+          "title": "La nieve que escucha",
+          "image": "photos/ef799408c4d51f073f53fcfc.webp",
+          "thumb": "photos/ef799408c4d51f073f53fcfc-thumb.webp",
+          "dhash": "09231b726170230f997e999a809b9a809b997f9ab3879a907383937685ba8d9e876f812d3a444b4a54a27f927b68777d6f7e857a8f897b95",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
