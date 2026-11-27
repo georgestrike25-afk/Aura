@@ -795,6 +795,36 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "el-barquero-de-la-bruma-c-efc5b0fd6ce2",
+          "title": "El barquero de la bruma Claroscuro",
+          "image": "photos/74734fc4208c32dc75c4d5cc.webp",
+          "thumb": "photos/74734fc4208c32dc75c4d5cc-thumb.webp",
+          "dhash": "bbf3fcfc377170f2697a855f74835a707f586d7c767879656a6f5b606756636e5e5a524b4740424648454f52624730342a21372f28393f3f",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-ciervo-del-deshielo-cl-d0dc4de55955",
+          "title": "El ciervo del deshielo Claroscuro",
+          "image": "photos/eae8a592ee2c9bcd25567b9d.webp",
+          "thumb": "photos/eae8a592ee2c9bcd25567b9d-thumb.webp",
+          "dhash": "79ffc3d9204307467a7c846976875e7086586d8478665e6a626262666f5a677854524f5955515b6062566774404344494b4c4e565b475662",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-mensajera-del-estuario-17fba6f7808c",
+          "title": "La mensajera del estuario Claroscuro",
+          "image": "photos/59eabe2d327a5a434273c96e.webp",
+          "thumb": "photos/59eabe2d327a5a434273c96e-thumb.webp",
+          "dhash": "fcfcd991715137cc63707d50677a4560764a62777c6d666a68695d656f5b67755b4c4350464047454952494d4c42404c3e394c3b38473636",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
