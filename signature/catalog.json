@@ -1357,6 +1357,46 @@
           "dhash": "07070f0f07070315411a2165343e874c596435423d1a2260323d63333e4520293b1b235c2f356d3c424c252e3e1c225329305e3037552932",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-ancla-y-la-hebra-79f7dd5e786f",
+          "title": "El ancla y la hebra",
+          "image": "photos/78dd0b4cfb723db557f8de9b.webp",
+          "thumb": "photos/78dd0b4cfb723db557f8de9b-thumb.webp",
+          "dhash": "2307032c6917331f121f1e1e2e2d31413f243332101d1c1825231f2a27232a25272e2a33362e474233464031393930494233544632493f2e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-libro-de-la-pared-4138807644d6",
+          "title": "El libro de la pared",
+          "image": "photos/3b599c64031143c1e980018d.webp",
+          "thumb": "photos/3b599c64031143c1e980018d-thumb.webp",
+          "dhash": "8707831981871383281313331818381c1d2b1818411d1c4a24224d2826472826381c1a6039308a59486d423925141235221d50372f48322d",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-balanza-del-polvo-83b8eb7fd0f9",
+          "title": "La balanza del polvo",
+          "image": "photos/7e057852182f8f87ecefecca.webp",
+          "thumb": "photos/7e057852182f8f87ecefecca-thumb.webp",
+          "dhash": "4401838789e6461f151b1f1f21253425284529291a1b1d2822233d28273d29282f262234241f3e2b243a2b253f352f4b392f4b322737231f",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-bota-que-levanta-el-su-b5984fab0fdd",
+          "title": "La bota que levanta el suelo",
+          "image": "photos/77be64228d80720524e33c51.webp",
+          "thumb": "photos/77be64228d80720524e33c51-thumb.webp",
+          "dhash": "0307070f27074941151f17202b1f2e35241f271c192017322e1d3a382420271c29271742321b463a232b2b1c271c0c3524123f2d1a41301d",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
         }
       ]
     },
