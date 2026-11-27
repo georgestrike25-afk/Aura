@@ -241,3 +241,8 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   mantiene solo el reloj. Los campos del clima usan la caché existente y dependen de los datos disponibles.
 - Pruebas de core añadidas para los cinco conjuntos, contraste, ubicación del reloj y persistencia.
   La instrumentación comprueba apertura de la pestaña, selección automática y manual, historial y render.
+- Verificado en 3efd4d1 con 106 pruebas unitarias, lint y 36 pruebas en emulador Android 14.
+  La [CI](https://github.com/georgestrike25-afk/Aura/actions/runs/46083729363) guarda las capturas
+  del editor y de los cinco conjuntos en docs/capturas, commit 5f5f166. El
+  [APK de prueba](https://github.com/georgestrike25-afk/Aura/releases/download/aura-studio-fecha-clima-test/Aura.apk)
+  conserva app.aura y la firma original. Queda pendiente el Galaxy S24+ físico.
