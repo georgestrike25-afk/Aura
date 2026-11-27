@@ -745,6 +745,36 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "el-ciervo-del-deshielo-lu-3515f9a14ca2",
+          "title": "El ciervo del deshielo Luz lateral",
+          "image": "photos/aff23b907f69608bcf3ba105.webp",
+          "thumb": "photos/aff23b907f69608bcf3ba105-thumb.webp",
+          "dhash": "fdffc3e1206602c8aeb3c29dafc892abca8da7c8ac91879d8e8f989aa5969db0847a72857c7588898889939c68635f736f6d7b7f827c868e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-mensajera-del-estuario-f59ead81caaa",
+          "title": "La mensajera del estuario Luz lateral",
+          "image": "photos/22721425fd38e3ce33195973.webp",
+          "thumb": "photos/22721425fd38e3ce33195973-thumb.webp",
+          "dhash": "f4f8d2e5615127c88da0b37694b26a8daf7191b0b19a8f96919290959e939aa7866b5a7060557568648c726c7c655a775d517d5b517e5a51",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-pastora-del-valle-luz--a7e04d4cbaa7",
+          "title": "La pastora del valle Luz lateral",
+          "image": "photos/3e7535dcd39a4f48cc165f94.webp",
+          "thumb": "photos/3e7535dcd39a4f48cc165f94-thumb.webp",
+          "dhash": "e7dff6b33bf0f093a4b2bc98abbc8ca3b9809cb6b5b4b09e958e908a8894989f95826b78563a6e4c35897865735c3d644d2f685031806b4b",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
