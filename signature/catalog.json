@@ -3,8 +3,8 @@
   "license": "",
   "collections": [
     {
-      "id": "arboles-de-la-vida-tercera-edicion",
-      "title": "Árboles de la vida - Tercera edición",
+      "id": "arboles-de-la-vida",
+      "title": "Árboles de la vida",
       "items": [
         {
           "id": "el-alcornoque-que-renace-4843407d8e2d",
@@ -45,13 +45,7 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
-        }
-      ]
-    },
-    {
-      "id": "arboles-de-la-vida-segunda-edicion",
-      "title": "Árboles de la vida - Segunda edición",
-      "items": [
+        },
         {
           "id": "el-primer-brote-412d63ea743e",
           "title": "El primer brote",
@@ -91,13 +85,7 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
-        }
-      ]
-    },
-    {
-      "id": "arboles-de-la-vida",
-      "title": "Árboles de la vida",
-      "items": [
+        },
         {
           "id": "el-arbol-de-las-dos-estac-c4ca8ed55fd9",
           "title": "El árbol de las dos estaciones",

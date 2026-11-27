@@ -91,10 +91,41 @@ object Signature {
                     !repeated && seenWorks.add(w.id)
                 }.map { GalleryWork(it, base) }
                 if (items.isEmpty()) continue
-                val prev = out[col.id]
-                out[col.id] = prev?.copy(items = prev.items + items)
+                // Una sola colección por nombre (sin importar mayúsculas, tildes ni espacios).
+                val key = titleKey(col.title).ifBlank { col.id }
+                val prev = out[key]
+                out[key] = prev?.copy(items = prev.items + items)
                     ?: GalleryCollection(col.id, col.title, col.description, items)
             }
+        }
+        return out.values.toList()
+    }
+
+    /** Clave para comparar nombres de colección: «Retratos del Mar » = «retratos del mar» = «Retratós del mar». */
+    fun titleKey(title: String): String {
+        val plain = java.text.Normalizer.normalize(title, java.text.Normalizer.Form.NFD).replace(Regex("\\p{M}+"), "")
+            .lowercase().replace(Regex("[^a-z0-9]+"), " ").trim()
+        // «Árboles de la vida - Segunda edición», «… parte 2», «… vol 3», «… II» son la misma colección.
+        return plain.replace(EDITION, "").trim()
+    }
+
+    private val EDITION = Regex(
+        "(\\s+(primera|segunda|tercera|cuarta|quinta|sexta|septima|octava|novena|decima|nueva|\\d+(ra|da|ta|va|na|ma)?)" +
+            "\\s+(edicion|parte|serie|tanda|coleccion|entrega))+$" +
+            "|\\s+(edicion|parte|vol|volumen|serie|tanda|entrega)\\s+(\\d+|[ivx]+)$" +
+            "|\\s+(\\d+|ii|iii|iv|v|vi|vii|viii|ix|x)$",
+    )
+
+    /**
+     * Junta colecciones con el mismo nombre (las de la persona con las publicadas incluidas): queda una sola,
+     * con todas sus obras, en el lugar de la primera.
+     */
+    fun unite(collections: List<GalleryCollection>): List<GalleryCollection> {
+        val out = LinkedHashMap<String, GalleryCollection>()
+        for (c in collections) {
+            val key = titleKey(c.title).ifBlank { c.id }
+            val prev = out[key]
+            out[key] = prev?.copy(items = prev.items + c.items.filter { w -> prev.items.none { it.work.id == w.work.id } }) ?: c
         }
         return out.values.toList()
     }

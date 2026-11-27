@@ -54,7 +54,7 @@ class SignatureRepository(context: Context) {
 
     /** Galería con lo que ya está en el teléfono (sin red). */
     fun cached(): List<GalleryCollection> =
-        mine() + visibleRemote(Signature.BASE_URLS.mapNotNull { b -> cachedSource(b)?.let { it to b } })
+        Signature.unite(mine() + visibleRemote(Signature.BASE_URLS.mapNotNull { b -> cachedSource(b)?.let { it to b } }))
 
     fun hasRemoteCache(): Boolean = Signature.BASE_URLS.any { cacheFile(it).exists() }
 
@@ -76,7 +76,7 @@ class SignatureRepository(context: Context) {
             }
         }
         if (!any) Result.failure(lastError ?: IOException("Sin catálogo"))
-        else Result.success(mine() + visibleRemote(sources))
+        else Result.success(Signature.unite(mine() + visibleRemote(sources)))
     }
 
     // ---------- Mis obras (subidas desde el teléfono) ----------

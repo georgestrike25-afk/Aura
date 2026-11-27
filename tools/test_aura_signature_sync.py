@@ -122,6 +122,32 @@ class GalleryTest(unittest.TestCase):
         self.assertEqual([], self.repo.catalog()["collections"])
 
 
+class SameNameTest(unittest.TestCase):
+    def test_editions_go_to_the_same_collection(self):
+        self.assertEqual(sync.title_key("Árboles de la vida"), sync.title_key("Árboles de la vida - Segunda edición"))
+        self.assertEqual(sync.title_key("Árboles de la vida"), sync.title_key("Árboles de la vida Tercera edición"))
+        self.assertEqual(sync.title_key("retratos del mar"), sync.title_key("Retratos del Mar 2"))
+        tmp = Path(tempfile.mkdtemp())
+        repo = FakeRepo()
+        g = sync.Gallery(repo)
+        a = image(tmp / "a.png", (10, 10, 10), (200, 200, 200))
+        b = image(tmp / "b.png", (200, 30, 30), (20, 20, 200))
+        g.publish([(a, "Árboles de la vida")])
+        g.publish([(b, "Árboles de la vida - Segunda edición")])
+        cols = repo.catalog()["collections"]
+        self.assertEqual(["Árboles de la vida"], [c["title"] for c in cols])
+        self.assertEqual(2, len(cols[0]["items"]))
+
+    def test_existing_duplicates_are_united_on_next_change(self):
+        catalog = {"version": 2, "collections": [
+            {"id": "x-3", "title": "X - Tercera edición", "items": [{"id": "c"}]},
+            {"id": "x", "title": "X", "items": [{"id": "a"}]},
+            {"id": "y", "title": "Y", "items": [{"id": "d"}]},
+        ]}
+        self.assertTrue(sync.unite_collections(catalog))
+        self.assertEqual([("X", ["c", "a"]), ("Y", ["d"])], [(c["title"], [i["id"] for i in c["items"]]) for c in catalog["collections"]])
+
+
 class FolderSyncTest(unittest.TestCase):
     def test_new_files_wait_until_stable_and_are_not_repeated(self):
         root = Path(tempfile.mkdtemp())

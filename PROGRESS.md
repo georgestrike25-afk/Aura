@@ -239,3 +239,7 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   entre los diseños de Studio (`core/studio/WallpaperRotation.kt`): recorre todos antes de repetir, y «Según la
   hora» usa diseños luminosos de mañana y tarde y oscuros de noche (luminosidad de la miniatura).
 - AutoDesign: Aqua e Ignis no se eligen solos; fuentes de agua/fuego en una de cada cuatro tandas, sin material.
+- **Colecciones sin repetir**: «X», «X - Segunda edición», «X 2», «X vol. 3»… son la misma colección
+  (`Signature.titleKey` en la app y `title_key` en el gestor). La app junta las que tengan el mismo nombre (también
+  tus fotos con las publicadas); el gestor publica en la que ya existe y une las repetidas en cada cambio. Se unieron
+  las tres «Árboles de la vida» (12 obras).

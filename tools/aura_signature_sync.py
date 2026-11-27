@@ -13,6 +13,8 @@ from __future__ import annotations
 import base64
 import json
 import os
+import re
+import unicodedata
 import time
 import urllib.error
 import urllib.request
@@ -25,6 +27,51 @@ import aura_signature_publish as publisher
 CATALOG = "signature/catalog.json"
 IMAGES = {".png", ".jpg", ".jpeg", ".webp"}
 DEFAULT_COLLECTION = "Creaciones"
+
+
+_EDITION = re.compile(
+    r"(\s+(primera|segunda|tercera|cuarta|quinta|sexta|septima|octava|novena|decima|nueva|\d+(ra|da|ta|va|na|ma)?)"
+    r"\s+(edicion|parte|serie|tanda|coleccion|entrega))+$"
+    r"|\s+(edicion|parte|vol|volumen|serie|tanda|entrega)\s+(\d+|[ivx]+)$"
+    r"|\s+(\d+|ii|iii|iv|v|vi|vii|viii|ix|x)$"
+)
+
+
+def title_key(title: str) -> str:
+    """Igual que Signature.titleKey en la app: «Árboles de la vida - Segunda edición» = «Árboles de la vida»."""
+    plain = unicodedata.normalize("NFD", title)
+    plain = "".join(ch for ch in plain if unicodedata.category(ch) != "Mn").lower()
+    plain = re.sub(r"[^a-z0-9]+", " ", plain).strip()
+    return _EDITION.sub("", plain).strip()
+
+
+def unite_collections(catalog: dict) -> bool:
+    """Junta las colecciones con el mismo nombre (o el mismo nombre con otra edición). Queda la del nombre
+    más corto, en el lugar de la primera, con todas las obras. Devuelve True si cambió algo."""
+    groups: dict[str, list[dict]] = {}
+    order: list[str] = []
+    for col in catalog.get("collections", []):
+        key = title_key(col.get("title", "")) or col["id"]
+        if key not in groups:
+            groups[key] = []
+            order.append(key)
+        groups[key].append(col)
+    if all(len(g) == 1 for g in groups.values()):
+        return False
+    merged = []
+    for key in order:
+        group = groups[key]
+        keep = min(group, key=lambda c: len(c.get("title", "")))
+        seen = set()
+        items = []
+        for col in group:
+            for item in col["items"]:
+                if item["id"] not in seen:
+                    seen.add(item["id"])
+                    items.append(item)
+        merged.append({**keep, "items": items})
+    catalog["collections"] = merged
+    return True
 
 
 class GitHubError(Exception):
@@ -149,6 +196,7 @@ class Gallery:
             catalog = self._load(head)
             before = json.dumps(catalog, sort_keys=True)
             files = change(catalog)
+            unite_collections(catalog)
             if not files and json.dumps(catalog, sort_keys=True) == before:
                 self.catalog = catalog
                 return  # nada que publicar
@@ -205,7 +253,9 @@ class Gallery:
                     continue
                 known.append(p.work["dhash"])
                 col_id = publisher.slug(p.collection) or publisher.slug(DEFAULT_COLLECTION)
-                col = next((c for c in catalog["collections"] if c["id"] == col_id), None)
+                # Mismo nombre (o el mismo con otra edición): va a la colección que ya existe.
+                key = title_key(p.collection)
+                col = next((c for c in catalog["collections"] if c["id"] == col_id or (key and title_key(c["title"]) == key)), None)
                 if col is None:
                     col = {"id": col_id, "title": p.collection, "items": []}
                     catalog["collections"].insert(0, col)
@@ -247,6 +297,12 @@ class Gallery:
         ids = set(work_ids)
 
         def change(catalog):
+            nonlocal col_id
+            # Si ya hay una colección con ese nombre (o el mismo con otra edición), se mueve a esa.
+            if collection_id is None:
+                same = next((c for c in catalog["collections"] if title_key(c["title"]) == title_key(collection)), None)
+                if same is not None:
+                    col_id = same["id"]
             moved = []
             for col in catalog["collections"]:
                 if col["id"] != col_id:

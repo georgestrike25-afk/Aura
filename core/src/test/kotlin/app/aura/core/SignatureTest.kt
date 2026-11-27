@@ -38,4 +38,24 @@ class SignatureTest {
         assertEquals(listOf("a" to "main/", "b" to "main/", "c" to "rama/"), merged[0].items.map { it.work.id to it.base })
         assertNotNull(Signature.parse("""{"version":2,"collections":[]}"""))
     }
+
+    @Test
+    fun sameNameCollectionsBecomeOne() {
+        fun cat(id: String, title: String, vararg ids: String) = Signature.parse(
+            """{"version":2,"collections":[{"id":"$id","title":"$title","items":[""" +
+                ids.joinToString(",") { """{"id":"$it","title":"$it","image":"$it.webp","thumb":"t/$it.webp"}""" } + "]}]}",
+        )!!
+        val merged = Signature.merge(listOf(cat("retratos-del-mar", "Retratos del mar", "a") to "x/", cat("retratos-del-mar-2", "Retratos del Mar ", "b") to "x/"))
+        assertEquals(1, merged.size)
+        assertEquals(listOf("a", "b"), merged[0].items.map { it.work.id })
+        assertEquals(Signature.titleKey("Retratos del mar"), Signature.titleKey("  Retratós del MAR."))
+        val arboles = Signature.titleKey("Árboles de la vida")
+        for (t in listOf("Árboles de la vida - Segunda edición", "Árboles de la vida - Tercera edición", "Árboles de la vida 2",
+            "Árboles de la vida II", "Árboles de la vida · Parte 3", "Árboles de la vida vol. 4", "Árboles de la vida (nueva edición)")) {
+            assertEquals(t, arboles, Signature.titleKey(t))
+        }
+        assertEquals("los hijos de la niebla", Signature.titleKey("Los hijos de la niebla"))
+        val united = Signature.unite(merged + merged.map { it.copy(id = "mine-x", title = "retratos del mar") })
+        assertEquals(1, united.size)
+    }
 }
