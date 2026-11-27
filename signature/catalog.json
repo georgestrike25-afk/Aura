@@ -639,6 +639,46 @@
           "dhash": "030f032f0f270307211e1c29231f2d252028221e2824202f2823312a23292521403025533b2b63452f513a2a30221a3e291e492f21402b1f",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-codo-del-vendaval-8600f5b1e646",
+          "title": "El codo del vendaval",
+          "image": "photos/06c43f22fe3cad20da481b1c.webp",
+          "thumb": "photos/06c43f22fe3cad20da481b1c-thumb.webp",
+          "dhash": "3f33091167c738093d545c39525a2e43493441441f34392d4146444f515959552932333137374b504f464a48282c2c2e2f2d2d2e2b30302d",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-diafragma-de-lana-a43a1695804a",
+          "title": "El diafragma de lana",
+          "image": "photos/e75b34a06d1c0cc64252c00e.webp",
+          "thumb": "photos/e75b34a06d1c0cc64252c00e-thumb.webp",
+          "dhash": "7e3f0fcd1fb5fb37562016541c1736110f280d0b3413104a1f17391712270e0c69311d714023492a1b371c15724121693a1d49291a382116",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-pulso-del-polen-03c77bdddf83",
+          "title": "El pulso del polen",
+          "image": "photos/546249a41530cd0166478a99.webp",
+          "thumb": "photos/546249a41530cd0166478a99-thumb.webp",
+          "dhash": "01810f050528012712170d1920132a2d18322f170e150d1d1d102a24121a1c0f1d1f0f2723113129132d2913241e0d2c23102e25112d2511",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "las-unas-del-cierzo-ab70c51414d3",
+          "title": "Las uñas del cierzo",
+          "image": "photos/b697b8fad6b6da7f929b4ab4.webp",
+          "thumb": "photos/b697b8fad6b6da7f929b4ab4-thumb.webp",
+          "dhash": "371f03143121698a384b5b47586630495d1f3c52273f53324759384a5a37495b444d593e444954504f6963663a3d40393a3b44403f4d4a4a",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
         }
       ]
     },
