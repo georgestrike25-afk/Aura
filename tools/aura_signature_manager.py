@@ -268,14 +268,17 @@ class ManagerApp:
         left.pack(side="left", fill="y")
         ttk.Label(left, text="Colecciones", style="Sidebar.TLabel").pack(anchor="w")
         self.search = tk.StringVar()
-        search = ttk.Entry(left, textvariable=self.search, width=28)
-        search.pack(fill="x", pady=(12, 6))
+        ttk.Label(left, text="Buscar por nombre", style="Muted.TLabel").pack(anchor="w", pady=(12, 4))
+        search = ttk.Entry(left, textvariable=self.search, width=32)
+        search.pack(fill="x", pady=(0, 10))
         search.bind("<Escape>", lambda _: self.search.set(""))
-        ttk.Label(left, text="Buscar por nombre", style="Muted.TLabel").pack(anchor="w", pady=(0, 8))
-        self.cols = ttk.Treeview(left, show="tree", selectmode="browse", style="Gallery.Treeview", height=10)
-        self.cols.column("#0", width=235, minwidth=235, stretch=False)
+        # Nombre a la izquierda (se acorta con «…») y la cantidad en su propia columna, siempre visible.
+        list_box = ttk.Frame(left, style="Sidebar.TFrame")
+        self.cols = ttk.Treeview(list_box, show="tree", columns=("count",), selectmode="browse", style="Gallery.Treeview", height=10)
+        self.cols.column("#0", width=250, minwidth=200, stretch=True)
+        self.cols.column("count", width=46, minwidth=40, stretch=False, anchor="e")
         self.cols.tag_configure("drop", background="#79613c", foreground="#ffffff")
-        side_scroll = ttk.Scrollbar(left, orient="vertical", command=self.cols.yview)
+        side_scroll = ttk.Scrollbar(list_box, orient="vertical", command=self.cols.yview)
         self.cols.configure(yscrollcommand=side_scroll.set)
         side_scroll.pack(side="right", fill="y")
         row = ttk.Frame(left, style="Sidebar.TFrame")
@@ -286,7 +289,8 @@ class ManagerApp:
         for text, command in (("Editar", self.edit_collection), ("↑", lambda: self.move_collection(-1)),
                               ("↓", lambda: self.move_collection(1)), ("Quitar", self.delete_collection)):
             ttk.Button(meta, text=text, command=command, width=6 if len(text) > 1 else 2).pack(side="left")
-        self.cols.pack(fill="both", expand=True)
+        self.cols.pack(side="left", fill="both", expand=True)
+        list_box.pack(fill="both", expand=True)
         self.cols.bind("<<TreeviewSelect>>", lambda _: self._select_collection())
         self.search.trace_add("write", lambda *_: self._render_collections())
 
@@ -296,13 +300,15 @@ class ManagerApp:
         bar.pack(fill="x", pady=(0, 14))
         self.col_title = ttk.Label(bar, text="Todas las obras", style="Title.TLabel")
         self.col_title.pack(side="left")
-        menu_button = ttk.Menubutton(bar, text="⋯", width=3)
-        menu = tk.Menu(menu_button, tearoff=False)
+        menu = tk.Menu(bar, tearoff=False, bg=PALETTE["panel"], fg=PALETTE["text"],
+                       activebackground="#534735", activeforeground="#fff0d5", bd=0)
         menu.add_command(label="Abrir carpeta", command=self.open_folder)
         menu.add_command(label="Actualizar", command=self.refresh_catalog)
         menu.add_command(label="Estadísticas", command=self.statistics)
         menu.add_command(label="Configuración", command=self.settings)
-        menu_button.configure(menu=menu)
+        menu_button = ttk.Button(bar, text="⋯", width=3)
+        menu_button.configure(command=lambda: menu.tk_popup(menu_button.winfo_rootx(),
+                                                            menu_button.winfo_rooty() + menu_button.winfo_height()))
         menu_button.pack(side="right")
         size = ttk.Combobox(bar, values=list(THUMB_SIZES), state="readonly", width=10)
         size.set("Grandes")
@@ -603,7 +609,7 @@ class ManagerApp:
         self.cols.delete(*self.cols.get_children())
         collections = self._collections()
         all_count = sum(len(col["items"]) for col in collections)
-        self.cols.insert("", "end", iid=ALL_WORKS, text=f"Todas las obras  ·  {all_count}")
+        self.cols.insert("", "end", iid=ALL_WORKS, text="Todas las obras", values=(all_count,))
         query = self.search.get().strip().casefold()
         for col in collections:
             items = col["items"]
@@ -611,7 +617,8 @@ class ManagerApp:
                 continue
             cover = self._thumb_image(items[0], (38, 38)) if items else None
             options = {"image": cover} if cover else {}
-            self.cols.insert("", "end", iid=col["id"], text=f"{col['title']}  ·  {len(items)}", **options)
+            title = col["title"] if len(col["title"]) <= 22 else col["title"][:21].rstrip() + "…"
+            self.cols.insert("", "end", iid=col["id"], text=title, values=(len(items),), **options)
         if not self.cols.exists(self.selected_col):
             self.selected_col = ALL_WORKS
             self.selected_works.clear()
