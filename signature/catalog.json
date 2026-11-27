@@ -1025,6 +1025,46 @@
           "dhash": "1e1f1b0e0e360e9f4a20205424214c2120431d204a251e6634255a2f2440201f683828864e327a462d4f28207f41279e5835914f306d3624",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-bronce-bajo-la-marea-4df473ae4070",
+          "title": "El bronce bajo la marea",
+          "image": "photos/17c7e2dd531a3d0bbff0a7e0.webp",
+          "thumb": "photos/17c7e2dd531a3d0bbff0a7e0-thumb.webp",
+          "dhash": "f8fffd1f37dd5c193743411323250a1a1d0917193244462f3d3b1726250b1a1c3d474346473a252c241925233e3e344b4331312f24313229",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-estela-que-guarda-la-l-86383a61aede",
+          "title": "La estela que guarda la lluvia",
+          "image": "photos/2a6618448fcd11f47dc7abe6.webp",
+          "thumb": "photos/2a6618448fcd11f47dc7abe6-thumb.webp",
+          "dhash": "671f1f0b13130f13323d4a3b48563244521f324027354138434f34404c24334041424c544b5050484e3f434e38302f483a37473a383e3535",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-seda-del-primer-viento-73bf6935c9f5",
+          "title": "La seda del primer viento",
+          "image": "photos/eb15850635648fc77036b3f9.webp",
+          "thumb": "photos/eb15850635648fc77036b3f9-thumb.webp",
+          "dhash": "632390ccb9233d391c1b24181e291c1f2b211923352c2d2b262b2423292d26275d463a5c423643342b3f31275f493a7154403c2e25362a20",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-tesela-del-regreso-5e08855162bc",
+          "title": "La tesela del regreso",
+          "image": "photos/2e935f911ee62fc119a1f50d.webp",
+          "thumb": "photos/2e935f911ee62fc119a1f50d-thumb.webp",
+          "dhash": "f2f2caad3c782537352410201a0f1c170f1b160f3f291535241424190f1c170f67402055341a301c0f3a26166d3f20724522644121613d1f",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
         }
       ]
     },
