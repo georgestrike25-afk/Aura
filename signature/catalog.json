@@ -1533,6 +1533,46 @@
           "dhash": "fe7f7fdf777b3f1f5131364d2e3246292d41262a653e3f5b37394d2f31472a2e9b625781514a5e3b3b5433357e4f4a84534d623e3e4f3134",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-disco-de-la-siesta-2e0656c2175c",
+          "title": "El disco de la siesta",
+          "image": "photos/58906b0ecaaf65dbb3027e7d.webp",
+          "thumb": "photos/58906b0ecaaf65dbb3027e7d-thumb.webp",
+          "dhash": "3f7f7f97b4f6e775e8c3bfe0c0c7d5b7c5ccaebfe9c3b9e0bdbfd7b5beceadbbc29078a57c73a17b769d7879b17c608c5c48794b3c744739",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-lapiz-del-sueno-2996f3fa8de2",
+          "title": "El lápiz del sueño",
+          "image": "photos/1cf183afad889bb680dcd185.webp",
+          "thumb": "photos/1cf183afad889bb680dcd185-thumb.webp",
+          "dhash": "f7f7fff3b7f3f89fd4d0dec2cae1bbc5deadbedfecd7d8d5cedac6c8dcc0c7dfe0ced0c5bec9b4b5c8bcbfd3d2c5c9c4bcc5b1b1c1b3b5c6",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-cometa-del-patio-fc4b497d0d5e",
+          "title": "La cometa del patio",
+          "image": "photos/603832d95505ffd2ce952813.webp",
+          "thumb": "photos/603832d95505ffd2ce952813-thumb.webp",
+          "dhash": "3d7af1f1130d0c03d0cecac3c8cbacc0cda5bdcdd9d4cdc8cccbc2cbcdc1cdd1c5ac92cfbeabd1c0afccbeaeb39378c6a48aceae94ceb096",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "los-anteojos-del-verano-6cb29bc3d0ff",
+          "title": "Los anteojos del verano",
+          "image": "photos/dfb2832f9e6366278bb0297e.webp",
+          "thumb": "photos/dfb2832f9e6366278bb0297e-thumb.webp",
+          "dhash": "1f6f9175339b462edad0a9dad5b5d5d4b6d0d0b5e5dab3e4d9b3e1d7b2dfd8b6c1aa72cbb57dd0b981cdb982ae9357ba9966c8a36cb9965f",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
