@@ -235,15 +235,6 @@
       "title": "Entre tinta y oro",
       "items": [
         {
-          "id": "el-remendador-de-tinta-2403ec1483fa",
-          "title": "El remendador de tinta",
-          "image": "photos/f8ca1449ce7f61bd9227fd62.webp",
-          "thumb": "photos/f8ca1449ce7f61bd9227fd62-thumb.webp",
-          "dhash": "1f1f1f375b337274251c15412f213022171b1610261d15392b1e34271b231b132f21152e221736291c3a291a392412261b10251b12302014",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "el-peso-de-la-tinta-88dd8defbcf3",
           "title": "El peso de la tinta",
           "image": "photos/149fc3e0e93be28980ef8c65.webp",
