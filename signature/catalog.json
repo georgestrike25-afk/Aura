@@ -863,21 +863,6 @@
       ]
     },
     {
-      "id": "retratos-del-mar-ii",
-      "title": "Retratos del mar II",
-      "items": [
-        {
-          "id": "el-vigia-de-la-espuma-567fc0dd138d",
-          "title": "El vigía de la espuma",
-          "image": "photos/f72ea82a177cf88585df7cb7.webp",
-          "thumb": "photos/f72ea82a177cf88585df7cb7-thumb.webp",
-          "dhash": "03000510302663631d35352942403f534c46574f2a3f3c2d403c3548423d4f482f413b29322a3f43354b51422b3932242a203d3e2e454c3e",
-          "width": 1440,
-          "height": 3120
-        }
-      ]
-    },
-    {
       "id": "mundos-imposibles",
       "title": "Mundos imposibles",
       "items": [
@@ -1973,6 +1958,15 @@
           "image": "photos/d93e3d3b283804de4dd84c17.webp",
           "thumb": "photos/d93e3d3b283804de4dd84c17-thumb.webp",
           "dhash": "41734f4d498b130d071b2c041c2c091c2e0e1a2e0418270f22320f20310517260f1c3016253814293c1022371e2a3f27324529334828293f",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-vigia-de-la-espuma-567fc0dd138d",
+          "title": "El vigía de la espuma",
+          "image": "photos/f72ea82a177cf88585df7cb7.webp",
+          "thumb": "photos/f72ea82a177cf88585df7cb7-thumb.webp",
+          "dhash": "03000510302663631d35352942403f534c46574f2a3f3c2d403c3548423d4f482f413b29322a3f43354b51422b3932242a203d3e2e454c3e",
           "width": 1440,
           "height": 3120
         }
