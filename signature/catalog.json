@@ -161,6 +161,46 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-26"
+        },
+        {
+          "id": "el-delta-de-la-luna-2-41249e1c2d2f",
+          "title": "El delta de la luna (2)",
+          "image": "photos/c91021f121c0e1a7c8f471eb.webp",
+          "thumb": "photos/c91021f121c0e1a7c8f471eb-thumb.webp",
+          "dhash": "130f0f0f470f1f0f1526381a2c3f1a2c3f15273a25384a3e4d5b41505e293d4e202e39444d554c545a2d3842222c36424c53323d471a2530",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-jardin-plegado-2-f9c97f5111a2",
+          "title": "El jardín plegado (2)",
+          "image": "photos/99bc6e04bba5f3fb090b7d5f.webp",
+          "thumb": "photos/99bc6e04bba5f3fb090b7d5f-thumb.webp",
+          "dhash": "1d394d060d233033262b152b2f18292e18262b16282d164441264e4b302a2f18272c103537153a3d202f361b222308232706292f0c333817",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-relicario-de-obsidiana-e78ed875d398",
+          "title": "El relicario de obsidiana (2)",
+          "image": "photos/cd8d3b722936ed84531db941.webp",
+          "thumb": "photos/cd8d3b722936ed84531db941-thumb.webp",
+          "dhash": "57499763e27332b6846a8f836a8f81698f80688fa68aad8a718d987d9f9e83ab7c647e44354070597483698c3b2a2e2e21232c2129352733",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-gruta-de-nacar-2-70fcd7795aec",
+          "title": "La gruta de nácar (2)",
+          "image": "photos/be7cc3cbdafc08844fb71df5.webp",
+          "thumb": "photos/be7cc3cbdafc08844fb71df5-thumb.webp",
+          "dhash": "6f2f0b9f8d0f339b455664455665415261394a5848586566696f525b6542525f515d668379756469704c5861636668706b6952575b47535c",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
