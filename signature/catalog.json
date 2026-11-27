@@ -31,15 +31,6 @@
       "title": "Paisajes naturales",
       "items": [
         {
-          "id": "bosque-y-cielo-1ebc9996f682",
-          "title": "Bosque y cielo",
-          "image": "photos/0ec22bd6be1c08d6658d121e.webp",
-          "thumb": "photos/0ec22bd6be1c08d6658d121e-thumb.webp",
-          "dhash": "4218343623639b5839412c52583265683e837a59545843797e5d807e588b7f565e6340626b43737144686343424820494b1c3f421e41401d",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "lago-y-montana-18e33620a0aa",
           "title": "Lago y montaña",
           "image": "photos/567d20c8b5100fda7a052671.webp",
