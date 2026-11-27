@@ -123,6 +123,23 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
     val current: StudioProject? get() = _history.value?.current
     val hasUnsavedChanges: Boolean get() = current != null && current != savedVersion
 
+    /** Diseños creados en esta sesión que todavía nadie guardó con ✓ (si se descartan, no quedan en Studio). */
+    private val unsavedNew = mutableSetOf<String>()
+
+    /** Al salir: ¿hay algo que preguntar? (cambios sin guardar o un diseño nuevo que nunca se guardó). */
+    val needsSaving: Boolean get() = hasUnsavedChanges || current?.id in unsavedNew
+
+    /** Salir sin guardar: vuelve a lo último guardado; un diseño nuevo nunca guardado se borra. */
+    fun discard(onDone: () -> Unit) {
+        val id = current?.id
+        viewModelScope.launch {
+            if (id != null && unsavedNew.remove(id)) {
+                runCatching { repo.delete(id) }
+            }
+            onDone()
+        }
+    }
+
     // ---------------------------------------------------------------- proyectos
 
     fun createFromPhoto(uri: Uri, onCreated: (String) -> Unit) = createFromPhoto(uri, null, onCreated = onCreated)
@@ -135,6 +152,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
             try {
                 val name = title ?: ("Diseño " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("d/M HH:mm")))
                 val project = repo.create(uri, name, design, mask)
+                unsavedNew += project.id
                 onCreated(project.id)
             } catch (e: CancellationException) {
                 throw e
@@ -188,6 +206,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
         _history.value = null
         _proposals.value = emptyList()
         proposalRound = 0
+        proposalSalt = System.nanoTime()
         _preview.value = null
         _maskOverlay.value = null
         gestureBase = null
@@ -213,6 +232,7 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
                 if (current == p) _history.value = _history.value?.replace(updated)
                 savedVersion = updated
             }
+            unsavedNew.remove(p.id)
             _message.value = "Diseño guardado"
             onDone?.invoke()
         }
@@ -387,6 +407,11 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
     private val _proposals = MutableStateFlow<List<DesignPreview>>(emptyList())
     val proposals = _proposals.asStateFlow()
     private var proposalRound = 0
+    /** Semilla de esta sesión de AutoDesign: cada vez que se abre, propuestas nuevas. */
+    private var proposalSalt = System.nanoTime()
+    /** Lo que se mostró hace poco, para no repetir fuentes ni estilos. */
+    private val recentFonts = ArrayDeque<String>()
+    private var recentStyles = emptySet<AutoDesign.Style>()
 
     fun generateProposals() {
         val project = current ?: return
@@ -421,7 +446,10 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
                                     if (project.mask.inverted) for (index in it.indices) it[index] = it[index].inv()
                                 }
                             }
-                            AutoDesign.propose(pixels, analysisWidth, analysisHeight, subject, round, reference, themedFonts)
+                            AutoDesign.propose(
+                                pixels, analysisWidth, analysisHeight, subject, round, reference, themedFonts,
+                                salt = proposalSalt, avoidFonts = recentFonts.toSet(), recentStyles = recentStyles,
+                            )
                         } finally {
                             sample.recycle()
                         }
@@ -432,6 +460,9 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
                     DesignPreview(proposal, image.asImageBitmap())
                 }
                 if (current?.id == project.id) _proposals.value = previews
+                designs.mapNotNull { it.design.customFont }.forEach { recentFonts.addLast(it) }
+                while (recentFonts.size > 12) recentFonts.removeFirst()
+                recentStyles = designs.mapNotNull { d -> AutoDesign.Style.entries.firstOrNull { it.title == d.title } }.toSet()
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

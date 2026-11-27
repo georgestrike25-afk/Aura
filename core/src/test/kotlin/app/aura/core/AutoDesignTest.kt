@@ -68,7 +68,7 @@ class AutoDesignTest {
                 assertNotEquals(0xFFFFFFFF.toInt(), d.color)
                 assertNotEquals(0xFFE8572A.toInt(), d.accentColor)
                 // Sobre una foto oscura, cifras claras con buen contraste.
-                assertTrue("${p.title}: ${Integer.toHexString(d.color)}", Fusion.contrastRatio(Fusion.luminance(d.color), 0.05f) >= 3f)
+                assertTrue("${p.title}: ${Integer.toHexString(d.color)}", Fusion.contrastRatio(Fusion.luminance(d.color), 0.05f) >= 2.2f)
             }
         }
         // El esquema «tono» usa el color de la foto.
@@ -131,5 +131,25 @@ class AutoDesignTest {
         assertEquals("user:123_Burn.otf", first.customFont)
         // En una escena común no se fuerza nada temático.
         assertTrue(AutoDesign.propose(forest, width, height, null, 0, userFonts = listOf(burn)).none { it.design.customFont == burn.id })
+    }
+
+    @Test
+    fun sessionSaltAndRecentHistoryGiveVariety() {
+        val a = AutoDesign.propose(forest, width, height, null, 0, salt = 1)
+        val b = AutoDesign.propose(forest, width, height, null, 0, salt = 2)
+        assertNotEquals(a.map { it.design }, b.map { it.design })
+        // Los estilos y fuentes recientes se evitan.
+        val recent = a.map { AutoDesign.Style.entries.first { s -> s.title == it.title } }.toSet()
+        val fonts = a.mapNotNull { it.design.customFont }.toSet()
+        val next = AutoDesign.propose(forest, width, height, null, 1, salt = 1, avoidFonts = fonts, recentStyles = recent)
+        assertTrue(next.none { it.design.customFont in fonts })
+        assertTrue(next.none { AutoDesign.Style.entries.first { s -> s.title == it.title } in recent })
+    }
+
+    @Test
+    fun designsBlendIntoThePhoto() {
+        val all = (0 until 10).flatMap { AutoDesign.propose(forest, width, height, null, it, salt = 5) }.map { it.design }
+        assertTrue(all.all { it.opacity in 74..92 && it.shadow <= 32 })
+        assertTrue("camaleón en varias", all.count { it.chameleon > 0 } >= 6)
     }
 }

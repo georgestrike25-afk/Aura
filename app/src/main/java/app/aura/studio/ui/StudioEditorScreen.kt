@@ -2,6 +2,7 @@ package app.aura.studio.ui
 
 import android.content.ActivityNotFoundException
 import androidx.activity.compose.BackHandler
+import androidx.compose.material3.AlertDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -109,8 +110,26 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, autoDesign
             viewModel.consumeMessage()
         }
     }
+    // Solo se guarda con ✓. Al salir con cambios (o con un diseño nuevo sin guardar) se pregunta.
+    var confirmLeave by remember { mutableStateOf(false) }
     val leave = {
-        if (viewModel.hasUnsavedChanges) viewModel.save { onBack() } else onBack()
+        if (viewModel.needsSaving) confirmLeave = true else onBack()
+    }
+    if (confirmLeave) {
+        AlertDialog(
+            onDismissRequest = { confirmLeave = false },
+            title = { Text("¿Guardar el diseño?") },
+            text = { Text("Si salís sin guardar, se pierden los cambios. Un diseño nuevo sin guardar no queda en Studio.") },
+            confirmButton = {
+                TextButton(onClick = { confirmLeave = false; viewModel.save { onBack() } }) { Text("Guardar") }
+            },
+            dismissButton = {
+                Row {
+                    TextButton(onClick = { confirmLeave = false }) { Text("Seguir editando") }
+                    TextButton(onClick = { confirmLeave = false; viewModel.discard { onBack() } }) { Text("Descartar") }
+                }
+            },
+        )
     }
     BackHandler(onBack = leave)
 

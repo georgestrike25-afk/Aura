@@ -230,3 +230,8 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   hasta 1600 px) y usa el modelo de sujetos de ML Kit en ese recorte; se queda con lo que tocó el dedo
   (`core/studio/EdgeSelection.kt` · `SubjectPick`). Nuevo «Quitar» inteligente (lo que no es sujeto bajo el dedo).
   Si el modelo no está o no ve nada ahí, se usa la selección por bordes de Codex sobre el recorte ampliado.
+- **AutoDesign 3 (integración y variedad)**: colores tono sobre tono con contraste justo (2,2:1), camaleón en la
+  mayoría de las propuestas, opacidad 74–92 %, sombras suaves y a veces un leve giro. Semilla nueva cada vez que
+  se abre y memoria de las últimas 12 fuentes y de los estilos recientes para no repetir.
+- **Studio guarda solo con ✓**: al salir con cambios pregunta Guardar / Descartar / Seguir editando; un diseño
+  nuevo que nunca se guardó se borra al descartarlo.

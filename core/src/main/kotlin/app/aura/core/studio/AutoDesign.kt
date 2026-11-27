@@ -97,14 +97,20 @@ object AutoDesign {
     fun propose(
         pixels: IntArray, width: Int, height: Int, subject: IntArray?, round: Int, reference: ClockDesign? = null,
         userFonts: List<ThemedFont> = emptyList(),
+        /** Semilla de la sesión: cada vez que se abre AutoDesign, otras propuestas (0 = solo según la foto). */
+        salt: Long = 0,
+        /** Fuentes y estilos mostrados hace poco: se evitan para no repetir. */
+        avoidFonts: Set<String> = emptySet(),
+        recentStyles: Set<Style> = emptySet(),
     ): List<Proposal> {
         require(width > 0 && height > 0 && pixels.size == width * height)
         require(subject == null || subject.size == pixels.size)
         val ctx = Context(pixels, width, height, Scene.read(subject, width, height), reference?.hourFormat ?: HourFormat.SYSTEM)
         // Misma foto y misma vuelta → mismas propuestas; otra vuelta → otras.
-        val rnd = Random(fingerprint(pixels) * 31 + round)
-        var styles = Style.entries.shuffled(rnd).take(3)
-        val usedFonts = mutableSetOf<String>()
+        val rnd = Random(fingerprint(pixels) * 31L + round + salt * 7919L)
+        // Al azar, pero primero los estilos que no se vieron hace poco.
+        var styles = Style.entries.shuffled(rnd).sortedBy { it in recentStyles }.take(3)
+        val usedFonts = avoidFonts.toMutableSet()
         val schemes = Scheme.entries.shuffled(rnd)
         // Escena de fuego o agua: la primera propuesta lleva la fuente temática (primero las de la persona) y su material.
         val theme = themeOf(ctx.traits)
@@ -247,7 +253,7 @@ object AutoDesign {
         )
         val local = Fusion.analyze(c.px, c.w, c.h, region)
         val harmony = Fusion.harmonize(local)
-        val (main, accent) = colors(c.traits, local.regionBrightness, scheme)
+        val (main, accent) = colors(c.traits, local.regionBrightness, scheme, local)
         val material = when {
             preferMaterial && harmony.material.isElement -> harmony.material
             preferMaterial -> listOf(ClockMaterial.GLASS, ClockMaterial.METAL).random(rnd)
@@ -267,25 +273,32 @@ object AutoDesign {
             behindSubject = behind,
             artistic = ArtisticClock(enabled = true),
         ).withMaterial(material)
-        if (material.isElement) d = d.copy(elementIntensity = rnd.nextInt(45, 75), textureScale = rnd.nextInt(30, 70))
-        // Camaleón suave: las cifras toman algo de la foto que tienen detrás (siempre legibles por el «lift»).
-        if (material == ClockMaterial.MINIMAL && rnd.nextInt(3) == 0) {
-            d = d.copy(chameleon = rnd.nextInt(20, 45), chameleonLift = if (local.regionBrightness < 0.5f) 45 else -45)
+        if (material.isElement) d = d.copy(elementIntensity = rnd.nextInt(40, 70), textureScale = rnd.nextInt(30, 70))
+        // Integrado a la foto: camaleón (las cifras toman la textura y el color de lo que tienen detrás, con un
+        // «lift» para que se sigan leyendo), algo de transparencia y sombras suaves. Nada de cifras «pegadas».
+        if (!material.isElement && rnd.nextInt(5) < 3) {
+            d = d.copy(chameleon = rnd.nextInt(35, 65), chameleonLift = if (local.regionBrightness < 0.5f) rnd.nextInt(30, 55) else -rnd.nextInt(30, 55))
         }
-        // Escena nocturna: un resplandor leve del color de acento.
-        if (c.traits.brightness < 0.25f && material == ClockMaterial.MINIMAL) d = d.copy(glow = rnd.nextInt(15, 35))
-        return d.copy(shadow = if (local.contrast > 0.22f) 45 else 30)
+        // Escena nocturna: a veces un resplandor leve del color de acento.
+        if (c.traits.brightness < 0.25f && material == ClockMaterial.MINIMAL && rnd.nextBoolean()) d = d.copy(glow = rnd.nextInt(10, 25))
+        // Un leve giro en algunas propuestas horizontales, siguiendo la luz de la escena.
+        val tilt = if (rnd.nextInt(4) == 0) (if (rnd.nextBoolean()) 1 else -1) * rnd.range(2.5f, 7f) else 0f
+        return d.copy(
+            shadow = rnd.nextInt(10, if (local.contrast > 0.22f) 32 else 24),
+            opacity = rnd.nextInt(74, 93),
+            rotation = tilt,
+        )
     }
 
     // ------------------------------------------------------------------ color
 
-    enum class Scheme { TINT, ACCENT, MONO, SOFT_COMPLEMENT }
+    enum class Scheme { TINT, ACCENT, MONO, SOFT_COMPLEMENT, TONAL }
 
     /**
      * (color principal, acento) tomados de la foto. El principal siempre con contraste ≥ 3:1 contra la zona
      * del reloj; el acento, el color más vivo de la imagen ajustado para que se distinga.
      */
-    internal fun colors(t: ImageTraits, regionBrightness: Float, scheme: Scheme): Pair<Int, Int> {
+    internal fun colors(t: ImageTraits, regionBrightness: Float, scheme: Scheme, local: ImageTraits? = null): Pair<Int, Int> {
         val light = regionBrightness < 0.55f
         val weighted = t.palette.zip(t.weights)
         val dominant = weighted.filter { it.second > 0.08f }.maxByOrNull { hsl(it.first)[1] * (0.5f + it.second) }?.first
@@ -293,20 +306,28 @@ object AutoDesign {
         val vivid = t.palette.maxByOrNull { hsl(it)[1] * (0.3f + hsl(it)[2]) } ?: dominant
         val (h, s, _) = hsl(dominant).let { Triple(it[0], it[1], it[2]) }
         val vh = hsl(vivid)[0]
-        val mainL = if (light) 0.93f else 0.12f
+        // Ni blanco ni negro puros: un tono que pertenece a la foto.
+        val mainL = if (light) 0.86f else 0.18f
         val main = when (scheme) {
             Scheme.TINT -> fromHsl(h, min(0.35f, s * 0.6f + 0.1f), mainL)
             Scheme.ACCENT -> fromHsl(h, 0.12f, if (light) 0.95f else 0.10f)
             Scheme.MONO -> fromHsl(vh, min(0.55f, hsl(vivid)[1]), if (light) 0.84f else 0.18f)
             Scheme.SOFT_COMPLEMENT -> fromHsl(h, 0.18f, mainL)
+            // Tono sobre tono: el mismo color de la zona del reloj, más claro u oscuro.
+            Scheme.TONAL -> {
+                val zone = hsl(local?.palette?.firstOrNull() ?: dominant)
+                fromHsl(zone[0], min(0.45f, zone[1] + 0.08f), (zone[2] + if (light) 0.38f else -0.38f).coerceIn(0.12f, 0.9f))
+            }
         }
         val accent = when (scheme) {
             Scheme.TINT -> fromHsl(h, max(0.45f, s), if (light) 0.66f else 0.38f)
             Scheme.ACCENT -> fromHsl(vh, max(0.55f, hsl(vivid)[1]), if (light) 0.62f else 0.40f)
             Scheme.MONO -> fromHsl(vh, max(0.5f, hsl(vivid)[1]), if (light) 0.66f else 0.32f)
             Scheme.SOFT_COMPLEMENT -> fromHsl((h + 165f) % 360f, 0.42f, if (light) 0.70f else 0.35f)
+            Scheme.TONAL -> fromHsl(vh, max(0.45f, hsl(vivid)[1]), if (light) 0.64f else 0.36f)
         }
-        return legible(main, regionBrightness) to legible(accent, regionBrightness, minRatio = 2.2f)
+        // Contraste suficiente para leer la hora, sin que resalte de más (antes 3:1).
+        return legible(main, regionBrightness, minRatio = 2.2f) to legible(accent, regionBrightness, minRatio = 1.7f)
     }
 
     /** Aclara u oscurece [color] (sin cambiar su tono) hasta que se lea sobre la zona del reloj. */
