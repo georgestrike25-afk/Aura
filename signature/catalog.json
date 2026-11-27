@@ -7,15 +7,6 @@
       "title": "Retratos de animales",
       "items": [
         {
-          "id": "caballo-y-cielo-38ce83a68657",
-          "title": "Caballo y cielo",
-          "image": "photos/683927b2e65ac7cd627df270.webp",
-          "thumb": "photos/683927b2e65ac7cd627df270-thumb.webp",
-          "dhash": "0002ceb03059139e788b90909d9fabb0acc0bdb2ada89eb1aa9db5ada0b6b3abbe9773b89573ad8d6fc4a589956b46a37a549d724a926c49",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "gato-42e707241137",
           "title": "Gato",
           "image": "photos/3db7da6a04a0347fefa28fe3.webp",
