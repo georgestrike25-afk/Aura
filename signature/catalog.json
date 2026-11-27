@@ -1329,6 +1329,46 @@
           "dhash": "76793f696d279618747f69666b525b583b574f306d765f776d5274613e60604256513c5b45297d593359533b2a22133e301b4a351c42311d",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-tallador-del-cauce-cb24fb48185e",
+          "title": "El tallador del cauce",
+          "image": "photos/f39c69ad8794c7f37ab1e031.webp",
+          "thumb": "photos/f39c69ad8794c7f37ab1e031-thumb.webp",
+          "dhash": "0018043293491e210b0e0c0f13101316121c1b120f120f16181425211827231a1e1b1226221a30281d3f3122241e1432291f34291e3d2d1f",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-guardiana-del-claro-93ee0587c03d",
+          "title": "La guardiana del claro",
+          "image": "photos/9b4213be764209c1409c40ba.webp",
+          "thumb": "photos/9b4213be764209c1409c40ba-thumb.webp",
+          "dhash": "fcf1cfcd4b58190f4332142e2712212111201f11312a15392f172d27141f1f12412f15563c18493315432f15482f12563815513413503514",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-mensajera-de-las-copas-58661fbd586a",
+          "title": "La mensajera de las copas",
+          "image": "photos/e125514e74de5eeee81af746.webp",
+          "thumb": "photos/e125514e74de5eeee81af746-thumb.webp",
+          "dhash": "1203071e33a32b670b100f0c16180e2127101b1f0d1212281e1b28201c0f17172117112c1a131b181313151217140d13151017161214110e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-vigia-de-las-cenizas-9394385b9460",
+          "title": "La vigía de las cenizas",
+          "image": "photos/2c8c21df284dda337e597fb0.webp",
+          "thumb": "photos/2c8c21df284dda337e597fb0-thumb.webp",
+          "dhash": "362f111139393c1b38333f3e3c4c37384a30344638343f44404a413b475647542d2a2e2e2b2c2525282f2d342a2527302a2a262424232226",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
