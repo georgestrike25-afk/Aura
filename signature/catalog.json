@@ -25,6 +25,26 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "el-pino-de-la-hora-azul-dbff58331025",
+          "title": "El pino de la hora azul",
+          "image": "photos/d0603c4ae53c20efe8b44bf9.webp",
+          "thumb": "photos/d0603c4ae53c20efe8b44bf9-thumb.webp",
+          "dhash": "020913706c070119313c64323d66333e66333d66495076484c6d4c4e6f4e53794941534f4558514b654e4a673324293b2c313c2e393e3242",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-higuera-del-manantial-245a484a7cec",
+          "title": "La higuera del manantial",
+          "image": "photos/f0173aed47590d8d75460eb9.webp",
+          "thumb": "photos/f0173aed47590d8d75460eb9-thumb.webp",
+          "dhash": "272586d2642d9272333d2c35423637433730382c474a2e3f482b424b2a3a412f4b4a21494a2843492d41452e403f1f433f1d4542283a3a21",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
