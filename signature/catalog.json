@@ -133,16 +133,6 @@
       "title": "Anatomía secreta",
       "items": [
         {
-          "id": "el-delta-de-la-luna-4999fcae376e",
-          "title": "El delta de la luna",
-          "image": "photos/acca27dff81bc0acd7029f77.webp",
-          "thumb": "photos/acca27dff81bc0acd7029f77-thumb.webp",
-          "dhash": "09170c0f23060b4f0b141b111b220f1a220d161d0d171e1b262c1f292f0f19200c1d2618262e202b3214242d151e261d22291d2229141c23",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
           "id": "el-jardin-plegado-cc18cdd50b83",
           "title": "El jardín plegado",
           "image": "photos/688dc34c833faeaa887fea8c.webp",
@@ -163,16 +153,6 @@
           "added": "2026-11-26"
         },
         {
-          "id": "la-gruta-de-nacar-f2748d1c032b",
-          "title": "La gruta de nácar",
-          "image": "photos/4918b5733ed044d157a23a17.webp",
-          "thumb": "photos/4918b5733ed044d157a23a17-thumb.webp",
-          "dhash": "33168c4f036239030f16151f2421202725161b1a09131318201d1a23200b15162a302e1c2d2a31383432353635343228302f222d2b2e3432",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
           "id": "la-virgen-del-velo-74a9795cfd84",
           "title": "La Virgen del Velo",
           "image": "photos/b0ba48afb16ddde655b7d001.webp",
@@ -188,15 +168,6 @@
       "id": "retratos-de-animales",
       "title": "Retratos de animales",
       "items": [
-        {
-          "id": "gato-42e707241137",
-          "title": "Gato",
-          "image": "photos/3db7da6a04a0347fefa28fe3.webp",
-          "thumb": "photos/3db7da6a04a0347fefa28fe3-thumb.webp",
-          "dhash": "07277d018b5bffef3f585441585440564f3b5149384d474b594f566153525a4c73877b8a958390957e6d6e5a52706744635a33534a234038",
-          "width": 1440,
-          "height": 3120
-        },
         {
           "id": "playa-y-atardecer-b99e6392fa5b",
           "title": "Playa y atardecer",
@@ -305,16 +276,6 @@
           "image": "photos/2882abd3934b3192fed8a2ec.webp",
           "thumb": "photos/2882abd3934b3192fed8a2ec-thumb.webp",
           "dhash": "090b1773098f2331212b37242e3a242e3b232d392a2e3931303a36323c2f313d161921261e232620261e1f2711141a15151a18181e1c1b21",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
-          "id": "la-veta-del-salar-4801a90f2f64",
-          "title": "La veta del salar",
-          "image": "photos/63c889fca99f1210e8f8be6f.webp",
-          "thumb": "photos/63c889fca99f1210e8f8be6f-thumb.webp",
-          "dhash": "1f3f0f0f2769c3075b4f4d5a51514e4b4e4343465c4444634d4d5a4a4c493a3f9170697c776c7d766d73605e646b635c786a7c8b7c867f75",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-26"
@@ -531,41 +492,11 @@
           "height": 3120
         },
         {
-          "id": "el-guante-de-la-abuela-69bec3137e74",
-          "title": "El guante de la abuela",
-          "image": "photos/63ed0dc353ef11d96ef6c425.webp",
-          "thumb": "photos/63ed0dc353ef11d96ef6c425-thumb.webp",
-          "dhash": "1f1f9f574f3edc4d16241f2233272028201d1918222217302a1a2b241715181447301950351d4129172417114a351a4831173a2510331f13",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
           "id": "el-sobre-de-la-primera-he-8ea7efea3ec6",
           "title": "El sobre de la primera helada",
           "image": "photos/31cbc09b5d070dc6f25a4157.webp",
           "thumb": "photos/31cbc09b5d070dc6f25a4157-thumb.webp",
           "dhash": "010307044546033317304429455d4a5d734f5c70263747414a56595a6350505d3f36385e524f8a6b62664a48392929493938564441443534",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
-          "id": "la-campanilla-del-regreso-23bab8311934",
-          "title": "La campanilla del regreso",
-          "image": "photos/214c10377f4de1e1a87eca7f.webp",
-          "thumb": "photos/214c10377f4de1e1a87eca7f-thumb.webp",
-          "dhash": "050b0313214343291c1b27262737273141242b3a22202931292e3d333a3a3039251e1834261b4c342a4a352c2219113020123d2a203c2a23",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
-          "id": "la-tijera-de-los-veranos-22f6d1d4e26b",
-          "title": "La tijera de los veranos",
-          "image": "photos/2ae52ef781599222624f1103.webp",
-          "thumb": "photos/2ae52ef781599222624f1103-thumb.webp",
-          "dhash": "39070e095744a2131b3b4226474e20424a133741152d3325393b333f3e2536392d2c22332e224235254235262d28173c2e1c432f1e3b2c1e",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-26"
@@ -730,86 +661,6 @@
           "image": "photos/774426b7d9c7fef60e770917.webp",
           "thumb": "photos/774426b7d9c7fef60e770917-thumb.webp",
           "dhash": "040000ad218124c835454f3e4c554a565d5f6466504e51595454696360746c6947403d483e395c4c4469534a473e3a4d3d375d443a614a42",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "el-ciervo-del-deshielo-lu-3515f9a14ca2",
-          "title": "El ciervo del deshielo Luz lateral",
-          "image": "photos/aff23b907f69608bcf3ba105.webp",
-          "thumb": "photos/aff23b907f69608bcf3ba105-thumb.webp",
-          "dhash": "fdffc3e1206602c8aeb3c29dafc892abca8da7c8ac91879d8e8f989aa5969db0847a72857c7588898889939c68635f736f6d7b7f827c868e",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-mensajera-del-estuario-f59ead81caaa",
-          "title": "La mensajera del estuario Luz lateral",
-          "image": "photos/22721425fd38e3ce33195973.webp",
-          "thumb": "photos/22721425fd38e3ce33195973-thumb.webp",
-          "dhash": "f4f8d2e5615127c88da0b37694b26a8daf7191b0b19a8f96919290959e939aa7866b5a7060557568648c726c7c655a775d517d5b517e5a51",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-pastora-del-valle-luz--a7e04d4cbaa7",
-          "title": "La pastora del valle Luz lateral",
-          "image": "photos/3e7535dcd39a4f48cc165f94.webp",
-          "thumb": "photos/3e7535dcd39a4f48cc165f94-thumb.webp",
-          "dhash": "e7dff6b33bf0f093a4b2bc98abbc8ca3b9809cb6b5b4b09e958e908a8894989f95826b78563a6e4c35897865735c3d644d2f685031806b4b",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "el-barquero-de-la-bruma-l-7358a1355a2e",
-          "title": "El barquero de la bruma Luz lateral",
-          "image": "photos/d958e96af0218f92360f8d7e.webp",
-          "thumb": "photos/d958e96af0218f92360f8d7e-thumb.webp",
-          "dhash": "99f2fcfc37f1f0e2a6b4bb9aaebb94aab996aab7bfb1a4ac9f989b908f93979d92877667656270707081827f745b43403b37544d47656a68",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-pastora-del-valle-clar-462d6a1a3007",
-          "title": "La pastora del valle Claroscuro",
-          "image": "photos/ba174b7712954c76514e14b9.webp",
-          "thumb": "photos/ba174b7712954c76514e14b9-thumb.webp",
-          "dhash": "c7ffd7bb39b97983697175606d765a687350616e74716d6d645c5e5956575b605b5145573f2a442f2046413a5448334b3c264839254b4331",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "el-barquero-de-la-bruma-c-efc5b0fd6ce2",
-          "title": "El barquero de la bruma Claroscuro",
-          "image": "photos/74734fc4208c32dc75c4d5cc.webp",
-          "thumb": "photos/74734fc4208c32dc75c4d5cc-thumb.webp",
-          "dhash": "bbf3fcfc377170f2697a855f74835a707f586d7c767879656a6f5b606756636e5e5a524b4740424648454f52624730342a21372f28393f3f",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "el-ciervo-del-deshielo-cl-d0dc4de55955",
-          "title": "El ciervo del deshielo Claroscuro",
-          "image": "photos/eae8a592ee2c9bcd25567b9d.webp",
-          "thumb": "photos/eae8a592ee2c9bcd25567b9d-thumb.webp",
-          "dhash": "79ffc3d9204307467a7c846976875e7086586d8478665e6a626262666f5a677854524f5955515b6062566774404344494b4c4e565b475662",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-mensajera-del-estuario-17fba6f7808c",
-          "title": "La mensajera del estuario Claroscuro",
-          "image": "photos/59eabe2d327a5a434273c96e.webp",
-          "thumb": "photos/59eabe2d327a5a434273c96e-thumb.webp",
-          "dhash": "fcfcd991715137cc63707d50677a4560764a62777c6d666a68695d656f5b67755b4c4350464047454952494d4c42404c3e394c3b38473636",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
@@ -1006,15 +857,6 @@
           "image": "photos/977b40a8b9e613b3a1940300.webp",
           "thumb": "photos/977b40a8b9e613b3a1940300-thumb.webp",
           "dhash": "0a270b0d28360f83060e15061019061019060e1609121a0a141c09141c09121b323a3a374042303a3e2c373d2d32314349484c54523e4647",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-huella-que-se-cierra-ef43a262c5fb",
-          "title": "La huella que se cierra",
-          "image": "photos/0cb1d6370fb2e61c6c51f42b.webp",
-          "thumb": "photos/0cb1d6370fb2e61c6c51f42b-thumb.webp",
-          "dhash": "01040413010101031716211d1c292a2637302c3e2826363c374a4c445950485f59506972637c7f6d8589768e60566f71637e7d6d86796b84",
           "width": 1440,
           "height": 3120
         }
@@ -1564,15 +1406,6 @@
           "height": 3120
         },
         {
-          "id": "la-fuente-del-abismo-6d2ae2a8b08e",
-          "title": "La fuente del abismo",
-          "image": "photos/842db7cd1c67a80bcc2ad430.webp",
-          "thumb": "photos/842db7cd1c67a80bcc2ad430-thumb.webp",
-          "dhash": "0a120d0a4f171b27160e16180f18180f18160e17140d151a1017190f17150d15170e1625151a25121b180e162213192d171c2d141c23121a",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "espacio-2-c9c1df5132ee",
           "title": "Espacio 2",
           "image": "photos/6a7b0905f658a2c3d9397b05.webp",
@@ -1587,15 +1420,6 @@
           "image": "photos/6ec19ceb7f405c45512af575.webp",
           "thumb": "photos/6ec19ceb7f405c45512af575-thumb.webp",
           "dhash": "0707072723b18d2703344814718c3aa2bb105b74013d5708546d0a627e014662113643122d340c3846074358161e21212722263530153236",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "selva-y-bajo-el-agua-37742c9cd65c",
-          "title": "Selva y bajo el agua",
-          "image": "photos/5d98e5d4b6e6026538a8941d.webp",
-          "thumb": "photos/5d98e5d4b6e6026538a8941d-thumb.webp",
-          "dhash": "03478d4de53417501a544710768028a7b7206e710d4b511359600b6372114e55234b422d493d22504f1c52552b34242e3b28264136164e4f",
           "width": 1440,
           "height": 3120
         }
@@ -1711,15 +1535,6 @@
           "image": "photos/f0bf75a8aad3ea90f942dbe4.webp",
           "thumb": "photos/f0bf75a8aad3ea90f942dbe4-thumb.webp",
           "dhash": "1a0f1f9f0b9c1c1b4523187a40287139244c27214928226838285830264223254727226138294f2d26402221502b2365392c5a312a4b2720",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-vendedora-de-sombra-ae4c1545a363",
-          "title": "La vendedora de sombra",
-          "image": "photos/fa042112994bf97a445b96be.webp",
-          "thumb": "photos/fa042112994bf97a445b96be-thumb.webp",
-          "dhash": "70c8c8c9c494d4754b422a2f24153d2d1c7e65485b4d3740312556402f856c5465492f694b30755437705439815e3e815f3f8e6845946d4a",
           "width": 1440,
           "height": 3120
         },
@@ -1920,15 +1735,6 @@
           "image": "photos/46fbae397aa484cae3ce3527.webp",
           "thumb": "photos/46fbae397aa484cae3ce3527-thumb.webp",
           "dhash": "3288307239f372c1797c7b787b7a797a797d7d7aab927a8a725a987f66be9b78a17144885c35825932a87036764d2362421e63421a694313",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "retrato-y-bosque-f5a4c2c473ec",
-          "title": "Retrato y bosque",
-          "image": "photos/6581452ebb9a95b3a8c398f2.webp",
-          "thumb": "photos/6581452ebb9a95b3a8c398f2-thumb.webp",
-          "dhash": "070f1d2f1e3d0b073030167970439e916754513a413e23695f3d544d34343221554c2c9075485c4d302c2b1b504824715e366a5b3a484029",
           "width": 1440,
           "height": 3120
         }
@@ -2552,29 +2358,11 @@
           "height": 3120
         },
         {
-          "id": "el-pulpo-del-espejo-2224fe480de2",
-          "title": "El pulpo del espejo",
-          "image": "photos/a126520da230003479e3321b.webp",
-          "thumb": "photos/a126520da230003479e3321b-thumb.webp",
-          "dhash": "030789244bc92f1c31231c5a3828824b2c6c3f262525223b2f294f392d47382f33291f412c20462f223e2f25332314412b1935251a30241c",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "la-red-de-vidrio-e7788c8d60fb",
           "title": "La red de vidrio",
           "image": "photos/5f45a377c014f684cafd92d4.webp",
           "thumb": "photos/5f45a377c014f684cafd92d4-thumb.webp",
           "dhash": "000303171315111b132c31172f332535352a3736383d36454136574632514434403526523d27624023573e272c21123b2a15372a193a301f",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-tortuga-del-contraluz-973e2b2f89ec",
-          "title": "La tortuga del contraluz",
-          "image": "photos/730dac70a42e5acb2eb587ba.webp",
-          "thumb": "photos/730dac70a42e5acb2eb587ba-thumb.webp",
-          "dhash": "0f0f1f1f47ea691b2228197653237154271d251a182b20504a2b3e422a0d241d1b2b1d2d2d18332d16172216212818232c1a1b22121c1b0d",
           "width": 1440,
           "height": 3120
         },
