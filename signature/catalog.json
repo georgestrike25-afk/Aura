@@ -3,6 +3,62 @@
   "license": "",
   "collections": [
     {
+      "id": "anatomia-secreta",
+      "title": "Anatomía secreta",
+      "items": [
+        {
+          "id": "el-delta-de-la-luna-4999fcae376e",
+          "title": "El delta de la luna",
+          "image": "photos/acca27dff81bc0acd7029f77.webp",
+          "thumb": "photos/acca27dff81bc0acd7029f77-thumb.webp",
+          "dhash": "09170c0f23060b4f0b141b111b220f1a220d161d0d171e1b262c1f292f0f19200c1d2618262e202b3214242d151e261d22291d2229141c23",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-jardin-plegado-cc18cdd50b83",
+          "title": "El jardín plegado",
+          "image": "photos/688dc34c833faeaa887fea8c.webp",
+          "thumb": "photos/688dc34c833faeaa887fea8c-thumb.webp",
+          "dhash": "0f0f5f2f293707d307161211271e16231a17120f0e120f1916161814150d0e0d1016101617131718130f120d10130c12170e1c1a1316110e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-relicario-de-obsidiana-32c60102ee32",
+          "title": "El relicario de obsidiana",
+          "image": "photos/830ae386c28a8b5cec03718e.webp",
+          "thumb": "photos/830ae386c28a8b5cec03718e-thumb.webp",
+          "dhash": "13130f172f8f4c0f0b14190c1a210c18210b121a0a1217131a1f11171b070f1510151a1e1d1c231d180d121811161a1d1e1f1b19180f1114",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-gruta-de-nacar-f2748d1c032b",
+          "title": "La gruta de nácar",
+          "image": "photos/4918b5733ed044d157a23a17.webp",
+          "thumb": "photos/4918b5733ed044d157a23a17-thumb.webp",
+          "dhash": "33168c4f036239030f16151f2421202725161b1a09131318201d1a23200b15162a302e1c2d2a31383432353635343228302f222d2b2e3432",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-virgen-del-velo-74a9795cfd84",
+          "title": "La Virgen del Velo",
+          "image": "photos/b0ba48afb16ddde655b7d001.webp",
+          "thumb": "photos/b0ba48afb16ddde655b7d001-thumb.webp",
+          "dhash": "608e8c868696030b111a1c101c20101c20121c1e0e1a1d262f2f333935111d20121d203a3d38524f441e2627161e1f353732504c4036352e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        }
+      ]
+    },
+    {
       "id": "retratos-de-animales",
       "title": "Retratos de animales",
       "items": [
