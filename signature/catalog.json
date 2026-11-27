@@ -821,48 +821,6 @@
       ]
     },
     {
-      "id": "la-ciudad-en-pausa-ii",
-      "title": "La ciudad en pausa II",
-      "items": [
-        {
-          "id": "el-ascensor-de-la-niebla-928154bb0e48",
-          "title": "El ascensor de la niebla",
-          "image": "photos/6e113248091ebfb5912764e8.webp",
-          "thumb": "photos/6e113248091ebfb5912764e8-thumb.webp",
-          "dhash": "230f03cece0bcbcf130f1317131919151d1813191e1518241b20281e261c151c3b2423432d30523645382330332020472e2d583a42362332",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-kiosco-sin-voz-e3aa11570727",
-          "title": "El kiosco sin voz",
-          "image": "photos/dd1334d0cf43359666285d82.webp",
-          "thumb": "photos/dd1334d0cf43359666285d82-thumb.webp",
-          "dhash": "0f1b0bce4e4123232b1c2733202f311f2e291b292e1e2933242c36262e2c1d294b30374c32395c3d45603e4a432b32462d3a5d3e4f604151",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-bicicleta-dormida-e7aca1bfcc96",
-          "title": "La bicicleta dormida",
-          "image": "photos/f731feb7baaef607092054d2.webp",
-          "thumb": "photos/f731feb7baaef607092054d2-thumb.webp",
-          "dhash": "1f8f0f23656323073f2d3a56405a543d583f2d434f363e523c4c583f544d384d5d3e435d3e406e494a64445057394268434683524e694450",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-escalera-del-ultimo-pi-ab2bf4486a87",
-          "title": "La escalera del último piso",
-          "image": "photos/aca73853cc63e3dfb7486188.webp",
-          "thumb": "photos/aca73853cc63e3dfb7486188-thumb.webp",
-          "dhash": "1a1d1f9f37363632141623191a291618261416241a1b2a2d2636222131181a293327363c2c382d263521203047314350344438293c2f273b",
-          "width": 1440,
-          "height": 3120
-        }
-      ]
-    },
-    {
       "id": "retratos-surrealistas-ii",
       "title": "Retratos surrealistas II",
       "items": [
