@@ -1596,6 +1596,36 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "el-equipaje-de-la-manana-e077a71ec950",
+          "title": "El equipaje de la mañana",
+          "image": "photos/a7de0476a6fdaf70bbdd1ebe.webp",
+          "thumb": "photos/a7de0476a6fdaf70bbdd1ebe-thumb.webp",
+          "dhash": "21022d61632124044e5147636b6f7e92a694afcb5a6065786f689987788a90984f4a3f5e534b8b73619f8374463c26584d415a53525f6068",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-panadero-de-las-sombra-6246c75401b3",
+          "title": "El panadero de las sombras",
+          "image": "photos/d845d3d95dfb199af136c77b.webp",
+          "thumb": "photos/d845d3d95dfb199af136c77b-thumb.webp",
+          "dhash": "ab77373733732a069c6a529e6b589766586b4b3e7b55478660547a5a4d5940318d694c946d4b99714d9d7551875c308b5e32895f32845b2d",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-escalera-de-la-marea-73d6f6b63f96",
+          "title": "La escalera de la marea",
+          "image": "photos/efc3f3d00e8b78c5283999f8.webp",
+          "thumb": "photos/efc3f3d00e8b78c5283999f8-thumb.webp",
+          "dhash": "c7cbfbbbe9692d1f526f714f6d6f4d6b6d4a686b6f807b67756f5c6c69596f6f8e725c786b586761536f5e50764d31795236664731644229",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
