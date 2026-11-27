@@ -825,15 +825,6 @@
       "title": "Retratos surrealistas II",
       "items": [
         {
-          "id": "el-retrato-que-se-borra-c889227b6a71",
-          "title": "El retrato que se borra",
-          "image": "photos/c5768333e1b134251c7f4cea.webp",
-          "thumb": "photos/c5768333e1b134251c7f4cea-thumb.webp",
-          "dhash": "23330d0d4d49132e221d23231e25262028241e25231e24362f353c343b231f252a232d423a42433b442f28322a242b322b333029322b252d",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "la-mano-de-la-sombra-b96ac7cb944c",
           "title": "La mano de la sombra",
           "image": "photos/7900a93c399e26d16b1104f3.webp",
@@ -1755,6 +1746,15 @@
           "image": "photos/505f325d73120ef8ad2e5977.webp",
           "thumb": "photos/505f325d73120ef8ad2e5977-thumb.webp",
           "dhash": "03031d662f2fe3a1101f21122226122428112025122124182426242f3015242814272c1e303526343614252a0d1d210e1d220f20260e2025",
+          "width": 1440,
+          "height": 3120
+        },
+        {
+          "id": "el-retrato-que-se-borra-c889227b6a71",
+          "title": "El retrato que se borra",
+          "image": "photos/c5768333e1b134251c7f4cea.webp",
+          "thumb": "photos/c5768333e1b134251c7f4cea-thumb.webp",
+          "dhash": "23330d0d4d49132e221d23231e25262028241e25231e24362f353c343b231f252a232d423a42433b442f28322a242b322b333029322b252d",
           "width": 1440,
           "height": 3120
         }
