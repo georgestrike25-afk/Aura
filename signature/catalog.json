@@ -2028,6 +2028,46 @@
           "dhash": "0000080c0c080c0a0a12180d161d101d251726300f192018262f1e2f3a20333f1521292536402a3e492a3f4d141d22272f332e383d253641",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-peine-del-mediodia-9ce7cf411b6c",
+          "title": "El peine del mediodía",
+          "image": "photos/48ef1564d054302b7f6831d9.webp",
+          "thumb": "photos/48ef1564d054302b7f6831d9-thumb.webp",
+          "dhash": "2f1f0f591d25371f361e1945241f351c1d241316211413311c172a17141f13133d2115482312391c102c181261331868321251250e36190d",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-remo-que-guarda-la-ori-764155ad7929",
+          "title": "El remo que guarda la orilla",
+          "image": "photos/19386ffb7917bd15feeb5443.webp",
+          "thumb": "photos/19386ffb7917bd15feeb5443-thumb.webp",
+          "dhash": "4d0d2809012d6963081f240b24280b24280b2428112a2d1830321e34351e36392738363a40394e4c3f414c4320221e28241c392f2233342b",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-baranda-de-las-manos-580a7838d284",
+          "title": "La baranda de las manos",
+          "image": "photos/2020ada944d953903c2c5b70.webp",
+          "thumb": "photos/2020ada944d953903c2c5b70-thumb.webp",
+          "dhash": "e7d3cbdbfb6b1ff3351a142317141b1a181019193f241a302118211d18161816633c234e33202f22181f1a1465432c5d3d283b2618281d15",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-piedra-de-las-pisadas-1512e6498be1",
+          "title": "La piedra de las pisadas",
+          "image": "photos/6bad0fbe8bd888eeff5be0a7.webp",
+          "thumb": "photos/6bad0fbe8bd888eeff5be0a7-thumb.webp",
+          "dhash": "0f1f0f0c40c603233c2d3d493a4b4033452c24332e24334031384a373f3f2e3b3e2c304a353163443d67433f38252348312f563a354b332e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
