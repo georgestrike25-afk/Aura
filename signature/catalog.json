@@ -256,6 +256,26 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-26"
+        },
+        {
+          "id": "el-lince-de-los-abedules-d15b8b67fbea",
+          "title": "El lince de los abedules",
+          "image": "photos/f3fdc42bb6f2f1059d8f15a8.webp",
+          "thumb": "photos/f3fdc42bb6f2f1059d8f15a8-thumb.webp",
+          "dhash": "1f0f0fb327e7c60e8795a78b9bae8998ac7e8a9c8795a78793a28a95a38190a0797f88736e6c878686767f896163656b6a67707171626264",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-martin-pescador-del-re-a30d82f576ed",
+          "title": "El martín pescador del remanso (2)",
+          "image": "photos/9a546535a19f3cdec70715a5.webp",
+          "thumb": "photos/9a546535a19f3cdec70715a5-thumb.webp",
+          "dhash": "111b0d2e09190de93b4e454155484256474256443b4f424455454555443b504243563d505e3b48583a45583c4254304a57344a5634465a33",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
