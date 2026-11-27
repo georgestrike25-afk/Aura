@@ -171,7 +171,7 @@ object AutoDesign {
                 val bandH = m.second * size * stretchY / c.aspect
                 val y = if (scene != null) (scene.top - bandH * 0.18f).coerceIn(0.10f + bandH / 2, 0.5f)
                 else freeRow(c, 0.5f, 0.44f, bandH, 0.10f + bandH / 2, 0.38f)
-                finish(c, rnd, scheme, 0.5f, y, 0.44f, bandH, behind, tilt = true).copy(
+                finish(c, rnd, scheme, 0.5f, y, 0.44f, bandH, behind).copy(
                     customFont = font, size = size, stretchY = stretchY,
                 )
             }
@@ -283,7 +283,7 @@ object AutoDesign {
         // Escena nocturna: a veces un resplandor leve del color de acento.
         if (c.traits.brightness < 0.25f && material == ClockMaterial.MINIMAL && rnd.nextBoolean()) d = d.copy(glow = rnd.nextInt(10, 25))
         // Un leve giro en algunas propuestas horizontales, siguiendo la luz de la escena.
-        // (Solo en estilos que no llegan a los bordes: un Gigante girado se saldría de la pantalla.)
+        // (Solo en Editorial: Monumento y Gigante ocupan casi todo el ancho y girados se saldrían de la pantalla.)
         val angle = if (tilt && rnd.nextInt(4) == 0) (if (rnd.nextBoolean()) 1 else -1) * rnd.range(2.5f, 6f) else 0f
         return d.copy(
             shadow = rnd.nextInt(10, if (local.contrast > 0.22f) 32 else 24),
