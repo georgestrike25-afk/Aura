@@ -785,6 +785,16 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "la-pastora-del-valle-clar-462d6a1a3007",
+          "title": "La pastora del valle Claroscuro",
+          "image": "photos/ba174b7712954c76514e14b9.webp",
+          "thumb": "photos/ba174b7712954c76514e14b9-thumb.webp",
+          "dhash": "c7ffd7bb39b97983697175606d765a687350616e74716d6d645c5e5956575b605b5145573f2a442f2046413a5448334b3c264839254b4331",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
