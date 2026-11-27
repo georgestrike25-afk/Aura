@@ -79,6 +79,46 @@
           "dhash": "82c40e2713173e1f8462708666729c74809f7582b07474bd8076ca8e7ac7877b8057559a675b9364536f4c47794f537f565761474932292d",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-camaleon-de-la-rama-se-79038a10fcd1",
+          "title": "El camaleón de la rama seca",
+          "image": "photos/2b64fc304e73cda7687b1a0e.webp",
+          "thumb": "photos/2b64fc304e73cda7687b1a0e-thumb.webp",
+          "dhash": "1f39091e4e4d4b1710180d10180d0c140b0a110a0e160c1b1e0e14190c0b120b0c130b1d1c0c1b1b0b0b110a0d11081314091013090b1008",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-elefante-despues-de-la-87395d72c1ed",
+          "title": "El elefante después de la lluvia",
+          "image": "photos/148e727fc00155bb8226e2ca.webp",
+          "thumb": "photos/148e727fc00155bb8226e2ca-thumb.webp",
+          "dhash": "7f3f0f66c17253133c5055374d532d434b253b422b3f44303f42464a453745473139372727234a3f305a54462c2a212f29203e362a423b2e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-martin-pescador-del-re-24ead0774bd6",
+          "title": "El martín pescador del remanso",
+          "image": "photos/e6e794e464c4dbf6440094e0.webp",
+          "thumb": "photos/e6e794e464c4dbf6440094e0-thumb.webp",
+          "dhash": "070b0f0667408427352f2c3e383a40404031363626252332322e48392d2729282a2a242b271e3e2e2236302a20211b27251e3e2e20292620",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-polilla-de-terciopelo-d5b2a1de2c65",
+          "title": "La polilla de terciopelo",
+          "image": "photos/f0e238afc9c47c781ab2893a.webp",
+          "thumb": "photos/f0e238afc9c47c781ab2893a-thumb.webp",
+          "dhash": "60606c06133321101d1811161510181712191914201a123429213e30251e1b16231c17423229573e2f372a2019150f271c133421173b231a",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
         }
       ]
     },
