@@ -107,7 +107,7 @@ class AutoDesignTest {
 
     @Test
     fun fireSceneUsesAFireFontWithIgnis() {
-        for (round in 0 until 5) {
+        for (round in listOf(0, 2, 4)) {
             val first = AutoDesign.propose(fire, width, height, null, round).first().design
             assertEquals("clock_rubikburned", first.customFont)
             assertEquals(app.aura.core.studio.ClockMaterial.IGNIS, first.material)

@@ -114,7 +114,8 @@ object AutoDesign {
         val schemes = Scheme.entries.shuffled(rnd)
         // Escena de fuego o agua: la primera propuesta lleva la fuente temática (primero las de la persona) y su material.
         val theme = themeOf(ctx.traits)
-        val themed = theme?.let { th -> (userFonts.filter { it.theme == th }.shuffled(rnd) + builtInThemed.filter { it.theme == th }.shuffled(rnd)).firstOrNull() }
+        // En una de cada dos tandas (la primera incluida), para que no se repita siempre la misma fuente temática.
+        val themed = theme?.takeIf { round % 2 == 0 }?.let { th -> (userFonts.filter { it.theme == th }.shuffled(rnd) + builtInThemed.filter { it.theme == th }.shuffled(rnd)).firstOrNull() }
         if (themed != null && styles.first() !in THEMED_STYLES) {
             val s0 = THEMED_STYLES.filter { it !in styles }.random(rnd)
             styles = listOf(s0) + styles.drop(1)
