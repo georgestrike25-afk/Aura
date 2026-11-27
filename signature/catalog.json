@@ -1373,6 +1373,16 @@
           "dhash": "03832f6363d363630f2a341539492d5567274c5e22475522414f3753612e53622b484d293f43495f643558622736361a2f324055582b4a53",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "la-esfinge-del-viento-sec-8d2b64a940a6",
+          "title": "La esfinge del viento seco",
+          "image": "photos/a8e09fff92aa1be3e2f99490.webp",
+          "thumb": "photos/a8e09fff92aa1be3e2f99490-thumb.webp",
+          "dhash": "1b1f1161670105c31a2e2d344944273e3d23353333403a3c433b575546666350373127423526634c345c503d28211935281c4d3522563b25",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
         }
       ]
     },
