@@ -235,3 +235,7 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   se abre y memoria de las últimas 12 fuentes y de los estilos recientes para no repetir.
 - **Studio guarda solo con ✓**: al salir con cambios pregunta Guardar / Descartar / Seguir editando; un diseño
   nuevo que nunca se guardó se borra al descartarlo.
+- **Modo aleatorio del fondo** (Studio): Apagado / Cada día / Según la hora / Cada hora. El fondo animado elige
+  entre los diseños de Studio (`core/studio/WallpaperRotation.kt`): recorre todos antes de repetir, y «Según la
+  hora» usa diseños luminosos de mañana y tarde y oscuros de noche (luminosidad de la miniatura).
+- AutoDesign: Aqua e Ignis no se eligen solos; fuentes de agua/fuego en una de cada cuatro tandas, sin material.

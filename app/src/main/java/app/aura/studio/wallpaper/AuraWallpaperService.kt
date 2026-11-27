@@ -1,5 +1,6 @@
 package app.aura.studio.wallpaper
 
+import app.aura.core.studio.WallpaperRotation
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -171,8 +172,19 @@ class AuraWallpaperService : WallpaperService() {
             handler.postAtTime(tick, base + untilNext + 5)
         }
 
+        /** Tramo del modo aleatorio que se está mostrando (cuando cambia, cambia el diseño). */
+        private var rotationSlot = Long.MIN_VALUE
+
         /** Muestra la hora actual: usa el fotograma preparado si corresponde, si no lo compone. */
         private fun showCurrent() {
+            val mode = app.studio.rotationMode()
+            if (mode != WallpaperRotation.Mode.OFF) {
+                val slot = WallpaperRotation.slot(mode, LocalDateTime.now())
+                if (slot != rotationSlot) {
+                    rotationSlot = slot
+                    if (loadLayers()) { frameMinute = -1; pendingMinute = -1 }
+                }
+            }
             val minute = epochMinute(System.currentTimeMillis())
             if (pendingMinute == minute && pending != null) {
                 // Intercambio: el fotograma preparado pasa a ser el actual.
@@ -246,7 +258,8 @@ class AuraWallpaperService : WallpaperService() {
         private fun loadLayers(): Boolean {
             if (width <= 0 || height <= 0) return false
             val repo = app.studio
-            val id = repo.activeIdBlocking() ?: return clear()
+            // Con el modo aleatorio, el diseño que toca según el día o la hora; si no, el activo.
+            val id = repo.displayIdBlocking() ?: return clear()
             val loaded = runBlocking { repo.load(id) } ?: return clear()
             if (loaded == project && background?.width == width && background?.height == height) return false
 

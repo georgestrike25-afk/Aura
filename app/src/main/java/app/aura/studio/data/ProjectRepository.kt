@@ -134,6 +134,49 @@ class ProjectRepository(context: Context) {
 
     fun activeIdBlocking(): String? = activeFile.takeIf { it.exists() }?.readText()?.trim()?.ifBlank { null }
 
+    // ---------------------------------------------------------------- modo aleatorio
+
+    private val rotationFile = File(root, "rotation.txt")
+    private val brightnessCache = HashMap<String, Float>()
+
+    fun rotationMode(): app.aura.core.studio.WallpaperRotation.Mode =
+        rotationFile.takeIf { it.exists() }?.readText()?.trim()
+            ?.let { n -> app.aura.core.studio.WallpaperRotation.Mode.entries.firstOrNull { it.name == n } }
+            ?: app.aura.core.studio.WallpaperRotation.Mode.OFF
+
+    fun setRotationMode(mode: app.aura.core.studio.WallpaperRotation.Mode) {
+        rotationFile.writeText(mode.name)
+    }
+
+    /** Diseño que muestra el fondo ahora: el elegido por el modo aleatorio, o el activo si está apagado. */
+    fun displayIdBlocking(now: java.time.LocalDateTime = java.time.LocalDateTime.now()): String? {
+        val mode = rotationMode()
+        if (mode == app.aura.core.studio.WallpaperRotation.Mode.OFF) return activeIdBlocking()
+        val ids = root.listFiles { f -> f.isDirectory && File(f, PROJECT).exists() }.orEmpty().map { it.name }
+        val light = ids.associateWith { brightnessOf(it) }
+        return app.aura.core.studio.WallpaperRotation.pick(mode, ids, light, now) ?: activeIdBlocking()
+    }
+
+    /** Luminosidad media de un diseño (de su miniatura), para el modo «Según la hora». */
+    private fun brightnessOf(id: String): Float = synchronized(brightnessCache) {
+        brightnessCache.getOrPut(id) {
+            val f = thumbFile(id)
+            val bmp = if (f.exists()) BitmapFactory.decodeFile(f.path, BitmapFactory.Options().apply { inSampleSize = 8 }) else null
+            if (bmp == null) 0.5f else try {
+                var sum = 0f
+                var n = 0
+                for (y in 0 until bmp.height step 2) for (x in 0 until bmp.width step 2) {
+                    val c = bmp.getPixel(x, y)
+                    sum += (0.2126f * (c shr 16 and 0xFF) + 0.7152f * (c shr 8 and 0xFF) + 0.0722f * (c and 0xFF)) / 255f
+                    n++
+                }
+                if (n == 0) 0.5f else sum / n
+            } finally {
+                bmp.recycle()
+            }
+        }
+    }
+
     @Synchronized
     private fun writeProject(folder: File, project: StudioProject) {
         val file = AtomicFile(File(folder, PROJECT))

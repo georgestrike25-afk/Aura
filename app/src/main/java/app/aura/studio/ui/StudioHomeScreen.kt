@@ -6,6 +6,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -104,6 +105,7 @@ fun StudioHomeScreen(viewModel: StudioViewModel, onOpen: (String) -> Unit, onAut
                     Spacer(Modifier.width(8.dp))
                     Text(busy ?: "Diseñar desde una foto")
                 }
+                if (projects.size >= 2) RotationCard(viewModel)
                 if (projects.isNotEmpty()) SectionTitle("Tus diseños")
             }
         }
@@ -167,6 +169,45 @@ private fun ProjectTile(p: StudioProject, active: Boolean, ratio: Float, viewMod
                     DropdownMenuItem(text = { Text("Usar en el fondo animado") }, onClick = { menu = false; viewModel.setActive(p.id) })
                     DropdownMenuItem(text = { Text("Eliminar") }, onClick = { menu = false; viewModel.delete(p.id) })
                 }
+            }
+        }
+    }
+}
+
+/** Modo aleatorio: el fondo animado va cambiando entre tus diseños. */
+@Composable
+private fun RotationCard(viewModel: StudioViewModel) {
+    val mode by viewModel.rotation.collectAsStateWithLifecycle()
+    var liveActive by remember { mutableStateOf(viewModel.liveWallpaperActive()) }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        liveActive = viewModel.liveWallpaperActive()
+    }
+    Spacer(Modifier.height(16.dp))
+    Column(
+        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant, androidx.compose.foundation.shape.RoundedCornerShape(18.dp))
+            .padding(16.dp),
+    ) {
+        Text("Modo aleatorio", style = MaterialTheme.typography.titleMedium)
+        Text(
+            "El fondo va cambiando solo entre tus diseños. «Según la hora» usa los de fotos luminosas de día y los oscuros de noche.",
+            style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText,
+        )
+        Spacer(Modifier.height(10.dp))
+        androidx.compose.foundation.layout.Row(
+            Modifier.horizontalScroll(androidx.compose.foundation.rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            app.aura.core.studio.WallpaperRotation.Mode.entries.forEach { m ->
+                androidx.compose.material3.FilterChip(
+                    selected = mode == m, onClick = { viewModel.setRotation(m) }, label = { Text(m.label) },
+                )
+            }
+        }
+        if (mode != app.aura.core.studio.WallpaperRotation.Mode.OFF && !liveActive) {
+            Spacer(Modifier.height(6.dp))
+            Text("Funciona con el fondo animado de Aura.", style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
+            androidx.compose.material3.TextButton(onClick = { runCatching { launcher.launch(viewModel.liveWallpaperIntent()) } }) {
+                Text("Poner el fondo animado")
             }
         }
     }

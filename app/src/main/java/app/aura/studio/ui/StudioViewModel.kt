@@ -21,6 +21,7 @@ import app.aura.core.studio.ClockDesign
 import app.aura.core.studio.Fusion
 import app.aura.core.studio.EdgeSelection
 import app.aura.core.studio.SubjectPick
+import app.aura.core.studio.WallpaperRotation
 import app.aura.core.studio.Harmony
 import app.aura.core.studio.ImageTraits
 import app.aura.core.studio.DigitSlot
@@ -766,6 +767,28 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun setActive(id: String) = viewModelScope.launch { repo.setActive(id); _message.value = "Diseño activo para el fondo animado" }
+
+    // ---------------------------------------------------------------- modo aleatorio
+
+    private val _rotation = MutableStateFlow(repo.rotationMode())
+    /** Modo aleatorio del fondo animado: cambia entre tus diseños cada día, según la hora o cada hora. */
+    val rotation: StateFlow<WallpaperRotation.Mode> = _rotation.asStateFlow()
+
+    fun setRotation(mode: WallpaperRotation.Mode) {
+        repo.setRotationMode(mode)
+        _rotation.value = mode
+        _message.value = when (mode) {
+            WallpaperRotation.Mode.OFF -> "Modo aleatorio apagado: el fondo muestra el diseño activo."
+            WallpaperRotation.Mode.DAILY -> "Cada día, un diseño distinto en el fondo."
+            WallpaperRotation.Mode.TIME_OF_DAY -> "A la mañana, a la tarde y a la noche, un diseño que va con ese momento."
+            WallpaperRotation.Mode.HOURLY -> "Cada hora, un diseño distinto en el fondo."
+        }
+    }
+
+    /** ¿El fondo animado de Aura está puesto en el teléfono? (el modo aleatorio lo necesita). */
+    fun liveWallpaperActive(): Boolean = WallpaperApplier.isLiveWallpaperActive(getApplication())
+
+    fun liveWallpaperIntent(): Intent = WallpaperApplier.liveWallpaperIntent(getApplication())
 
     fun consumeMessage() { _message.value = null }
 
