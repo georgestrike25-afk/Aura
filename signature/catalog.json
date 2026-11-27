@@ -3,6 +3,52 @@
   "license": "",
   "collections": [
     {
+      "id": "arboles-de-la-vida",
+      "title": "Árboles de la vida",
+      "items": [
+        {
+          "id": "el-arbol-de-las-dos-estac-c4ca8ed55fd9",
+          "title": "El árbol de las dos estaciones",
+          "image": "photos/8e198335f4c481616b1f9103.webp",
+          "thumb": "photos/8e198335f4c481616b1f9103-thumb.webp",
+          "dhash": "871f3397f7f3331f3e353e443a45403842342e37664b4f664f585c4c57493f4a9c675b855d58745556604c5456403f59413f533f3e46383a",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-arbol-de-las-raices-ab-0496ba6e7f7d",
+          "title": "El árbol de las raíces abiertas",
+          "image": "photos/ed8793cb2775c3323498a268.webp",
+          "thumb": "photos/ed8793cb2775c3323498a268-thumb.webp",
+          "dhash": "371f0f15e02382832f4f59345761284c57193d49234752315258375458304d5527373935372e584d3e5c5449242827312d254f413351453b",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-arbol-de-las-semillas--456cf2443e7e",
+          "title": "El árbol de las semillas viajeras",
+          "image": "photos/a09937529ea58ec270348339.webp",
+          "thumb": "photos/a09937529ea58ec270348339-thumb.webp",
+          "dhash": "0b191b25e1c3094d273233323f3e314041303e40323c3841473d494e41474f483c3a2b483f266657356a5e433428134231184c3c23514129",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-arbol-que-vuelve-a-bro-ee961454c349",
+          "title": "El árbol que vuelve a brotar",
+          "image": "photos/003ebd1a9e4b9c3f2828ac05.webp",
+          "thumb": "photos/003ebd1a9e4b9c3f2828ac05-thumb.webp",
+          "dhash": "05810301e063490f1e252e1f2833242c37292d372e303a383437443c3e4b3f434a3632462d1f683e247c4c352d20183f2714492a143f271b",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        }
+      ]
+    },
+    {
       "id": "anatomia-secreta",
       "title": "Anatomía secreta",
       "items": [
