@@ -12,11 +12,29 @@ import android.graphics.Paint
 import android.graphics.Shader
 import android.net.Uri
 import android.service.wallpaper.WallpaperService
+import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.ViewModelProvider
+import androidx.test.core.app.ActivityScenario
 import androidx.lifecycle.ViewModelStore
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Until
+import app.aura.core.settings.AppSettings
+import app.aura.core.studio.ClockInformationField
+import app.aura.core.studio.ClockInformationLayouts
+import app.aura.core.studio.ClockInformationMode
+import app.aura.core.studio.ClockInformationSet
+import app.aura.core.studio.fields
+import app.aura.core.studio.selectedInformationMode
+import app.aura.core.weather.Coordinates
+import app.aura.core.weather.CurrentConditions
+import app.aura.core.weather.DailyPoint
+import app.aura.core.weather.Place
+import app.aura.core.weather.WeatherCondition
+import app.aura.core.weather.WeatherData
+import app.aura.core.weather.WeatherSnapshot
 import app.aura.core.studio.AutoDesign
 import app.aura.core.studio.ClockText
 import app.aura.core.studio.ClockMaterial
@@ -27,9 +45,13 @@ import app.aura.core.studio.StudioProject
 import app.aura.studio.mask.MaskRenderer
 import app.aura.studio.mask.SubjectSegmenter
 import app.aura.studio.render.ClockExtras
+import app.aura.studio.render.ClockExtrasBuilder
 import app.aura.studio.render.StudioCompositor
 import app.aura.studio.wallpaper.WallpaperApplier
 import app.aura.studio.ui.StudioViewModel
+import app.aura.studio.ui.StudioEditorScreen
+import app.aura.ui.MainActivity
+import app.aura.ui.theme.AuraTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -379,6 +401,92 @@ class StudioFlowTest {
         } finally {
             withContext(Dispatchers.Main) { store.clear() }
             photo.recycle()
+        }
+    }
+
+    @Test
+    fun openingDateAndWeatherSuggestsASetAndAllowsManualChoice() = runBlocking {
+        val repo = context.aura.studio
+        val created = repo.create(syntheticPhoto(), "Fecha y clima de prueba")
+        val project = created.copy(autoMask = true, design = created.design.copy(centerY = 0.55f, showColon = false))
+        repo.save(project)
+        val device = UiDevice.getInstance(instrumentation)
+        val scenario = ActivityScenario.launch(MainActivity::class.java)
+        try {
+            lateinit var model: StudioViewModel
+            scenario.onActivity { activity ->
+                model = ViewModelProvider(activity)[StudioViewModel::class.java]
+                activity.setContentView(ComposeView(activity).apply {
+                    setContent { AuraTheme { StudioEditorScreen(model, project.id, false, {}, {}) } }
+                })
+            }
+            val tab = device.wait(Until.findObject(By.text("Fecha y clima")), 15_000)
+            assertNotNull("acceso a Fecha y clima", tab)
+            tab!!.click()
+            withTimeout(15_000) { while (model.current?.design?.informationArrangement == null) delay(25) }
+            val suggested = model.current!!.design
+            assertTrue(suggested.informationArrangement!!.automatic)
+            assertEquals(project.design, suggested.copy(informationArrangement = null))
+            device.waitForIdle()
+            device.takeScreenshot(File(out, "studio_fecha_clima_automatico.png"))
+
+            val complete = device.wait(Until.findObject(By.text("Completo")), 10_000)
+            assertNotNull("selector del modo Completo", complete)
+            complete!!.click()
+            val manual = device.wait(Until.findObject(By.desc("Conjunto 1")), 10_000)
+            assertNotNull("selector manual", manual)
+            manual!!.click()
+            withTimeout(15_000) { while (model.current?.design?.informationArrangement?.automatic != false) delay(25) }
+            val design = model.current!!.design
+            assertEquals(ClockInformationMode.FULL, design.selectedInformationMode)
+            assertEquals(ClockInformationSet.INITIAL, design.informationArrangement!!.set)
+            device.waitForIdle()
+            device.takeScreenshot(File(out, "studio_fecha_clima_conjuntos.png"))
+
+            withContext(Dispatchers.Main) { model.undo() }
+            assertTrue(model.current!!.design.informationArrangement!!.automatic)
+            withContext(Dispatchers.Main) { model.redo() }
+            assertEquals(design, model.current!!.design)
+            repo.save(model.current!!)
+            assertEquals(design, repo.load(project.id)?.design)
+
+            val date = java.time.LocalDateTime.of(2026, 11, 27, 6, 42)
+            val sample = WeatherSnapshot(
+                Place("ush", "Ushuaia", coordinates = Coordinates(-54.81, -68.31)),
+                WeatherData(
+                    current = CurrentConditions(0L, 18.0, 17.0, 55, 8.0, 2, true, WeatherCondition.PARTLY_CLOUDY_DAY),
+                    hourly = emptyList(), daily = listOf(DailyPoint("2026-11-27", 21.0, 11.0, 2, condition = WeatherCondition.PARTLY_CLOUDY_DAY)),
+                    timeZoneId = "America/Argentina/Ushuaia",
+                ),
+                providerId = "test", fetchedAtMillis = 0L,
+            )
+            val source = repo.photo(project.id)!!
+            val painter = ClockPainter(StudioFonts.resolver(context))
+            val compositor = StudioCompositor(painter)
+            val width = screen.width / 2
+            val height = screen.height / 2
+            val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            try {
+                val layouts = ClockInformationLayouts(64, 138, IntArray(64 * 138) { Color.DKGRAY }, null, emptyList())
+                ClockInformationSet.entries.forEachIndexed { index, set ->
+                    val fitted = design.copy(informationArrangement = layouts.arrange(ClockInformationMode.FULL, set))
+                    val extra = ClockExtrasBuilder.build(context, fitted, AppSettings(), sample, date)
+                    assertEquals(ClockInformationMode.FULL.fields(), extra.information.map { it.first })
+                    compositor.render(bmp, source, null, project.copy(design = fitted), extra)
+                    save("studio_fecha_clima_conjunto_${index + 1}", bmp)
+                }
+                val original = design.copy(informationMode = null)
+                val legacy = ClockExtrasBuilder.build(context, original.copy(informationArrangement = null), AppSettings(), sample, date)
+                val styled = ClockExtrasBuilder.build(context, original, AppSettings(), sample, date)
+                assertNotNull(legacy.subtitle)
+                assertEquals(listOf(ClockInformationField.CAPTION to legacy.subtitle), styled.information)
+            } finally {
+                bmp.recycle()
+                source.recycle()
+            }
+        } finally {
+            scenario.close()
+            repo.delete(project.id)
         }
     }
 

@@ -13,6 +13,8 @@ import android.graphics.Shader
 import android.graphics.Typeface
 import app.aura.core.studio.ClockDesign
 import app.aura.core.studio.ClockInformationField
+import app.aura.core.studio.InformationBounds
+import app.aura.core.style.Alignment
 import app.aura.core.studio.informationStyle
 import app.aura.core.studio.ClockLayout
 import app.aura.core.studio.ClockMaterial
@@ -92,18 +94,24 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
             for ((field, text) in extras.information) {
                 val style = d.informationStyle(field)
                 if (!style.visible) continue
-                val face = style.fontId?.let(fonts) ?: Typeface.create("sans-serif", Typeface.NORMAL)
+                val face = style.fontId?.let(fonts) ?: Typeface.create(style.systemFont.androidFamily, Typeface.NORMAL)
                 paint.reset(width * style.size.coerceIn(0.015f, 0.10f), face, 0.01f)
-                val available = width * 0.94f
+                val available = width * style.maxWidth.coerceIn(0.10f, 0.94f)
                 val measured = paint.measureText(text)
                 if (measured > available) paint.textSize *= available / measured
-                val half = paint.measureText(text) / 2f
-                val x = (style.x.coerceIn(0f, 1f) * width).coerceIn(half, width - half)
+                val textWidth = paint.measureText(text)
+                val anchor = style.x.coerceIn(0f, 1f) * width
+                val left = when (style.alignment) {
+                    Alignment.START -> anchor
+                    Alignment.CENTER -> anchor - textWidth / 2f
+                    Alignment.END -> anchor - textWidth
+                }.coerceIn(0f, (width - textWidth).coerceAtLeast(0f))
                 val baseline = (style.y.coerceIn(0f, 1f) * height).coerceIn(-paint.ascent(), height - paint.descent())
                 val alpha = style.opacity.coerceIn(0, 100) * 255 / 100
                 paint.color = withAlpha(style.color ?: d.color, alpha)
-                paint.setShadowLayer(width * 0.004f, 0f, width * 0.002f, withAlpha(Color.BLACK, alpha / 2))
-                canvas.drawText(text, x - half, baseline, paint)
+                val shadow = if (Color.luminance(paint.color) < 0.15f) Color.WHITE else Color.BLACK
+                paint.setShadowLayer(width * 0.004f, 0f, width * 0.002f, withAlpha(shadow, alpha / 2))
+                canvas.drawText(text, left, baseline, paint)
             }
         }
 
@@ -329,6 +337,30 @@ class ClockPainter(private val fonts: (String) -> Typeface? = { null }) {
     private fun fullMatrix(d: ClockDesign, lay: Layout, width: Int, height: Int): android.graphics.Matrix {
         val warp = warpMatrix(d, lay.transform, lay.box, width, height)
         return android.graphics.Matrix(lay.transform).apply { warp?.let { postConcat(it) } }
+    }
+
+    /** Rectángulos de los glifos visibles, con la deformación y las posiciones reales del reloj. */
+    fun informationObstacles(width: Int, height: Int, rawDesign: ClockDesign, extras: ClockExtras): List<InformationBounds> {
+        val design = rawDesign.normalized()
+        if (design.opacity == 0) return emptyList()
+        val lay = layout(design, extras, width, height)
+        val full = fullMatrix(design, lay, width, height)
+        val matrix = android.graphics.Matrix()
+        val bounds = Rect()
+        return lay.runs.mapNotNull { run ->
+            if (run.style?.hidden == true || run.style?.opacity == 0) return@mapNotNull null
+            paint.reset(lay.textSize, run.face, design.letterSpacing)
+            paint.getTextBounds(run.text, 0, run.text.length, bounds)
+            if (bounds.isEmpty) return@mapNotNull null
+            val box = RectF(
+                run.x + bounds.left, run.baseline + bounds.top,
+                run.x + max(bounds.right.toFloat(), run.width), run.baseline + bounds.bottom,
+            )
+            matrix.set(full)
+            run.matrix?.let { matrix.preConcat(it) }
+            matrix.mapRect(box)
+            InformationBounds(box.left / width, box.top / height, box.right / width, box.bottom / height)
+        }
     }
 
     /**

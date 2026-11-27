@@ -4,6 +4,8 @@ import android.content.Context
 import android.text.format.DateFormat
 import app.aura.core.settings.AppSettings
 import app.aura.core.studio.ClockInformationField
+import app.aura.core.studio.ClockInformationMode
+import app.aura.core.studio.selectedInformationMode
 import app.aura.core.studio.fields
 import app.aura.ui.WeatherText
 import app.aura.core.studio.ClockDesign
@@ -35,21 +37,26 @@ object ClockExtrasBuilder {
             parts += "${TemperatureFormatter.short(snapshot.data.current.temperatureC, settings.temperatureUnit)} ${snapshot.place.name}"
         }
         val ampm = if (!is24) " " + now.format(DateTimeFormatter.ofPattern("a", Locale.getDefault())) else ""
-        val mode = design.informationMode
-        val information = mode?.fields()?.mapNotNull { field ->
+        val mode = design.selectedInformationMode
+        val styledOriginal = mode == ClockInformationMode.ORIGINAL && design.informationArrangement != null
+        val subtitle = parts.joinToString(" · ").ifBlank { null }
+        val information = mode.fields().mapNotNull { field ->
             val value = when (field) {
                 ClockInformationField.DATE -> date
                 ClockInformationField.TEMPERATURE -> snapshot?.data?.current?.let { TemperatureFormatter.short(it.temperatureC, settings.temperatureUnit) }
                 ClockInformationField.CONDITION -> snapshot?.data?.current?.let { WeatherText.now(context, it) }
                 ClockInformationField.LOCATION -> snapshot?.place?.name
+                ClockInformationField.CAPTION -> subtitle.takeIf { styledOriginal }
                 ClockInformationField.RANGE -> snapshot?.data?.daily?.firstOrNull { it.date == now.toLocalDate().toString() }?.let {
                     TemperatureFormatter.short(it.maxC, settings.temperatureUnit) + " / " +
                         TemperatureFormatter.short(it.minC, settings.temperatureUnit)
                 }
             }
             value?.let { field to it }
-        }.orEmpty()
-        return ClockExtras(h, m + ampm.lowercase(Locale.getDefault()).takeIf { it.isNotBlank() }.orEmpty(),
-            if (mode == null) parts.joinToString(" · ").ifBlank { null } else null, information)
+        }
+        return ClockExtras(
+            h, m + ampm.lowercase(Locale.getDefault()).takeIf { it.isNotBlank() }.orEmpty(),
+            subtitle.takeIf { mode == ClockInformationMode.ORIGINAL && !styledOriginal }, information,
+        )
     }
 }

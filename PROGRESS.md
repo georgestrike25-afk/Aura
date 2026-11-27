@@ -226,3 +226,18 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   Android 14. [CI](https://github.com/georgestrike25-afk/Aura/actions/runs/45912824390).
   El [APK actualizado](https://github.com/georgestrike25-afk/Aura/releases/download/aura-studio-materials-test/Aura.apk)
   conserva la firma original. Capturas de los 13 acabados en `docs/capturas/` (`a40476e`).
+
+## Aura Studio · cinco conjuntos de fecha y clima
+
+- Rama de prueba aura-studio-fecha-clima, desde la versión verificada de materiales y selección.
+- La pestaña Fecha y clima del editor muestra Puro, Esencial, Ambiental, Completo y Original. Los
+  conjuntos 1–5 corresponden a las cinco composiciones vistas por el usuario. Todo se aplica al
+  reloj existente. La foto conserva su encuadre y los números conservan su posición.
+- En modo automático, al abrir la pestaña, Aura evalúa las zonas de la foto, el contraste, el
+  solapamiento con las cifras y la máscara si está disponible. La operación se realiza en el teléfono.
+  Los ajustes manuales se conservan y se puede recalcular a pedido. Se guarda la composición por modo,
+  con historial, vista previa, exportación y fondo animado.
+- Se conserva la línea legada de Original en los proyectos que aún no tienen un conjunto. Puro
+  mantiene solo el reloj. Los campos del clima usan la caché existente y dependen de los datos disponibles.
+- Pruebas de core añadidas para los cinco conjuntos, contraste, ubicación del reloj y persistencia.
+  La instrumentación comprueba apertura de la pestaña, selección automática y manual, historial y render.
