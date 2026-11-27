@@ -1383,6 +1383,36 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-26"
+        },
+        {
+          "id": "el-fenix-de-las-cenizas-f-d0b91aac28a0",
+          "title": "El fénix de las cenizas frías",
+          "image": "photos/483a87a403e041593a34a58d.webp",
+          "thumb": "photos/483a87a403e041593a34a58d-thumb.webp",
+          "dhash": "0303012527254503051e240e2c31183338202e2f202f30333834554c3f694a351d201f2724203c2e24372e251111111814121e1714171715",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-hipocampo-de-la-tormen-c456d6a8c40c",
+          "title": "El hipocampo de la tormenta",
+          "image": "photos/f1f917fe277388c172a2113a.webp",
+          "thumb": "photos/f1f917fe277388c172a2113a-thumb.webp",
+          "dhash": "3b1f076145373104112a2e1e3d4116363c102a2e1b313428373746493f4844372c35333b3b3359473360462f232a262b342f2f373337372f",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-unicornio-del-salitral-4e87690396f0",
+          "title": "El unicornio del salitral",
+          "image": "photos/792335f20e7d4bbd3fc808de.webp",
+          "thumb": "photos/792335f20e7d4bbd3fc808de-thumb.webp",
+          "dhash": "0f071b3373c3c3432224303834423234441a25355141494e41473739462931426e504c45373340393e48424e684d474a3b3856484a56494d",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
         }
       ]
     },
