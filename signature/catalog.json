@@ -227,6 +227,46 @@
           "dhash": "4d84e8688d6d3f4a2326112428122226101b21102025122729152427142127124b4424584b2b4840263e3a1b5148265d4a2656452b493f28",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-guante-de-la-abuela-69bec3137e74",
+          "title": "El guante de la abuela",
+          "image": "photos/63ed0dc353ef11d96ef6c425.webp",
+          "thumb": "photos/63ed0dc353ef11d96ef6c425-thumb.webp",
+          "dhash": "1f1f9f574f3edc4d16241f2233272028201d1918222217302a1a2b241715181447301950351d4129172417114a351a4831173a2510331f13",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "el-sobre-de-la-primera-he-8ea7efea3ec6",
+          "title": "El sobre de la primera helada",
+          "image": "photos/31cbc09b5d070dc6f25a4157.webp",
+          "thumb": "photos/31cbc09b5d070dc6f25a4157-thumb.webp",
+          "dhash": "010307044546033317304429455d4a5d734f5c70263747414a56595a6350505d3f36385e524f8a6b62664a48392929493938564441443534",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-campanilla-del-regreso-23bab8311934",
+          "title": "La campanilla del regreso",
+          "image": "photos/214c10377f4de1e1a87eca7f.webp",
+          "thumb": "photos/214c10377f4de1e1a87eca7f-thumb.webp",
+          "dhash": "050b0313214343291c1b27262737273141242b3a22202931292e3d333a3a3039251e1834261b4c342a4a352c2219113020123d2a203c2a23",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
+        },
+        {
+          "id": "la-tijera-de-los-veranos-22f6d1d4e26b",
+          "title": "La tijera de los veranos",
+          "image": "photos/2ae52ef781599222624f1103.webp",
+          "thumb": "photos/2ae52ef781599222624f1103-thumb.webp",
+          "dhash": "39070e095744a2131b3b4226474e20424a133741152d3325393b333f3e2536392d2c22332e224235254235262d28173c2e1c432f1e3b2c1e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-26"
         }
       ]
     },
