@@ -381,6 +381,46 @@
           "dhash": "0101016367615a562c406633466e394a723a4b736a5b7a6a5c7794768a94778b4b375245344272535f705565291a332b1e30241b25201922",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-cartografo-de-sal-3e120fb4caa2",
+          "title": "El cartógrafo de sal",
+          "image": "photos/a94f780cd8bf810a1bafd8c0.webp",
+          "thumb": "photos/a94f780cd8bf810a1bafd8c0-thumb.webp",
+          "dhash": "60481030203001102e3e3d2f3f3e33424038474548534f4a4f475e5b4d7869574b49454a4034614e3d7d604b3533303d383349423a554a41",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-velero-de-fotones-3d56e26db410",
+          "title": "El velero de fotones",
+          "image": "photos/c36d13b90229800c4d245015.webp",
+          "thumb": "photos/c36d13b90229800c4d245015-thumb.webp",
+          "dhash": "9ef7efcbd1008704333c432f39402c363d29333b434c5342494f3c454b3540484c50544f51545656575e5a592a2a293937364945434d4643",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-navegante-de-los-anill-4dced89e6db7",
+          "title": "La navegante de los anillos",
+          "image": "photos/3b3de48583e98e5abae9f84f.webp",
+          "thumb": "photos/3b3de48583e98e5abae9f84f-thumb.webp",
+          "dhash": "feffcff3334c1228472d383f2a353828333427317648535e3d46513841523b4552373c472f323d2c2f413136211819251a1b241a1b221b1c",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-sonda-del-hielo-ef52a8ecee96",
+          "title": "La sonda del hielo",
+          "image": "photos/4ce4701acf3e69a717089512.webp",
+          "thumb": "photos/4ce4701acf3e69a717089512-thumb.webp",
+          "dhash": "0302103137373197404c5b4450604a56644f586563666d65676c6f727878787d575150545556535f654a5660342e2b383330433b35453e3a",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
