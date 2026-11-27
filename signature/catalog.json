@@ -903,6 +903,46 @@
           "dhash": "68cc0e0e0d0fcdc63a273434253131242f37243230242f382b37362a3631242f44313f503b4c523c4d4934445034464a30424e324556384b",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-puente-de-la-ultima-lu-40f0fd0b593a",
+          "title": "El puente de la última luz",
+          "image": "photos/ffb4778da406289dbd4640f9.webp",
+          "thumb": "photos/ffb4778da406289dbd4640f9-thumb.webp",
+          "dhash": "01030d17d1860624281d282f212d3a27333b273230272f3f3138453339392c333631313c3335453737373332282321342c2943352f342f2c",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-rostro-sin-dueno-81b989af2321",
+          "title": "El rostro sin dueño",
+          "image": "photos/6ce9c3adf6dd0966dae5bf07.webp",
+          "thumb": "photos/6ce9c3adf6dd0966dae5bf07-thumb.webp",
+          "dhash": "030307860665071a140c111c10142313171e1015140e11241e1a31231c1a1013140e101f181531211a1f1214151313251f1a342a21261d19",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-zorro-de-vidrio-ahumad-ca8240fed292",
+          "title": "El zorro de vidrio ahumado",
+          "image": "photos/bbd786e7d2996a5e8e98b34b.webp",
+          "thumb": "photos/bbd786e7d2996a5e8e98b34b-thumb.webp",
+          "dhash": "10300406074c4546091d2010262a14292d1b2d2f0d1f22212f2f373d391e2c2c1f2b29353630413e363538331118151c201c2c2b252a2923",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-amapola-de-los-reflejo-b28c2735b662",
+          "title": "La amapola de los reflejos",
+          "image": "photos/fe3d665f41bc889d5b4468ff.webp",
+          "thumb": "photos/fe3d665f41bc889d5b4468ff-thumb.webp",
+          "dhash": "03430e8fef7f270d030e0e061414091c1f07191e1415102b19122419140a15153d2f182f2b17232616151a121c180a221e0d20201017150c",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
