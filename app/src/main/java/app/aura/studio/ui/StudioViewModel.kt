@@ -26,6 +26,7 @@ import app.aura.core.studio.ImageTraits
 import app.aura.core.studio.DigitSlot
 import app.aura.core.studio.MagneticGuides
 import app.aura.core.studio.History
+import app.aura.core.studio.MaskRegion
 import app.aura.core.studio.MaskStroke
 import app.aura.core.studio.PhotoFrame
 import app.aura.core.studio.StudioProject
@@ -570,13 +571,13 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
                         val source = photo ?: return@withLock null
                         cropAround(source, stroke, baseMask)
                     } ?: return@withContext null
-                    try {
-                        val picked = pickWithModel(crop, stroke.erase)
-                            ?: pickByEdges(crop)
-                        picked?.let { SubjectPick.toRegion(it, crop.w, crop.h, crop.left, crop.top, crop.gridW, crop.gridH) }
+                    val picked = try {
+                        pickWithModel(crop, stroke.erase)
                     } finally {
                         crop.bitmap.recycle()
                     }
+                    picked?.let { SubjectPick.toRegion(it, crop.w, crop.h, crop.left, crop.top, crop.gridW, crop.gridH) }
+                        ?: renderLock.withLock { photo?.let { edgeSelection(it, stroke, baseMask) } }
                 }
                 if (current == project) addStroke(stroke.copy(selection = selection))
             } catch (e: CancellationException) {
@@ -670,20 +671,35 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
         return SubjectPick.touched(alpha, crop.seeds, crop.w, crop.h)
     }
 
-    /** Respaldo sin modelo: bordes de color y textura, sobre el recorte (mucho más detalle que la foto entera). */
-    private fun pickByEdges(crop: Crop): BooleanArray? {
-        val k = minOf(1f, 640f / maxOf(crop.w, crop.h))
-        val sw = (crop.w * k).roundToInt().coerceAtLeast(1)
-        val sh = (crop.h * k).roundToInt().coerceAtLeast(1)
-        fun down(values: IntArray?): IntArray? = values?.let { v -> IntArray(sw * sh) { i -> v[((i / sw) / k).toInt().coerceAtMost(crop.h - 1) * crop.w + ((i % sw) / k).toInt().coerceAtMost(crop.w - 1)] } }
-        val small = Bitmap.createScaledBitmap(crop.bitmap, sw, sh, true)
-        val pixels = IntArray(sw * sh).also { small.getPixels(it, 0, sw, 0, 0, sw, sh) }
-        if (small !== crop.bitmap) small.recycle()
-        val seeds = BooleanArray(sw * sh) { i -> crop.seeds[((i / sw) / k).toInt().coerceAtMost(crop.h - 1) * crop.w + ((i % sw) / k).toInt().coerceAtMost(crop.w - 1)] }
-        val region = EdgeSelection.refine(pixels, seeds, sw, sh, down(crop.subject)) ?: return null
-        val smallMask = BooleanArray(sw * sh)
-        for (i in region.runs.indices step 3) for (x in region.runs[i + 1] until region.runs[i + 2]) smallMask[region.runs[i] * sw + x] = true
-        return BooleanArray(crop.w * crop.h) { i -> smallMask[((i / crop.w) * k).toInt().coerceAtMost(sh - 1) * sw + ((i % crop.w) * k).toInt().coerceAtMost(sw - 1)] }
+    /**
+     * Respaldo sin modelo: bordes de color y textura sobre la foto entera (necesita ver el fondo alrededor del
+     * objeto), a 900 px de lado mayor, el doble de detalle que la versión anterior.
+     */
+    private fun edgeSelection(source: Bitmap, stroke: MaskStroke, base: Bitmap?): MaskRegion? {
+        val k = minOf(1f, 900f / maxOf(source.width, source.height))
+        val w = (source.width * k).roundToInt().coerceAtLeast(1)
+        val h = (source.height * k).roundToInt().coerceAtLeast(1)
+        val buffer = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        try {
+            val canvas = Canvas(buffer)
+            val rect = Rect(0, 0, w, h)
+            val filter = Paint(Paint.FILTER_BITMAP_FLAG)
+            fun read(): IntArray = IntArray(w * h).also { buffer.getPixels(it, 0, w, 0, 0, w, h) }
+            canvas.drawBitmap(source, null, rect, filter)
+            val pixels = read()
+            buffer.eraseColor(Color.TRANSPARENT)
+            MaskRenderer.drawStroke(canvas, stroke.copy(erase = false, selection = null), w, h)
+            val seedPixels = read()
+            val seeds = BooleanArray(seedPixels.size) { (seedPixels[it] ushr 24) >= 140 }
+            val subject = base?.let {
+                buffer.eraseColor(Color.TRANSPARENT)
+                canvas.drawBitmap(it, null, rect, filter)
+                read().apply { for (i in indices) this[i] = this[i] ushr 24 }
+            }
+            return EdgeSelection.refine(pixels, seeds, w, h, subject)
+        } finally {
+            buffer.recycle()
+        }
     }
 
     fun clearMask() {

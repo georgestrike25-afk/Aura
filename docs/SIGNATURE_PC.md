@@ -57,3 +57,11 @@ El gestor prepara cada imagen en la PC (1440×3120 WEBP, miniatura 360×780 y hu
 `tools/aura_signature_publish.py` y publica imágenes + `signature/catalog.json` en **un solo commit** en `main`
 con la API de GitHub. Código: `tools/aura_signature_manager.py` (ventana) y `tools/aura_signature_sync.py`
 (lógica, con pruebas en `tools/test_aura_signature_sync.py`). Se compila en `.github/workflows/signature-manager.yml`.
+
+## Instalación y actualizaciones
+
+- La primera vez que abrís el .exe (desde Descargas o donde sea) se instala solo en
+  `%LOCALAPPDATA%\Programs\Aura Signature\`, se abre desde ahí y borra la copia descargada. El acceso directo
+  del escritorio y el inicio con Windows apuntan a esa copia.
+- Al abrir y cada 6 horas revisa si hay una versión nueva en GitHub («aura-signature-pc»). Si la hay, la baja y
+  aparece **Actualizar y reiniciar**: reemplaza el .exe y vuelve a abrirse. Tus ajustes, el token y la carpeta no cambian.

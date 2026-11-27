@@ -25,6 +25,7 @@ from tkinter import filedialog, messagebox, simpledialog, ttk
 from PIL import Image, ImageOps, ImageTk
 
 import aura_signature_sync as sync
+import aura_signature_update as updater
 
 APP = "Aura Signature"
 VERSION = "1.1.0"
@@ -197,6 +198,8 @@ class ManagerApp:
         threading.Thread(target=self._worker, daemon=True).start()
         root.after(150, self._drain)
         root.after(1500, self._first_run_shortcut)
+        root.after(800, self._after_install)
+        root.after(10_000, self._check_updates)
         root.after(4000, self._tick)
         # Sin bandeja en las pruebas automáticas (su hilo no dejaría terminar el proceso).
         use_tray = pystray is not None and not os.environ.get("AURA_NO_TRAY")
@@ -345,6 +348,8 @@ class ManagerApp:
         ttk.Button(bottom, text="Actividad", command=self._toggle_log).pack(side="right", padx=8)
         self.retry_uploads = ttk.Button(bottom, text="Reintentar", command=self._retry_failed, state="disabled")
         self.retry_uploads.pack(side="right")
+        # Aparece solo cuando hay una versión nueva descargada.
+        self.update_button = ttk.Button(bottom, text="Actualizar y reiniciar", style="Accent.TButton", command=self.install_update)
         self.activity = ttk.Label(bottom, text="", style="Muted.TLabel")
         self.activity.pack(side="left", padx=12, fill="x", expand=True)
         self.log_box = tk.Text(bottom, height=5, bg=PALETTE["panel"], fg=PALETTE["text"], relief="flat", wrap="word",
@@ -387,6 +392,58 @@ class ManagerApp:
         self.thumb_size = THUMB_SIZES[label]
         self.images.clear()
         self._render_collections()
+
+    # ---------- instalación y actualizaciones
+
+    def _after_install(self):
+        """Ya corriendo desde la carpeta fija: borra la copia descargada y apunta acceso directo e inicio acá."""
+        def remove():  # en segundo plano: puede esperar unos segundos a que se cierre la copia descargada
+            removed = updater.remove_old_copy(sys.argv)
+            if removed:
+                self.events.put(("log", f"Aura Signature quedó instalado. Borré la copia descargada ({removed.name})."))
+        threading.Thread(target=remove, daemon=True).start()
+        here = str(updater.current_exe())
+        if updater.is_installed() and self.cfg.values.get("installed_path") != here:
+            self.cfg.values["installed_path"] = here
+            self.cfg.save()
+            try:
+                create_desktop_shortcut()
+                if self.cfg.values.get("autostart"):
+                    set_autostart(True)
+            except Exception as e:  # noqa: BLE001
+                self.log(f"⚠ No se pudo actualizar el acceso directo: {e}")
+
+    def _check_updates(self):
+        """Mira en GitHub si hay una versión nueva (al abrir y cada 6 horas) y la deja lista para instalar."""
+        def job():
+            try:
+                build = updater.update_available()
+                if build:
+                    path = updater.download_update()
+                    self.events.put(("update", str(path)))
+            except Exception as e:  # noqa: BLE001
+                self.events.put(("log", f"⚠ No se pudo bajar la actualización: {e}"))
+        if updater.is_installed():
+            threading.Thread(target=job, daemon=True).start()
+        self.root.after(6 * 3600 * 1000, self._check_updates)
+
+    def _offer_update(self, path: str):
+        self.pending_update = path
+        self.update_button.pack(side="right", padx=8)
+        self.log("Hay una versión nueva de Aura Signature: tocá «Actualizar y reiniciar».")
+        if self.tray:
+            self.tray.notify("Hay una versión nueva de Aura Signature lista para instalar.")
+
+    def install_update(self):
+        path = getattr(self, "pending_update", None)
+        if not path:
+            return
+        try:
+            updater.apply_update_and_restart(Path(path))
+        except Exception as e:  # noqa: BLE001
+            messagebox.showerror(APP, f"No se pudo actualizar: {e}")
+            return
+        self.quit()
 
     def _first_run_shortcut(self):
         """La primera vez deja el acceso directo en el escritorio."""
@@ -453,6 +510,8 @@ class ManagerApp:
                     self.progress.stop()
                 elif kind in ("catalog", "thumb"):
                     refresh = True
+                elif kind == "update":
+                    self._offer_update(value)
                 elif kind == "tray":
                     {"open": self.show_window, "sync": self.refresh_catalog, "quit": self.quit}[value]()
                     if value == "quit":
@@ -1286,6 +1345,12 @@ def dark_title_bar(window) -> None:
 
 
 def main():
+    # Primera vez desde Descargas (o cualquier otra carpeta): se copia a su carpeta fija y abre esa copia.
+    try:
+        if updater.install_self():
+            return
+    except Exception:
+        pass  # si no se puede instalar, sigue funcionando desde donde está
     if IS_WINDOWS:
         try:
             import ctypes
