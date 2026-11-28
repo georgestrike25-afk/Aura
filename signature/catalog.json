@@ -1702,6 +1702,26 @@
           "dhash": "0707072723b18d2703344814718c3aa2bb105b74013d5708546d0a627e014662113643122d340c3846074358161e21212722263530153236",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-pulpo-de-la-loza-876ca5e1c8d5",
+          "title": "El pulpo de la loza",
+          "image": "photos/986367d5df1c5bbc1c689bc7.webp",
+          "thumb": "photos/986367d5df1c5bbc1c689bc7-thumb.webp",
+          "dhash": "0f0f0743d2ed1f8f086e9109779b08789d056f94105c75245a682b6c7c15637e465b5c594b41444e483b5157264c5f2a5b7028596d34444d",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-medusa-de-la-luz-dormi-fe8b8d458080",
+          "title": "La medusa de la luz dormida",
+          "image": "photos/59dd08231f50e76d48f788dd.webp",
+          "thumb": "photos/59dd08231f50e76d48f788dd-thumb.webp",
+          "dhash": "0c308e8e8cc8090b01395f023c62023d63013c64043c603c596f3b5a71034b6e0356722d6377246d8204819902516a0e5d740b6f8502778e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
