@@ -111,6 +111,46 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-26"
+        },
+        {
+          "id": "el-abrazo-de-la-piedra-be94da4ee29e",
+          "title": "El abrazo de la piedra",
+          "image": "photos/4fbdf4d6cd1544735826ba45.webp",
+          "thumb": "photos/4fbdf4d6cd1544735826ba45-thumb.webp",
+          "dhash": "010123f030e106779d8ba9a38fadab94b0ae95b1a793ac9b848fae8f95caa4b287737a79635e8f7064a9827a4939264c3b2956432e513d2d",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "el-cauce-de-las-raices-7379fe9ed611",
+          "title": "El cauce de las raíces",
+          "image": "photos/721a381ea6af97263c9dd704.webp",
+          "thumb": "photos/721a381ea6af97263c9dd704-thumb.webp",
+          "dhash": "dbffb7f1f7f00933b69fbbb19dbbad9abba998bbd5b3b9c1a2a6b99eabbba2babe97849e7e70977d7c9a848c5b4735664f43675450665657",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-raiz-que-sostiene-el-a-51edeef2c286",
+          "title": "La raíz que sostiene el alba",
+          "image": "photos/cae505b62da3b3a2fd34b0c8.webp",
+          "thumb": "photos/cae505b62da3b3a2fd34b0c8-thumb.webp",
+          "dhash": "000105313233a6869684b19885b39a87b39b87b3b69ec3ac95b4b098b5bda3c4ba9aa89f8082ad8983c5a0a75547405d493a6d5243634f47",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-sombra-de-las-semillas-55ecbefde2c0",
+          "title": "La sombra de las semillas",
+          "image": "photos/45be5da8ff4c5b70579aaa25.webp",
+          "thumb": "photos/45be5da8ff4c5b70579aaa25-thumb.webp",
+          "dhash": "bfbfcff9e1650207af94b3ad93b3a990b2a58eb0d5b1bacaa8b3c1a3b1c4a6b9c89d88a68170af8c83bb9893715645725848816252806252",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
