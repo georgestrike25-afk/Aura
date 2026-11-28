@@ -17,16 +17,6 @@
           "added": "2026-11-27"
         },
         {
-          "id": "el-ginkgo-de-las-dos-oril-845bed3c3790",
-          "title": "El ginkgo de las dos orillas",
-          "image": "photos/b8049d611aaa9e77dcec15a2.webp",
-          "thumb": "photos/b8049d611aaa9e77dcec15a2-thumb.webp",
-          "dhash": "0f0f67611733e2477e91a28a9cac8c9dae8294a67688947a8b8c85939c8092a24750525059595e68685d6b702b2c282e2f254042393d3f3b",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
           "id": "el-pino-de-la-hora-azul-dbff58331025",
           "title": "El pino de la hora azul",
           "image": "photos/d0603c4ae53c20efe8b44bf9.webp",
@@ -37,31 +27,11 @@
           "added": "2026-11-27"
         },
         {
-          "id": "la-higuera-del-manantial-245a484a7cec",
-          "title": "La higuera del manantial",
-          "image": "photos/f0173aed47590d8d75460eb9.webp",
-          "thumb": "photos/f0173aed47590d8d75460eb9-thumb.webp",
-          "dhash": "272586d2642d9272333d2c35423637433730382c474a2e3f482b424b2a3a412f4b4a21494a2843492d41452e403f1f433f1d4542283a3a21",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
           "id": "el-primer-brote-412d63ea743e",
           "title": "El primer brote",
           "image": "photos/a62368a7706b11a20f45395a.webp",
           "thumb": "photos/a62368a7706b11a20f45395a-thumb.webp",
           "dhash": "3d73e0d033318ea5e3cdc3decab9dfcabae5ccc4cab99bbca974d0b97fe6cca6a79d7ca3926eb8a278c1ad87726d40847640897942897d46",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-grieta-viva-19f4b709e95e",
-          "title": "La grieta viva",
-          "image": "photos/b1cf2e27d4de8d4ccbc71513.webp",
-          "thumb": "photos/b1cf2e27d4de8d4ccbc71513-thumb.webp",
-          "dhash": "311860603437100ce6b296e8bca4e1beaee6bfadeaba9dd5ac8dddb699f1c7adc59d87bc9179c3987fcaa28f8c684a976e51987050a17a59",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
@@ -85,36 +55,6 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
-        },
-        {
-          "id": "el-arbol-de-las-dos-estac-c4ca8ed55fd9",
-          "title": "El árbol de las dos estaciones",
-          "image": "photos/8e198335f4c481616b1f9103.webp",
-          "thumb": "photos/8e198335f4c481616b1f9103-thumb.webp",
-          "dhash": "871f3397f7f3331f3e353e443a45403842342e37664b4f664f585c4c57493f4a9c675b855d58745556604c5456403f59413f533f3e46383a",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
-          "id": "el-arbol-de-las-raices-ab-0496ba6e7f7d",
-          "title": "El árbol de las raíces abiertas",
-          "image": "photos/ed8793cb2775c3323498a268.webp",
-          "thumb": "photos/ed8793cb2775c3323498a268-thumb.webp",
-          "dhash": "371f0f15e02382832f4f59345761284c57193d49234752315258375458304d5527373935372e584d3e5c5449242827312d254f413351453b",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
-          "id": "el-arbol-de-las-semillas--456cf2443e7e",
-          "title": "El árbol de las semillas viajeras",
-          "image": "photos/a09937529ea58ec270348339.webp",
-          "thumb": "photos/a09937529ea58ec270348339-thumb.webp",
-          "dhash": "0b191b25e1c3094d273233323f3e314041303e40323c3841473d494e41474f483c3a2b483f266657356a5e433428134231184c3c23514129",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
         },
         {
           "id": "el-arbol-que-vuelve-a-bro-ee961454c349",
@@ -163,31 +103,11 @@
           "added": "2026-11-26"
         },
         {
-          "id": "el-delta-de-la-luna-2-41249e1c2d2f",
-          "title": "El delta de la luna (2)",
-          "image": "photos/c91021f121c0e1a7c8f471eb.webp",
-          "thumb": "photos/c91021f121c0e1a7c8f471eb-thumb.webp",
-          "dhash": "130f0f0f470f1f0f1526381a2c3f1a2c3f15273a25384a3e4d5b41505e293d4e202e39444d554c545a2d3842222c36424c53323d471a2530",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
           "id": "el-jardin-plegado-2-f9c97f5111a2",
           "title": "El jardín plegado (2)",
           "image": "photos/99bc6e04bba5f3fb090b7d5f.webp",
           "thumb": "photos/99bc6e04bba5f3fb090b7d5f-thumb.webp",
           "dhash": "1d394d060d233033262b152b2f18292e18262b16282d164441264e4b302a2f18272c103537153a3d202f361b222308232706292f0c333817",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "el-relicario-de-obsidiana-e78ed875d398",
-          "title": "El relicario de obsidiana (2)",
-          "image": "photos/cd8d3b722936ed84531db941.webp",
-          "thumb": "photos/cd8d3b722936ed84531db941-thumb.webp",
-          "dhash": "57499763e27332b6846a8f836a8f81698f80688fa68aad8a718d987d9f9e83ab7c647e44354070597483698c3b2a2e2e21232c2129352733",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
@@ -218,16 +138,6 @@
           "height": 3120
         },
         {
-          "id": "el-camaleon-de-la-rama-se-79038a10fcd1",
-          "title": "El camaleón de la rama seca",
-          "image": "photos/2b64fc304e73cda7687b1a0e.webp",
-          "thumb": "photos/2b64fc304e73cda7687b1a0e-thumb.webp",
-          "dhash": "1f39091e4e4d4b1710180d10180d0c140b0a110a0e160c1b1e0e14190c0b120b0c130b1d1c0c1b1b0b0b110a0d11081314091013090b1008",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
           "id": "el-elefante-despues-de-la-87395d72c1ed",
           "title": "El elefante después de la lluvia",
           "image": "photos/148e727fc00155bb8226e2ca.webp",
@@ -248,16 +158,6 @@
           "added": "2026-11-26"
         },
         {
-          "id": "la-polilla-de-terciopelo-d5b2a1de2c65",
-          "title": "La polilla de terciopelo",
-          "image": "photos/f0e238afc9c47c781ab2893a.webp",
-          "thumb": "photos/f0e238afc9c47c781ab2893a-thumb.webp",
-          "dhash": "60606c06133321101d1811161510181712191914201a123429213e30251e1b16231c17423229573e2f372a2019150f271c133421173b231a",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
           "id": "el-lince-de-los-abedules-d15b8b67fbea",
           "title": "El lince de los abedules",
           "image": "photos/f3fdc42bb6f2f1059d8f15a8.webp",
@@ -273,26 +173,6 @@
           "image": "photos/9a546535a19f3cdec70715a5.webp",
           "thumb": "photos/9a546535a19f3cdec70715a5-thumb.webp",
           "dhash": "111b0d2e09190de93b4e454155484256474256443b4f424455454555443b504243563d505e3b48583a45583c4254304a57344a5634465a33",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-cabra-del-filo-6ec185e57aed",
-          "title": "La cabra del filo",
-          "image": "photos/40179c8feea6de20d51b009f.webp",
-          "thumb": "photos/40179c8feea6de20d51b009f-thumb.webp",
-          "dhash": "2f7f4739d1d331b2a7b6c7a5b4c8a2b2c79fafc4c1c4cbbfc1c6b9bbc0b7bec984878b7f77728382858695a76a593f6e5a416f6255787571",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-liebre-del-ultimo-sol-339af1b522b5",
-          "title": "La liebre del último sol",
-          "image": "photos/f04fc3850c63642d02716d15.webp",
-          "thumb": "photos/f04fc3850c63642d02716d15-thumb.webp",
-          "dhash": "ffffefb3b3b3b853a07baf9b79af9475ad8e72abcc94b0bb89a4b084a5af87b3b48081ae7665996f6e9c74857a574a7856487355487a5749",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
@@ -331,16 +211,6 @@
           "height": 3120
         },
         {
-          "id": "el-alerce-de-la-turbera-c65dac2ee1b7",
-          "title": "El alerce de la turbera",
-          "image": "photos/55a5f329deafe384c76c5c7c.webp",
-          "thumb": "photos/55a5f329deafe384c76c5c7c-thumb.webp",
-          "dhash": "0f030f171331031624393a263c3d273c3d23383a3346443e4d483f4f493647453634283c382649412d4f4532322310382d1a3f3825382e19",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
           "id": "el-arco-de-la-quebrada-80ec1207abbd",
           "title": "El arco de la quebrada",
           "image": "photos/309dbaab6c15035e7e5f8aec.webp",
@@ -376,15 +246,6 @@
           "height": 3120
         },
         {
-          "id": "campo-y-cielo-f71e130c186c",
-          "title": "Campo y cielo",
-          "image": "photos/e0c4b4f2de92f7e2bbd4a3c6.webp",
-          "thumb": "photos/e0c4b4f2de92f7e2bbd4a3c6-thumb.webp",
-          "dhash": "ffffb77371b8eb13c9c9c9c1c1c1b6b6b6acacacbfbfbf919191929292a6a6a66363633434342f2f2f4c4c4c1d1d1d1a1a1a191919191919",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "espacio-123466e949b2",
           "title": "Espacio",
           "image": "photos/97a4a5725500d9f568e76725.webp",
@@ -403,15 +264,6 @@
           "height": 3120
         },
         {
-          "id": "flores-y-estatua-63de0c8c5799",
-          "title": "Flores y estatua",
-          "image": "photos/2e3eaca7e2ff6f7eba357ddb.webp",
-          "thumb": "photos/2e3eaca7e2ff6f7eba357ddb-thumb.webp",
-          "dhash": "0101016367615a562c406633466e394a723a4b736a5b7a6a5c7794768a94778b4b375245344272535f705565291a332b1e30241b25201922",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "el-cartografo-de-sal-3e120fb4caa2",
           "title": "El cartógrafo de sal",
           "image": "photos/a94f780cd8bf810a1bafd8c0.webp",
@@ -422,31 +274,11 @@
           "added": "2026-11-27"
         },
         {
-          "id": "el-velero-de-fotones-3d56e26db410",
-          "title": "El velero de fotones",
-          "image": "photos/c36d13b90229800c4d245015.webp",
-          "thumb": "photos/c36d13b90229800c4d245015-thumb.webp",
-          "dhash": "9ef7efcbd1008704333c432f39402c363d29333b434c5342494f3c454b3540484c50544f51545656575e5a592a2a293937364945434d4643",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
           "id": "la-navegante-de-los-anill-4dced89e6db7",
           "title": "La navegante de los anillos",
           "image": "photos/3b3de48583e98e5abae9f84f.webp",
           "thumb": "photos/3b3de48583e98e5abae9f84f-thumb.webp",
           "dhash": "feffcff3334c1228472d383f2a353828333427317648535e3d46513841523b4552373c472f323d2c2f413136211819251a1b241a1b221b1c",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-sonda-del-hielo-ef52a8ecee96",
-          "title": "La sonda del hielo",
-          "image": "photos/4ce4701acf3e69a717089512.webp",
-          "thumb": "photos/4ce4701acf3e69a717089512-thumb.webp",
-          "dhash": "0302103137373197404c5b4450604a56644f586563666d65676c6f727878787d575150545556535f654a5660342e2b383330433b35453e3a",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
@@ -476,38 +308,11 @@
           "height": 3120
         },
         {
-          "id": "cielo-6-9e3d06cb2b66",
-          "title": "Cielo 6",
-          "image": "photos/dbf36f0ec520fff0c268f94a.webp",
-          "thumb": "photos/dbf36f0ec520fff0c268f94a-thumb.webp",
-          "dhash": "6c4081023043d034171a14101f2011262a1931351d2a272133352b3d3d354844353d343c3f37525448646455412f123f35203d3a28494737",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "selva-64e02f7cf18b",
           "title": "Selva",
           "image": "photos/e1a06b03b838150a3ff5cdbd.webp",
           "thumb": "photos/e1a06b03b838150a3ff5cdbd-thumb.webp",
           "dhash": "241e6013776719860f27261939381e40401b3d3d1e40412947492f4f4f2e52522f4d452f443d3552501f413f111e14192c201f352e1a322e",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-lince-del-pedregal-be0d1fb3c05a",
-          "title": "El lince del pedregal",
-          "image": "photos/09bee8d70f33b7a2b07d5db8.webp",
-          "thumb": "photos/09bee8d70f33b7a2b07d5db8-thumb.webp",
-          "dhash": "130a068c4d0b881927281a323425363a2a36392f2a2d233d3b2e41413632352c4a3e275f4f3c57503e4844324e411d5a4d2e554b38544c38",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-tejon-de-la-hojarasca-795400b5f329",
-          "title": "El tejón de la hojarasca",
-          "image": "photos/5695538fba256fd65f6b687b.webp",
-          "thumb": "photos/5695538fba256fd65f6b687b-thumb.webp",
-          "dhash": "03118f8e327c899b2a28183432203b3a28353423312c1a3c3929423d2d2e2f1d3c321b372e1d362c1d3a321c412c1749341d48321c46301b",
           "width": 1440,
           "height": 3120
         },
@@ -545,15 +350,6 @@
           "height": 3120
         },
         {
-          "id": "el-injerto-de-la-infancia-9832649764d5",
-          "title": "El injerto de la infancia",
-          "image": "photos/ce944771a33a5fdaaf87e5ff.webp",
-          "thumb": "photos/ce944771a33a5fdaaf87e5ff-thumb.webp",
-          "dhash": "c4218848070f75133b1016390f163b0f163d1016491a204f1d22562125592127512423652e2c6d322f592a2748221c52251f50221c49211a",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "la-baldosa-de-los-domingo-12639dfe030b",
           "title": "La baldosa de los domingos",
           "image": "photos/1e2429593329abeb17572b86.webp",
@@ -572,16 +368,6 @@
           "height": 3120
         },
         {
-          "id": "el-sobre-de-la-primera-he-8ea7efea3ec6",
-          "title": "El sobre de la primera helada",
-          "image": "photos/31cbc09b5d070dc6f25a4157.webp",
-          "thumb": "photos/31cbc09b5d070dc6f25a4157-thumb.webp",
-          "dhash": "010307044546033317304429455d4a5d734f5c70263747414a56595a6350505d3f36385e524f8a6b62664a48392929493938564441443534",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
           "id": "el-banquito-de-la-siesta-32d40ace0890",
           "title": "El banquito de la siesta",
           "image": "photos/653be9de6d0c12fdfd5c4132.webp",
@@ -597,26 +383,6 @@
           "image": "photos/979e24c361abe63825ccc691.webp",
           "thumb": "photos/979e24c361abe63825ccc691-thumb.webp",
           "dhash": "070f1717114360c8b1a891b5ab95b5ac96b1a8948e866d9f927f9c917c93856f6c614876664f7f6f56837057685a4e5d573c6b634571644e",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-cuchara-de-las-grosell-5070ef762ed3",
-          "title": "La cuchara de las grosellas",
-          "image": "photos/2a04c5ebe9b9c133c3c14280.webp",
-          "thumb": "photos/2a04c5ebe9b9c133c3c14280-thumb.webp",
-          "dhash": "070d33120662248e9c977b9e997ba19b7da19b7d807c5e867b598e83628f886a5451305e56326a6043655e45463e294d412d524330534433",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-llave-del-porton-0becef7e879a",
-          "title": "La llave del portón",
-          "image": "photos/286d85d0cafb85bab14cdf6e.webp",
-          "thumb": "photos/286d85d0cafb85bab14cdf6e-thumb.webp",
-          "dhash": "070f133321861f42afa282b8ab8cbaad8eb5a8888a7d629586689d8c6a9b8b6e584d386152346b572f69563c554a3764553d695940635541",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
@@ -655,16 +421,6 @@
           "height": 3120
         },
         {
-          "id": "la-garza-de-tinta-53ff9a7f08d1",
-          "title": "La garza de tinta",
-          "image": "photos/15098b235d0715d261f93864.webp",
-          "thumb": "photos/15098b235d0715d261f93864-thumb.webp",
-          "dhash": "0000001727241501485e5e4c6261506664546765596a665d6c6764706a6c736b45483b464e47525c545b61582e2b1f31352c36403a394642",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
           "id": "la-pluma-sumergida-2cdb6b289806",
           "title": "La pluma sumergida",
           "image": "photos/3b0f192380c67608b01ddebd.webp",
@@ -680,16 +436,6 @@
           "image": "photos/57306f92075bf587e3841ddd.webp",
           "thumb": "photos/57306f92075bf587e3841ddd-thumb.webp",
           "dhash": "00000034253501183d2425412828452b2a4c2e2c4d32304f34305a3b336a44383d201d3c241d4e2f245834292a130f351e144126174f2d1b",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-veta-del-papel-6a02024cd1f4",
-          "title": "La veta del papel",
-          "image": "photos/6bcc5a81bfc956bd6ede54f1.webp",
-          "thumb": "photos/6bcc5a81bfc956bd6ede54f1-thumb.webp",
-          "dhash": "ffbfffd35b19fd9c9268378a6334805a2f78552ca779429f733f936a398c6434916b3e9872457c5c377e5b338e6f4d8a694561482c5c4327",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
@@ -715,15 +461,6 @@
           "image": "photos/5e88e1b1e02695e02f496af7.webp",
           "thumb": "photos/5e88e1b1e02695e02f496af7-thumb.webp",
           "dhash": "0e320f8c842e03131a1f201c20221b20221a1f2123282a3a3f423d414324292b423f3b494b4b56524d4b433c382c2041362c5542314e3827",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-hija-del-lodazal-474c21bfae9c",
-          "title": "La hija del lodazal",
-          "image": "photos/e865cf4507fabdd0e34397ee.webp",
-          "thumb": "photos/e865cf4507fabdd0e34397ee-thumb.webp",
-          "dhash": "181a250d4cf494ac192a1f1a2b201a2a1f1a2a1f2130252e3627333b2b2030244545343d39243c3824444534433a263f331d38301b403927",
           "width": 1440,
           "height": 3120
         },
@@ -756,26 +493,6 @@
           "added": "2026-11-27"
         },
         {
-          "id": "el-barquero-de-la-bruma-8c59fe411feb",
-          "title": "El barquero de la bruma",
-          "image": "photos/4fd19bd91494f78c59fdd9bf.webp",
-          "thumb": "photos/4fd19bd91494f78c59fdd9bf-thumb.webp",
-          "dhash": "100240f020e0d0727b7c6884846d928e739f9779756f5d776b58846e569c82625651434442396155437a6a523c342728261e3f37295c5441",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "el-ciervo-del-deshielo-e999323ac3de",
-          "title": "El ciervo del deshielo",
-          "image": "photos/a5c9a7b8f189abbfbfd9efeb.webp",
-          "thumb": "photos/a5c9a7b8f189abbfbfd9efeb-thumb.webp",
-          "dhash": "00000121202400097a6a7583717c8c7882947e876a545a7b6062896e71927679544a4a5b4e4e6457597065694a4142554b4c5f525566585a",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
           "id": "la-mensajera-del-estuario-c236f43ded69",
           "title": "La mensajera del estuario",
           "image": "photos/774426b7d9c7fef60e770917.webp",
@@ -801,15 +518,6 @@
           "height": 3120
         },
         {
-          "id": "la-ventana-interior-79da180ebd62",
-          "title": "La ventana interior",
-          "image": "photos/12133afd96b9503178c635f1.webp",
-          "thumb": "photos/12133afd96b9503178c635f1-thumb.webp",
-          "dhash": "010101870f0f01040c16130f1a17111d1a111d1b131d1a26241a2b2a1f1a2723171d1849311c50371f2026202921183f2b1a533721473626",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "el-umbral-que-cede-46bc4e3f3cad",
           "title": "El umbral que cede",
           "image": "photos/5821a97bd17ce04a3d77285d.webp",
@@ -828,29 +536,11 @@
           "height": 3120
         },
         {
-          "id": "flores-y-cielo-2-f5c3a1facfe8",
-          "title": "Flores y cielo 2",
-          "image": "photos/7b2fbed49a0a00ecf4f4fd49.webp",
-          "thumb": "photos/7b2fbed49a0a00ecf4f4fd49-thumb.webp",
-          "dhash": "3911143098cc6f1b71697d8c7e8c8d8291998b99837687a28987b19386caa9975f4d585f504a5a4f4a6c5c5c5a443759453f50414343353b",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "patron-y-edificios-d7fb5582fb26",
           "title": "Patrón y edificios",
           "image": "photos/3241529b6638c0b966d0a9ce.webp",
           "thumb": "photos/3241529b6638c0b966d0a9ce-thumb.webp",
           "dhash": "f01b65656565644d29445c25405723415921425c666b73664645816b63636f7c806b6885503fa373598674724148554a40465a4c4b434c59",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "plantas-y-castillo-7d7566fe231a",
-          "title": "Plantas y castillo",
-          "image": "photos/c21bb457e8bbacb418ea9f8f.webp",
-          "thumb": "photos/c21bb457e8bbacb418ea9f8f-thumb.webp",
-          "dhash": "6b07433333636cce798b937e8b898b90817576595f747969787891918398947d50625d4b584f7672586f74662f3f34333b2a3a3d272d3326",
           "width": 1440,
           "height": 3120
         },
@@ -869,15 +559,6 @@
       "id": "poesia-de-fuego",
       "title": "Poesía de fuego",
       "items": [
-        {
-          "id": "el-calor-que-queda-ab3417a9b8c2",
-          "title": "El calor que queda",
-          "image": "photos/188a81754b793e9e7d1cb110.webp",
-          "thumb": "photos/188a81754b793e9e7d1cb110-thumb.webp",
-          "dhash": "13170f0c8e96170f1f1f152424182324182021162120152b281a2c291b232217322a1c593a1f613d20382e1e463a2558452c5b462c433825",
-          "width": 1440,
-          "height": 3120
-        },
         {
           "id": "el-pajaro-de-una-chispa-93ee22e22c7e",
           "title": "El pájaro de una chispa",
@@ -924,26 +605,6 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
-        },
-        {
-          "id": "la-brasa-del-herrero-5321dda7784d",
-          "title": "La brasa del herrero",
-          "image": "photos/1bbb5271c5c576e5b24daec2.webp",
-          "thumb": "photos/1bbb5271c5c576e5b24daec2-thumb.webp",
-          "dhash": "0b071b7765252727363d4d373f4f373f4e353c4b4249573c424e3c4250343a4646474c333237373539332c2b2b29293a3330674d3c4e3b31",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-ceniza-que-brota-47aa2aa01caf",
-          "title": "La ceniza que brota",
-          "image": "photos/7e3c58dfe80a080b41c26474.webp",
-          "thumb": "photos/7e3c58dfe80a080b41c26474-thumb.webp",
-          "dhash": "010109243737774d67778a6c7c8e707f917180936473846c7581747a84707e8f3d41453b3f443e444a3d444a312b272b28282a292b262729",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
         }
       ]
     },
@@ -970,15 +631,6 @@
           "height": 3120
         },
         {
-          "id": "la-piel-del-relampago-7c8225bbe523",
-          "title": "La piel del relámpago",
-          "image": "photos/6c0253bb147cc96f0405e27f.webp",
-          "thumb": "photos/6c0253bb147cc96f0405e27f-thumb.webp",
-          "dhash": "59018f0e27310f2f251c23291d262c1e272f1d27251c2332212b31212b271c24302028391e28391f2a32212c27161d331b23361e26291b23",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "la-ultima-pluma-ce9c591ec98c",
           "title": "La última pluma",
           "image": "photos/5d191336a70f98619eb8b491.webp",
@@ -993,26 +645,6 @@
           "image": "photos/a10b85e6ce0db3f742302a0c.webp",
           "thumb": "photos/a10b85e6ce0db3f742302a0c-thumb.webp",
           "dhash": "dbfff7d31b4f8e1ba1adbb9ba9b897a6b793a4b5a4adb99fa9b498a4b094a3b2717a7b828686808689747e814f4d445f5d596262635c5c5a",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-corteza-que-recuerda-118e136ef3fd",
-          "title": "La corteza que recuerda",
-          "image": "photos/ece4fdea51281481d2c40713.webp",
-          "thumb": "photos/ece4fdea51281481d2c40713-thumb.webp",
-          "dhash": "16000830252221207c8fa37f91a58293a68495a77c8d9d848f9a8d939a949eaa65695f60605b6f706c7578734d49394e453e5854525e6062",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-piedra-que-germina-84a4890925c4",
-          "title": "La piedra que germina",
-          "image": "photos/336e3ae264fecd3f31977eeb.webp",
-          "thumb": "photos/336e3ae264fecd3f31977eeb-thumb.webp",
-          "dhash": "dcecf0f72726e5a7a3adb59aa6b094a1ac94a0aaaeb5b9a2aaa79fa8a99fa6aa727361646963767d7d6b7373544d353f3e3453555352524c",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
@@ -1052,50 +684,11 @@
           "height": 3120
         },
         {
-          "id": "la-antena-del-silencio-9e6584c12fa8",
-          "title": "La antena del silencio",
-          "image": "photos/977b40a8b9e613b3a1940300.webp",
-          "thumb": "photos/977b40a8b9e613b3a1940300-thumb.webp",
-          "dhash": "0a270b0d28360f83060e15061019061019060e1609121a0a141c09141c09121b323a3a374042303a3e2c373d2d32314349484c54523e4647",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "el-junco-de-plata-0d23f85bbed4",
           "title": "El junco de plata",
           "image": "photos/87706518bfe721234de838c3.webp",
           "thumb": "photos/87706518bfe721234de838c3-thumb.webp",
           "dhash": "ffffff9ffff71f1f4b5d713a4d622d415624384f586a7d4e5e6f3b4e6331455b5a64704e5d6c4051633546582d333d303c4b2736481e2e40",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "el-sereno-de-la-sal-3f82e0d1a0fa",
-          "title": "El sereno de la sal",
-          "image": "photos/17e4d284dc2a6940a743a851.webp",
-          "thumb": "photos/17e4d284dc2a6940a743a851-thumb.webp",
-          "dhash": "fffff7b3b3d2f2263d4c5c374556313f4e2d3a4853637448515e3f4955414f5e59636e56525548494f4c555f454f58484b5145494e42484e",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-marea-de-la-greda-549894cb78f4",
-          "title": "La marea de la greda",
-          "image": "photos/0fd1c1310aef2d2990aa80d1.webp",
-          "thumb": "photos/0fd1c1310aef2d2990aa80d1-thumb.webp",
-          "dhash": "000011242424160737475b3c4c604050644253674b5b6e4b56655a637057677a3d485440454c595b6163707f262729322f2e424141404549",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-piedra-sin-peso-c70a7dc71d4e",
-          "title": "La piedra sin peso",
-          "image": "photos/f7d054b8c18c9ac36ea9dd9a.webp",
-          "thumb": "photos/f7d054b8c18c9ac36ea9dd9a-thumb.webp",
-          "dhash": "ffffefdad31b3c6639475a323f512a37492532434d5c714a57693b485935435656617158616d45505e434f5f46464a3f404530353c2f333a",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
@@ -1121,61 +714,11 @@
           "added": "2026-11-27"
         },
         {
-          "id": "la-fase-del-pozo-aaa70cd4f5ab",
-          "title": "La fase del pozo",
-          "image": "photos/82340633039ae76042c11e56.webp",
-          "thumb": "photos/82340633039ae76042c11e56-thumb.webp",
-          "dhash": "05090765a5c9c13413253c182c451f334e2237521c293421303f314051243340151d19191e1d2427282227240f151210140f1719131f2017",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
           "id": "la-flor-del-eclipse-b6f7f308446d",
           "title": "La flor del eclipse",
           "image": "photos/d346583f185ed36208cea360.webp",
           "thumb": "photos/d346583f185ed36208cea360-thumb.webp",
           "dhash": "84c00607330527032632422733442834462b3343334052434f605055643c4759222e382c3842323d482b36451114131c1e1d2d25241d1a1b",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-hamaca-inmovil-430db0c4a5a6",
-          "title": "La hamaca inmóvil",
-          "image": "photos/23fe31f1045080a7ff675db2.webp",
-          "thumb": "photos/23fe31f1045080a7ff675db2-thumb.webp",
-          "dhash": "410531aa0c0636191414141414141414141414141d1c1c21211f222120201f1e55524d615d5766625b605c5654514c65605a67625c65605a",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-huella-de-vidrio-695890f3d2bc",
-          "title": "La huella de vidrio",
-          "image": "photos/4d38cd6636ba78aba2165286.webp",
-          "thumb": "photos/4d38cd6636ba78aba2165286-thumb.webp",
-          "dhash": "12284d8d4c130b041515161a191a1919191515161717183939363232301717184543415554505856534f4d4b49464364605b6c68636b6763",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "el-invernadero-de-una-hoj-1498531c8af3",
-          "title": "El invernadero de una hoja",
-          "image": "photos/36b1dbdfd485d2829922fe95.webp",
-          "thumb": "photos/36b1dbdfd485d2829922fe95-thumb.webp",
-          "dhash": "48b04c4d593c4cc30f10110f10120f10120f101213131527272423242114141656524c5f5b5255524b524e485a544e5c5751655f5867615a",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-antena-de-ceniza-a8910894487f",
-          "title": "La antena de ceniza",
-          "image": "photos/c1e183c03bc0cd224da87629.webp",
-          "thumb": "photos/c1e183c03bc0cd224da87629-thumb.webp",
-          "dhash": "02102c6c511ccd0e0f10100f10110f10100e0f101213131415151718171314144f4d47524f494d4b46514f4956534c5e5b536460585c5951",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
@@ -1186,15 +729,6 @@
       "id": "guardianes-del-tiempo",
       "title": "Guardianes del tiempo",
       "items": [
-        {
-          "id": "el-custodio-de-la-espera-566467e52aaa",
-          "title": "El custodio de la espera",
-          "image": "photos/147398178a4ba8440f9aefb2.webp",
-          "thumb": "photos/147398178a4ba8440f9aefb2-thumb.webp",
-          "dhash": "23070f07068e11073213093911073c140936150a32140a421a0b431c0e36170d3a1b0f4a2613582e195327154f261662321d6c38206b3721",
-          "width": 1440,
-          "height": 3120
-        },
         {
           "id": "el-guardian-del-regreso-7eceb7024ef2",
           "title": "El guardián del regreso",
@@ -1221,26 +755,6 @@
           "dhash": "0f030e480c840b0f0c0f0f131b201920231114150d1011181a1d1a1b1e1215150f131717191e1c1c21191a1c151c20212d38282e36202024",
           "width": 1440,
           "height": 3120
-        },
-        {
-          "id": "el-custodio-de-la-erosion-0741a496aa96",
-          "title": "El custodio de la erosión",
-          "image": "photos/127f8c2d05541abbd9274d84.webp",
-          "thumb": "photos/127f8c2d05541abbd9274d84-thumb.webp",
-          "dhash": "1f120f2573cb23662a1f2b3223302f222e2a202b3c28303f2a2d472f31432b324a2b2640271f4f3024562f283e221843271a4c2b1d402219",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "el-guardian-del-relevo-343266975286",
-          "title": "El guardián del relevo",
-          "image": "photos/3b6012c7304e57487916642f.webp",
-          "thumb": "photos/3b6012c7304e57487916642f-thumb.webp",
-          "dhash": "03030f3733d24d07141d1a1b252325312e202a27151e1c1b25221f292517211e19201d191d191d211d1b23201a1e1a2a241b322c22212420",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
         },
         {
           "id": "la-tejedora-de-las-horas-d03020f5df34",
@@ -1278,15 +792,6 @@
           "height": 3120
         },
         {
-          "id": "la-traquea-de-cobre-d0f574803fff",
-          "title": "La tráquea de cobre",
-          "image": "photos/8eecf017b58b04e8131ffe66.webp",
-          "thumb": "photos/8eecf017b58b04e8131ffe66-thumb.webp",
-          "dhash": "79190f4b4d67674b17201c171f1b151d19141c191d25202128212027211d252031342c3231243a352830322a3e3a2e3c35274a402f413c30",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "membrana-de-agua-89edf04862ef",
           "title": "Membrana de agua",
           "image": "photos/038ba1ade21a33f00ed0957b.webp",
@@ -1303,16 +808,6 @@
           "dhash": "030f032f0f270307211e1c29231f2d252028221e2824202f2823312a23292521403025533b2b63452f513a2a30221a3e291e492f21402b1f",
           "width": 1440,
           "height": 3120
-        },
-        {
-          "id": "el-codo-del-vendaval-8600f5b1e646",
-          "title": "El codo del vendaval",
-          "image": "photos/06c43f22fe3cad20da481b1c.webp",
-          "thumb": "photos/06c43f22fe3cad20da481b1c-thumb.webp",
-          "dhash": "3f33091167c738093d545c39525a2e43493441441f34392d4146444f515959552932333137374b504f464a48282c2c2e2f2d2d2e2b30302d",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
         },
         {
           "id": "el-diafragma-de-lana-a43a1695804a",
@@ -1333,16 +828,6 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-26"
-        },
-        {
-          "id": "las-unas-del-cierzo-ab70c51414d3",
-          "title": "Las uñas del cierzo",
-          "image": "photos/b697b8fad6b6da7f929b4ab4.webp",
-          "thumb": "photos/b697b8fad6b6da7f929b4ab4-thumb.webp",
-          "dhash": "371f03143121698a384b5b47586630495d1f3c52273f53324759384a5a37495b444d593e444954504f6963663a3d40393a3b44403f4d4a4a",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
         }
       ]
     },
@@ -1356,15 +841,6 @@
           "image": "photos/9a88fcc0b55123dc3baee473.webp",
           "thumb": "photos/9a88fcc0b55123dc3baee473-thumb.webp",
           "dhash": "3f1f0f0d1d176b691c293629394d1b2835111a23131c2418253115212d111a221e2c3b2a3d5a2335501a26322c384a202d471826401a2532",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-corazon-de-la-lucierna-af9f2fc93139",
-          "title": "El corazón de la luciérnaga",
-          "image": "photos/2a0b36c6063b26b89b516f1c.webp",
-          "thumb": "photos/2a0b36c6063b26b89b516f1c-thumb.webp",
-          "dhash": "213133294d392363173025163024163024173327213c2d233d2e213b2d1d392b3f5839465e3f3f593c38553a415a354a6239526b414f663d",
           "width": 1440,
           "height": 3120
         },
@@ -1387,31 +863,11 @@
           "height": 3120
         },
         {
-          "id": "el-puente-de-la-ultima-lu-40f0fd0b593a",
-          "title": "El puente de la última luz",
-          "image": "photos/ffb4778da406289dbd4640f9.webp",
-          "thumb": "photos/ffb4778da406289dbd4640f9-thumb.webp",
-          "dhash": "01030d17d1860624281d282f212d3a27333b273230272f3f3138453339392c333631313c3335453737373332282321342c2943352f342f2c",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
           "id": "el-rostro-sin-dueno-81b989af2321",
           "title": "El rostro sin dueño",
           "image": "photos/6ce9c3adf6dd0966dae5bf07.webp",
           "thumb": "photos/6ce9c3adf6dd0966dae5bf07-thumb.webp",
           "dhash": "030307860665071a140c111c10142313171e1015140e11241e1a31231c1a1013140e101f181531211a1f1214151313251f1a342a21261d19",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "el-zorro-de-vidrio-ahumad-ca8240fed292",
-          "title": "El zorro de vidrio ahumado",
-          "image": "photos/bbd786e7d2996a5e8e98b34b.webp",
-          "thumb": "photos/bbd786e7d2996a5e8e98b34b-thumb.webp",
-          "dhash": "10300406074c4546091d2010262a14292d1b2d2f0d1f22212f2f373d391e2c2c1f2b29353630413e363538331118151c201c2c2b252a2923",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
@@ -1438,15 +894,6 @@
           "image": "photos/cf0e05cf794c4f6d774620b2.webp",
           "thumb": "photos/cf0e05cf794c4f6d774620b2-thumb.webp",
           "dhash": "0d010f131531031f301e4633204b33204b321f4a3b2751402a57412b583f2a575747534e3f4b5947526b566068584e6d5c526c5b525c4f49",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-rio-hacia-arriba-41d46a72437f",
-          "title": "El río hacia arriba",
-          "image": "photos/85463ba303c74f254f798f87.webp",
-          "thumb": "photos/85463ba303c74f254f798f87-thumb.webp",
-          "dhash": "c84acc290b0f0d1f14342f12353011353013352f1c423b1f4840214b422149402f5848417061457767346051375648577a6c5378693a5d4d",
           "width": 1440,
           "height": 3120
         },
@@ -1502,15 +949,6 @@
           "height": 3120
         },
         {
-          "id": "el-peso-de-la-ausencia-0512e53d4e3d",
-          "title": "El peso de la ausencia",
-          "image": "photos/6868a663b47f5994b2ddf8a8.webp",
-          "thumb": "photos/6868a663b47f5994b2ddf8a8-thumb.webp",
-          "dhash": "8f9080c7c8d0d0001a15101b1611221b153a2e24201913231c163b2f24503f3132261d201a142b221a6a513e2e231b2f241c3a2c225f4836",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "el-alivio-despues-del-nud-a60e41263bee",
           "title": "El alivio después del nudo",
           "image": "photos/d70651b85cdffefdb849a3cd.webp",
@@ -1527,16 +965,6 @@
           "dhash": "050f0f0d6131270d2e13203817263918273215242b141e361c243c1e262e15203f161e3c1823441b2548182046161c511920571b234c181e",
           "width": 1440,
           "height": 3120
-        },
-        {
-          "id": "el-abrigo-de-la-ternura-6ab33e50322a",
-          "title": "El abrigo de la ternura",
-          "image": "photos/e076233aa22168c86f2cf199.webp",
-          "thumb": "photos/e076233aa22168c86f2cf199-thumb.webp",
-          "dhash": "5ffddf5b7c4bcd6146382d312e2b202221171918382b21423225261f191315143f25173120162b1b112017121d171222160e2e1c0f251a12",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
         },
         {
           "id": "el-pulso-de-la-calma-a1d878bf9976",
@@ -1557,16 +985,6 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-26"
-        },
-        {
-          "id": "la-envidia-del-color-1e5f92498796",
-          "title": "La envidia del color",
-          "image": "photos/943f45e391bdebb7ee0b3e9b.webp",
-          "thumb": "photos/943f45e391bdebb7ee0b3e9b-thumb.webp",
-          "dhash": "000127263307241b151f191d261d2930232732251b241c29261b3a301f21281e28221a32241a3323182c1c17321d153b2117461816441213",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
         }
       ]
     },
@@ -1574,15 +992,6 @@
       "id": "civilizaciones-antiguas",
       "title": "Civilizaciones antiguas",
       "items": [
-        {
-          "id": "el-espejo-de-la-selva-3019f4024d3f",
-          "title": "El espejo de la selva",
-          "image": "photos/e9f9611cde9fc1106561a9e3.webp",
-          "thumb": "photos/e9f9611cde9fc1106561a9e3-thumb.webp",
-          "dhash": "07cf8f56ccae230f040e0e01141b01192800131c06131407181d06192103121621282233392c323a311b241f2629213f3c2a383a2e292c22",
-          "width": 1440,
-          "height": 3120
-        },
         {
           "id": "el-lino-del-nilo-1fdffbcf75fe",
           "title": "El lino del Nilo",
@@ -1629,26 +1038,6 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-26"
-        },
-        {
-          "id": "la-seda-del-primer-viento-73bf6935c9f5",
-          "title": "La seda del primer viento",
-          "image": "photos/eb15850635648fc77036b3f9.webp",
-          "thumb": "photos/eb15850635648fc77036b3f9-thumb.webp",
-          "dhash": "632390ccb9233d391c1b24181e291c1f2b211923352c2d2b262b2423292d26275d463a5c423643342b3f31275f493a7154403c2e25362a20",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
-          "id": "la-tesela-del-regreso-5e08855162bc",
-          "title": "La tesela del regreso",
-          "image": "photos/2e935f911ee62fc119a1f50d.webp",
-          "thumb": "photos/2e935f911ee62fc119a1f50d-thumb.webp",
-          "dhash": "f2f2caad3c782537352410201a0f1c170f1b160f3f291535241424190f1c170f67402055341a301c0f3a26166d3f20724522644121613d1f",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
         }
       ]
     },
@@ -1657,29 +1046,11 @@
       "title": "Arte abstracto",
       "items": [
         {
-          "id": "pliegue-mineral-e7e56cf8f682",
-          "title": "Pliegue mineral",
-          "image": "photos/ee5010aa21ccf244d4fd051f.webp",
-          "thumb": "photos/ee5010aa21ccf244d4fd051f-thumb.webp",
-          "dhash": "e0e0e868cc4f4f1e15191e12161c12171d161a1f161c21161b21161c21181e22181e25252c312b31351a2126242b333a3f443c4346252d31",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "sedimento-rojo-3d20d9327d21",
           "title": "Sedimento rojo",
           "image": "photos/ce8c0fbaa1234fbf0557f85c.webp",
           "thumb": "photos/ce8c0fbaa1234fbf0557f85c-thumb.webp",
           "dhash": "2183064e0e1e38664c141b4f161a62201c6a241c3b13154b15175017193f13165e2217832717781a155618187727138724118e170f7d1e12",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "tension-de-lino-68c3e60d411b",
-          "title": "Tensión de lino",
-          "image": "photos/4ca6aeae5db06dfd09dc08ad.webp",
-          "thumb": "photos/4ca6aeae5db06dfd09dc08ad-thumb.webp",
-          "dhash": "0f0f0f0a4d4d1b171a1e0723260925290b1a1f09191c06292b0e282a0e1a1f091e21073634163331151b1f083d391b5c5130463d1c343113",
           "width": 1440,
           "height": 3120
         },
@@ -1713,16 +1084,6 @@
           "added": "2026-11-27"
         },
         {
-          "id": "la-hebra-de-grafito-a55bdc6c0d66",
-          "title": "La hebra de grafito",
-          "image": "photos/4bd0785ea145c702ed3ca046.webp",
-          "thumb": "photos/4bd0785ea145c702ed3ca046-thumb.webp",
-          "dhash": "fffff7f7b733f7d7a39c979792908a88877d7d7ebcb0a7978f8a8b88868988889c959176706b6e6d6e7375776a64615a534e4c4b4a494a4b",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
           "id": "porcelana-invertida-7320edb5fd7b",
           "title": "Porcelana invertida",
           "image": "photos/95c6868ceed806d0791a4368.webp",
@@ -1748,15 +1109,6 @@
           "height": 3120
         },
         {
-          "id": "el-desierto-de-las-mantas-9a1616780f4a",
-          "title": "El desierto de las mantas",
-          "image": "photos/7f1103f07099a1f9a12cd041.webp",
-          "thumb": "photos/7f1103f07099a1f9a12cd041-thumb.webp",
-          "dhash": "7f3f1f1b3b1f0f0f54574046503d27332917221d232e24323b2d222e2514221e51442865512d5948283f37215f3f1b8d5a2298602374481a",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "el-refugio-del-nautilo-557adea3150b",
           "title": "El refugio del nautilo",
           "image": "photos/0a99e7c091f2e460e056d2bf.webp",
@@ -1773,25 +1125,6 @@
           "dhash": "1b051f0f070f1f27051d291b36401e353d021d2b0c232e52473e4d483f0c202a0e1f28504e456e604a1c2b3108192327383e192b3204141f",
           "width": 1440,
           "height": 3120
-        },
-        {
-          "id": "retrato-11-b1a31bcab576",
-          "title": "Retrato 11",
-          "image": "photos/6ec19ceb7f405c45512af575.webp",
-          "thumb": "photos/6ec19ceb7f405c45512af575-thumb.webp",
-          "dhash": "0707072723b18d2703344814718c3aa2bb105b74013d5708546d0a627e014662113643122d340c3846074358161e21212722263530153236",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-pulpo-de-la-loza-876ca5e1c8d5",
-          "title": "El pulpo de la loza",
-          "image": "photos/986367d5df1c5bbc1c689bc7.webp",
-          "thumb": "photos/986367d5df1c5bbc1c689bc7-thumb.webp",
-          "dhash": "0f0f0743d2ed1f8f086e9109779b08789d056f94105c75245a682b6c7c15637e465b5c594b41444e483b5157264c5f2a5b7028596d34444d",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
         },
         {
           "id": "la-medusa-de-la-luz-dormi-fe8b8d458080",
@@ -1812,16 +1145,6 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
-        },
-        {
-          "id": "la-tortuga-del-mosaico-2c8fbdea20f8",
-          "title": "La tortuga del mosaico",
-          "image": "photos/7dbd4115c453718e340b7e75.webp",
-          "thumb": "photos/7dbd4115c453718e340b7e75-thumb.webp",
-          "dhash": "0102010b0480260f02659c026aa1036fa60571a60a5f8a286b862f73881976971a60712f6a722576892b7a883c76754587824f85815a6b63",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
         }
       ]
     },
@@ -1829,15 +1152,6 @@
       "id": "espiritus-del-bosque",
       "title": "Espíritus del bosque",
       "items": [
-        {
-          "id": "el-huesped-del-tronco-19218472fc6e",
-          "title": "El huésped del tronco",
-          "image": "photos/e1d314ba8f356cd468829a97.webp",
-          "thumb": "photos/e1d314ba8f356cd468829a97-thumb.webp",
-          "dhash": "83a50d4d0c4d8e3e1e100821110927150b2313091e10082f190c2f190c2012093a1e0f4c220e4a220e3d22125b28145f291147200d39190c",
-          "width": 1440,
-          "height": 3120
-        },
         {
           "id": "el-oido-de-la-corteza-c36820450ebc",
           "title": "El oído de la corteza",
@@ -1857,15 +1171,6 @@
           "height": 3120
         },
         {
-          "id": "el-pastor-de-la-escarcha-2595db400d19",
-          "title": "El pastor de la escarcha",
-          "image": "photos/3a34e4610a0fe1655c05a0f8.webp",
-          "thumb": "photos/3a34e4610a0fe1655c05a0f8-thumb.webp",
-          "dhash": "0e268bccd9410f842c2e383437443738442d2f3a27282e2f30362f2f362b2b314d47484e494c544c4c574e4d4640424e47484f4849484143",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "retrato-10-e90af4558f05",
           "title": "Retrato 10",
           "image": "photos/6a4d0ae6f0f34209660a1170.webp",
@@ -1873,16 +1178,6 @@
           "dhash": "76793f696d279618747f69666b525b583b574f306d765f776d5274613e60604256513c5b45297d593359533b2a22133e301b4a351c42311d",
           "width": 1440,
           "height": 3120
-        },
-        {
-          "id": "el-tallador-del-cauce-cb24fb48185e",
-          "title": "El tallador del cauce",
-          "image": "photos/f39c69ad8794c7f37ab1e031.webp",
-          "thumb": "photos/f39c69ad8794c7f37ab1e031-thumb.webp",
-          "dhash": "0018043293491e210b0e0c0f13101316121c1b120f120f16181425211827231a1e1b1226221a30281d3f3122241e1432291f34291e3d2d1f",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
         },
         {
           "id": "la-guardiana-del-claro-93ee0587c03d",
@@ -1900,16 +1195,6 @@
           "image": "photos/e125514e74de5eeee81af746.webp",
           "thumb": "photos/e125514e74de5eeee81af746-thumb.webp",
           "dhash": "1203071e33a32b670b100f0c16180e2127101b1f0d1212281e1b28201c0f17172117112c1a131b181313151217140d13151017161214110e",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-vigia-de-las-cenizas-9394385b9460",
-          "title": "La vigía de las cenizas",
-          "image": "photos/2c8c21df284dda337e597fb0.webp",
-          "thumb": "photos/2c8c21df284dda337e597fb0-thumb.webp",
-          "dhash": "362f111139393c1b38333f3e3c4c37384a30344638343f44404a413b475647542d2a2e2e2b2c2525282f2d342a2527302a2a262424232226",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
@@ -1958,16 +1243,6 @@
           "added": "2026-11-27"
         },
         {
-          "id": "el-pozo-de-las-voces-de0926f96b62",
-          "title": "El pozo de las voces",
-          "image": "photos/fbbb71722f173c3f95da1e4b.webp",
-          "thumb": "photos/fbbb71722f173c3f95da1e4b-thumb.webp",
-          "dhash": "3fffff5766fe7c774c45493c3e452b2f361f22275443423c35362a2b2e212325543d323127232320201f1f205e43393b2e2c282425222224",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
           "id": "la-escoba-de-las-lucierna-4a1150274175",
           "title": "La escoba de las luciérnagas",
           "image": "photos/88c751f913e11a582a6e8a8a.webp",
@@ -1983,36 +1258,6 @@
           "image": "photos/24d9db4dd6b046db2479aa4a.webp",
           "thumb": "photos/24d9db4dd6b046db2479aa4a-thumb.webp",
           "dhash": "1f0f1bcf6d2b9e230d181c1e292c1a25280d181c302f2d3f3227342a221d1f1d4d38284a2b193820172f2118493224644029563927473223",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-costurera-de-la-lluvia-1e341fa83d01",
-          "title": "La costurera de la lluvia",
-          "image": "photos/1eddac8f2b3d9be286ad61c8.webp",
-          "thumb": "photos/1eddac8f2b3d9be286ad61c8-thumb.webp",
-          "dhash": "0f1c65c199cc6641757e6a828d7f7e8a817881786e6e5e716455777365797c6f5148375d48385b473a4e4d415b5e465a59495f61595d635b",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "el-equipaje-de-la-manana-e077a71ec950",
-          "title": "El equipaje de la mañana",
-          "image": "photos/a7de0476a6fdaf70bbdd1ebe.webp",
-          "thumb": "photos/a7de0476a6fdaf70bbdd1ebe-thumb.webp",
-          "dhash": "21022d61632124044e5147636b6f7e92a694afcb5a6065786f689987788a90984f4a3f5e534b8b73619f8374463c26584d415a53525f6068",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "el-panadero-de-las-sombra-6246c75401b3",
-          "title": "El panadero de las sombras",
-          "image": "photos/d845d3d95dfb199af136c77b.webp",
-          "thumb": "photos/d845d3d95dfb199af136c77b-thumb.webp",
-          "dhash": "ab77373733732a069c6a529e6b589766586b4b3e7b55478660547a5a4d5940318d694c946d4b99714d9d7551875c308b5e32895f32845b2d",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
@@ -2034,29 +1279,11 @@
       "title": "Sueños y memorias",
       "items": [
         {
-          "id": "el-abrigo-de-ayer-3f9f39de8eff",
-          "title": "El abrigo de ayer",
-          "image": "photos/f9b54402aaf3474ea7386c63.webp",
-          "thumb": "photos/f9b54402aaf3474ea7386c63-thumb.webp",
-          "dhash": "7c7329160e0e9c1f221f0e1b1a0c16160a16160b13140a1a180b1a180a141409201d0c3f2d0f3e2c0f1c1a0b2a220c3f2d0f392a0e27200b",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "el-tren-de-la-infancia-d834347357f8",
           "title": "El tren de la infancia",
           "image": "photos/eff9424e719201552f0cf3a5.webp",
           "thumb": "photos/eff9424e719201552f0cf3a5-thumb.webp",
           "dhash": "f4f3e78ddedcf5033e261a2015101e140f1b130e281c132b1b132a1c142118124026164326163420152d1d13452a19462817432817422717",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-almohada-de-lluvia-69d70f714bc7",
-          "title": "La almohada de lluvia",
-          "image": "photos/72cc1cf7e2b07275e7ec46ce.webp",
-          "thumb": "photos/72cc1cf7e2b07275e7ec46ce-thumb.webp",
-          "dhash": "0202098d8c02860013212d1927341c2b391b2b3a1a2834293543333f4e2a3a4c22272e30343b43454e3b3f49242528323234474549494a54",
           "width": 1440,
           "height": 3120
         },
@@ -2068,16 +1295,6 @@
           "dhash": "fe7f7fdf777b3f1f5131364d2e3246292d41262a653e3f5b37394d2f31472a2e9b625781514a5e3b3b5433357e4f4a84534d623e3e4f3134",
           "width": 1440,
           "height": 3120
-        },
-        {
-          "id": "el-disco-de-la-siesta-2e0656c2175c",
-          "title": "El disco de la siesta",
-          "image": "photos/58906b0ecaaf65dbb3027e7d.webp",
-          "thumb": "photos/58906b0ecaaf65dbb3027e7d-thumb.webp",
-          "dhash": "3f7f7f97b4f6e775e8c3bfe0c0c7d5b7c5ccaebfe9c3b9e0bdbfd7b5beceadbbc29078a57c73a17b769d7879b17c608c5c48794b3c744739",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
         },
         {
           "id": "el-lapiz-del-sueno-2996f3fa8de2",
@@ -2125,33 +1342,6 @@
           "height": 3120
         },
         {
-          "id": "el-musico-del-bosque-fc987283a6c6",
-          "title": "El músico del bosque",
-          "image": "photos/1429966c07888c849f3c7473.webp",
-          "thumb": "photos/1429966c07888c849f3c7473-thumb.webp",
-          "dhash": "4111084e0f4c078722172022161f2317202217202418222b1d242b1d242519212e20253c29293d28262e2124392826402d28442f28382724",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-jardinera-del-asfalto-0616d9760d03",
-          "title": "La jardinera del asfalto",
-          "image": "photos/29abb45157449488292dfd49.webp",
-          "thumb": "photos/29abb45157449488292dfd49-thumb.webp",
-          "dhash": "08508e2b33616817252d2b252e2c242d2b252d2b3b3e3d3f3f3b3e3f3a3a3d3c484744403f374040384847443e3e383c3d343c3c343e3e38",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-mujer-que-siembra-nube-6ecc8a781057",
-          "title": "La mujer que siembra nubes",
-          "image": "photos/8604c972b9e6f8ba27d3eca8.webp",
-          "thumb": "photos/8604c972b9e6f8ba27d3eca8-thumb.webp",
-          "dhash": "450b53b3f1e6a3016639336638326639336439327f4d427545376c3f336f423a935a4279452e794834804e3d663926663a277b4b3782503c",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "estatua-y-edificios-1956af438d68",
           "title": "Estatua y edificios",
           "image": "photos/a660ad101bdfb5ccfcc47d74.webp",
@@ -2179,41 +1369,11 @@
           "height": 3120
         },
         {
-          "id": "la-guardiana-de-las-semil-a9d0c6482500",
-          "title": "La guardiana de las semillas",
-          "image": "photos/92323626a4e1c8d082057187.webp",
-          "thumb": "photos/92323626a4e1c8d082057187-thumb.webp",
-          "dhash": "01010c307069f0177f99c1829bc3849dc4849dc49bacca949aaea0a5b9aeb6cd797c876c52457c64598a90a1674c31634029654c34665e52",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
           "id": "el-puente-de-las-raices-8fbb4fc0ef1e",
           "title": "El puente de las raíces",
           "image": "photos/d46ab8f3ee6ce519f75b5081.webp",
           "thumb": "photos/d46ab8f3ee6ce519f75b5081-thumb.webp",
           "dhash": "01013533072f26e6a3a99da9aea2afb3a5b1b4a6949988949886989b89989d8a5d5f396c6f556a6e575455374b4c235552355b5b493c3b25",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "el-tejedor-de-mareas-c40502d68a26",
-          "title": "El tejedor de mareas",
-          "image": "photos/9e5e6d57c156995903d28308.webp",
-          "thumb": "photos/9e5e6d57c156995903d28308-thumb.webp",
-          "dhash": "112752b23333b3519cafc49cafc59cb0c59cafc4a4b2c2999eaa9b9ea9a5b3c37e817e6d5b5576615585847c5d532f5d4b3162553f635d4b",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-nieve-que-escucha-230b171136c3",
-          "title": "La nieve que escucha",
-          "image": "photos/ef799408c4d51f073f53fcfc.webp",
-          "thumb": "photos/ef799408c4d51f073f53fcfc-thumb.webp",
-          "dhash": "09231b726170230f997e999a809b9a809b997f9ab3879a907383937685ba8d9e876f812d3a444b4a54a27f927b68777d6f7e857a8f897b95",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
@@ -2224,15 +1384,6 @@
       "id": "la-gravedad-de-las-cosas",
       "title": "La gravedad de las cosas",
       "items": [
-        {
-          "id": "el-hilo-de-plomo-ce9e95fd74de",
-          "title": "El hilo de plomo",
-          "image": "photos/0bb7e1e5848d3689aa9f66d7.webp",
-          "thumb": "photos/0bb7e1e5848d3689aa9f66d7-thumb.webp",
-          "dhash": "0f0f070b0f0e171347593a64765160734f485a3a3d4e31495a3a495b3a4152344756365d6c475e6c4755623e65734d7a885d7b885d737e53",
-          "width": 1440,
-          "height": 3120
-        },
         {
           "id": "el-paraguas-de-piedra-36fc94bfe624",
           "title": "El paraguas de piedra",
@@ -2266,16 +1417,6 @@
           "image": "photos/78dd0b4cfb723db557f8de9b.webp",
           "thumb": "photos/78dd0b4cfb723db557f8de9b-thumb.webp",
           "dhash": "2307032c6917331f121f1e1e2e2d31413f243332101d1c1825231f2a27232a25272e2a33362e474233464031393930494233544632493f2e",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
-          "id": "el-libro-de-la-pared-4138807644d6",
-          "title": "El libro de la pared",
-          "image": "photos/3b599c64031143c1e980018d.webp",
-          "thumb": "photos/3b599c64031143c1e980018d-thumb.webp",
-          "dhash": "8707831981871383281313331818381c1d2b1818411d1c4a24224d2826472826381c1a6039308a59486d423925141235221d50372f48322d",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-26"
@@ -2325,47 +1466,11 @@
           "height": 3120
         },
         {
-          "id": "la-liebre-del-pedernal-7743a677ba67",
-          "title": "La liebre del pedernal",
-          "image": "photos/a7d5812a710afb124c991d2e.webp",
-          "thumb": "photos/a7d5812a710afb124c991d2e-thumb.webp",
-          "dhash": "088854cc0c1c1327101827111828111829111a2c131c2f1c24341b2233141d31242d403a3f4e2b33471f2a4129324637405538435a333e57",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-salamandra-de-las-bras-c5c4a4843fae",
-          "title": "La salamandra de las brasas",
-          "image": "photos/95153661f69087778cc429bc.webp",
-          "thumb": "photos/95153661f69087778cc429bc-thumb.webp",
-          "dhash": "63850d0e3378623b1f14191d131921161e21151d21161c2b1a202e1c2426192039242a341e22321e23362026362227311e222d1c202d1b1f",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "bosque-178cb5d325ea",
-          "title": "Bosque",
-          "image": "photos/c6bceaa37f1b697287fff522.webp",
-          "thumb": "photos/c6bceaa37f1b697287fff522-thumb.webp",
-          "dhash": "060e0b27376c191f745f42ad997eb9ab96988f79857962a99985a99a868579656d614879695273634d6559424135205d4c3a493b2c433827",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "cielo-4-5dd262c5595a",
           "title": "Cielo 4",
           "image": "photos/92c379f6dd308fb049bbf682.webp",
           "thumb": "photos/92c379f6dd308fb049bbf682-thumb.webp",
           "dhash": "0f0f334d1daa6004384c52687a7e66797e40575e35484c4c5b5c505f603b515644565960686353616144595d3a3b353d3e354247414b5350",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "cielo-7-48cb41967b63",
-          "title": "Cielo 7",
-          "image": "photos/186750c7e81c8d961ba378fa.webp",
-          "thumb": "photos/186750c7e81c8d961ba378fa-thumb.webp",
-          "dhash": "010201c937677130867e769e979db4a7afc0acb0a49390b4988ec39f8bc4a48a7a746c7966567d756f66696a6756305f4f316558387b735e",
           "width": 1440,
           "height": 3120
         },
@@ -2379,40 +1484,11 @@
           "height": 3120
         },
         {
-          "id": "retrato-y-bajo-el-agua-988f74135ac3",
-          "title": "Retrato y bajo el agua",
-          "image": "photos/48097fc575322b7ba19d096d.webp",
-          "thumb": "photos/48097fc575322b7ba19d096d-thumb.webp",
-          "dhash": "03832f6363d363630f2a341539492d5567274c5e22475522414f3753612e53622b484d293f43495f643558622736361a2f324055582b4a53",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-esfinge-del-viento-sec-8d2b64a940a6",
-          "title": "La esfinge del viento seco",
-          "image": "photos/a8e09fff92aa1be3e2f99490.webp",
-          "thumb": "photos/a8e09fff92aa1be3e2f99490-thumb.webp",
-          "dhash": "1b1f1161670105c31a2e2d344944273e3d23353333403a3c433b575546666350373127423526634c345c503d28211935281c4d3522563b25",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
           "id": "el-fenix-de-las-cenizas-f-d0b91aac28a0",
           "title": "El fénix de las cenizas frías",
           "image": "photos/483a87a403e041593a34a58d.webp",
           "thumb": "photos/483a87a403e041593a34a58d-thumb.webp",
           "dhash": "0303012527254503051e240e2c31183338202e2f202f30333834554c3f694a351d201f2724203c2e24372e251111111814121e1714171715",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-26"
-        },
-        {
-          "id": "el-hipocampo-de-la-tormen-c456d6a8c40c",
-          "title": "El hipocampo de la tormenta",
-          "image": "photos/f1f917fe277388c172a2113a.webp",
-          "thumb": "photos/f1f917fe277388c172a2113a-thumb.webp",
-          "dhash": "3b1f076145373104112a2e1e3d4116363c102a2e1b313428373746493f4844372c35333b3b3359473360462f232a262b342f2f373337372f",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-26"
@@ -2433,33 +1509,6 @@
       "id": "retratos-surrealistas",
       "title": "Retratos surrealistas",
       "items": [
-        {
-          "id": "el-rostro-prestado-b9e20774ec37",
-          "title": "El rostro prestado",
-          "image": "photos/550b5caaee404cd3266530e8.webp",
-          "thumb": "photos/550b5caaee404cd3266530e8-thumb.webp",
-          "dhash": "173f3769594d8d1f242e3a242f3b202c381d28352b36422e394524303c222e3b27323e37414d26313d1d28351b2633343f4b212c38101c29",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-luz-de-espaldas-14d56c80c044",
-          "title": "La luz de espaldas",
-          "image": "photos/4cbf8b90eb72470cde065bb5.webp",
-          "thumb": "photos/4cbf8b90eb72470cde065bb5-thumb.webp",
-          "dhash": "3111336466f2e84026291b282b1c2a2d1e2d30212e32223131213b3825323525292c1e2828183f371f3233221b1e14181c111b1d1223251a",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-piel-del-silencio-556b2c15e89f",
-          "title": "La piel del silencio",
-          "image": "photos/2acd9e5e2743dde5c8ef62f1.webp",
-          "thumb": "photos/2acd9e5e2743dde5c8ef62f1-thumb.webp",
-          "dhash": "231b271959e4cc174e353f5037415037414e353f563a455e4149543a435338435036414f373e4731394d343f48303a462f38472f3948303a",
-          "width": 1440,
-          "height": 3120
-        },
         {
           "id": "la-voz-de-arcilla-1fe6ab59b3ea",
           "title": "La voz de arcilla",
@@ -2488,15 +1537,6 @@
           "height": 3120
         },
         {
-          "id": "retrato-4-d625701d221d",
-          "title": "Retrato 4",
-          "image": "photos/c80e4c29353e93951c8a46f3.webp",
-          "thumb": "photos/c80e4c29353e93951c8a46f3-thumb.webp",
-          "dhash": "3c312366c18494b4353e3b304242193843263c4223363b322f28504a3e4b5551383129442f1e6c4e33715c46381f11311f122f2014443424",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "retrato-6-22c536bd6aeb",
           "title": "Retrato 6",
           "image": "photos/22f3bc7d1a13fdae038cbae8.webp",
@@ -2515,92 +1555,11 @@
           "height": 3120
         },
         {
-          "id": "retrato-8-55b1b5b771aa",
-          "title": "Retrato 8",
-          "image": "photos/91ea52502907fd286d7f9389.webp",
-          "thumb": "photos/91ea52502907fd286d7f9389-thumb.webp",
-          "dhash": "4808042619a1e8581732381a39411e3f4621424a213f443747444d58523f5a5d4149404a483851514275705f4847394241324e4a3b74644d",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "retrato-9-9bd69bef77ee",
-          "title": "Retrato 9",
-          "image": "photos/464f0eaca92b8b441b1efc1d.webp",
-          "thumb": "photos/464f0eaca92b8b441b1efc1d-thumb.webp",
-          "dhash": "061b25c62d9c3a63810403830604880604830201770f0b562218852e20910503581b154c31234a22195b0e0c271c172f211b1c18151c1512",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "retrato-y-cielo-3-673390813c5d",
-          "title": "Retrato y cielo 3",
-          "image": "photos/ca8883852778ca90532becec.webp",
-          "thumb": "photos/ca8883852778ca90532becec-thumb.webp",
-          "dhash": "6918e4c66c47030b48443d4d3f36513e3349423a73462c643a229b522a8c56388047297b4f2ca1663b8c5d3c6138207a4b2a846441725135",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "retrato-y-cielo-df7071c3dd0a",
-          "title": "Retrato y cielo",
-          "image": "photos/0bf96e05d390e3fce0dce9b7.webp",
-          "thumb": "photos/0bf96e05d390e3fce0dce9b7-thumb.webp",
-          "dhash": "1f0f19e9e5ecda2218393c2549491c3f430f2d36654c355a4d3b594737674a37823e194b2f1d603f29703f282c1e15171a191b18152a1c16",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "retrato-y-rocas-032de12745d5",
-          "title": "Retrato y rocas",
-          "image": "photos/3debabfd1447d0e82cb72ea3.webp",
-          "thumb": "photos/3debabfd1447d0e82cb72ea3-thumb.webp",
-          "dhash": "81022261e88c3a252c474c324c524554554958586267615852476f5e4d8e7f6b6b5b465f4c356b4f32a171484d3d26503a1f52351d5b371d",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "retrato-2d6f7bae32ed",
           "title": "Retrato",
           "image": "photos/b1d47f56050392f740c2fcec.webp",
           "thumb": "photos/b1d47f56050392f740c2fcec-thumb.webp",
           "dhash": "05d084e6e463600c14242a17242b19262c1b2b304629244c171375271d633530774636652f1b97492aa4624a68392a6e3e29824d33996c51",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-hombre-de-los-parpados-d9cf0f2f6179",
-          "title": "El hombre de los párpados dorados",
-          "image": "photos/47422fb1691b6f7d790b0090.webp",
-          "thumb": "photos/47422fb1691b6f7d790b0090-thumb.webp",
-          "dhash": "1b134d1d4ccd272c2122122526142425142123132021123e321e3129161f2112262516372e1c3229172322132924142c26162b2515211e11",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-perfil-de-lluvia-8ab172bdfbc4",
-          "title": "El perfil de lluvia",
-          "image": "photos/505f325d73120ef8ad2e5977.webp",
-          "thumb": "photos/505f325d73120ef8ad2e5977-thumb.webp",
-          "dhash": "03031d662f2fe3a1101f21122226122428112025122124182426242f3015242814272c1e303526343614252a0d1d210e1d220f20260e2025",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-retrato-que-se-borra-c889227b6a71",
-          "title": "El retrato que se borra",
-          "image": "photos/c5768333e1b134251c7f4cea.webp",
-          "thumb": "photos/c5768333e1b134251c7f4cea-thumb.webp",
-          "dhash": "23330d0d4d49132e221d23231e25262028241e25231e24362f353c343b231f252a232d423a42433b442f28322a242b322b333029322b252d",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-mano-de-la-sombra-b96ac7cb944c",
-          "title": "La mano de la sombra",
-          "image": "photos/7900a93c399e26d16b1104f3.webp",
-          "thumb": "photos/7900a93c399e26d16b1104f3-thumb.webp",
-          "dhash": "0f0f0b194cf88c8e6233296e392d6937315f3231743d2c8b4f3b874a368046346d372d6c353062322f6b3b315b2d2d633130562d2d462729",
           "width": 1440,
           "height": 3120
         }
@@ -2625,15 +1584,6 @@
           "image": "photos/155a4da89b55c65ffb2fddcd.webp",
           "thumb": "photos/155a4da89b55c65ffb2fddcd-thumb.webp",
           "dhash": "f9fd7f3f1f1d081861351d3f1d0f2b1008270e084f2b1745211334160d2a120b33180e4c21143b190f2f180f2a0e0939140c2d120b2d170f",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-helecho-de-humo-837a4790e0cf",
-          "title": "El helecho de humo",
-          "image": "photos/7fcf059fdbfc7190fd861eff.webp",
-          "thumb": "photos/7fcf059fdbfc7190fd861eff-thumb.webp",
-          "dhash": "6083030d0dcf2f170e1a150e1d1a193437244b52102224162f2e1d3d3d1e3e441831341b3f3d1c40411c393f1b32321f3d3f1e3e421b3335",
           "width": 1440,
           "height": 3120
         },
@@ -2665,50 +1615,11 @@
           "height": 3120
         },
         {
-          "id": "plantas-y-cielo-2-e6ca3bfa4dcc",
-          "title": "Plantas y cielo 2",
-          "image": "photos/4b060557eafb3cb7c153add4.webp",
-          "thumb": "photos/4b060557eafb3cb7c153add4-thumb.webp",
-          "dhash": "24002371b1215ed24e535a6a686895897eab9a897e746c87705aab8a67bfa4877c66507a5e438a6a4a9b7d5f46311647311a412f1b3b2d1b",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-agave-del-pedregal-5c81e1db60f2",
-          "title": "El agave del pedregal",
-          "image": "photos/936e1115a22ced494822cb58.webp",
-          "thumb": "photos/936e1115a22ced494822cb58-thumb.webp",
-          "dhash": "090b19e7f46c797119262919292c18292d17272c3234372a3234263033242e325c453d3f3932282f2a2d3131482e2231261e1d1f1b20201e",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "el-olivo-del-ultimo-sol-9bd3aef5f78e",
-          "title": "El olivo del último sol",
-          "image": "photos/478eac91a8ebbb70033951da.webp",
-          "thumb": "photos/478eac91a8ebbb70033951da-thumb.webp",
-          "dhash": "0701114a0810701d231a25251b27251c28241b26241a252a1f282f212a30212c2a2123382a28452f2d613e3e2e221b3628203629233b2d28",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
           "id": "la-cala-del-agua-negra-bd6c6b2be6f4",
           "title": "La cala del agua negra",
           "image": "photos/11cf029f2593fd97add1d145.webp",
           "thumb": "photos/11cf029f2593fd97add1d145-thumb.webp",
           "dhash": "3f3f27cdcbb7db791a28271829281020200b19191b252327302a1c27240c1a1a34362930352a1e2822111d19282c231924220e1b190d1713",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
-        },
-        {
-          "id": "la-dedalera-del-claro-61b2d8b5895e",
-          "title": "La dedalera del claro",
-          "image": "photos/16f3ce1dc6b497d447f6eeb3.webp",
-          "thumb": "photos/16f3ce1dc6b497d447f6eeb3-thumb.webp",
-          "dhash": "c084080c0524260311170f111810141c13191f15131a131b1f152624192a281a1b1f152f281c5033284a361e1f21132c26143d2c1c302715",
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
@@ -2729,29 +1640,11 @@
           "height": 3120
         },
         {
-          "id": "el-peso-del-cielo-e5f8ecea521a",
-          "title": "El peso del cielo",
-          "image": "photos/7dd457fd983abe7f727d62dc.webp",
-          "thumb": "photos/7dd457fd983abe7f727d62dc-thumb.webp",
-          "dhash": "050c0d0de63163621f301a3c543849644a3249321e3020304534384f3b273b292f45302a3e2d314534334b353249312235262d423139543c",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "la-casa-que-espera-4bcec57df1a6",
           "title": "La casa que espera",
           "image": "photos/c2ffe28bd68e8318be9dea35.webp",
           "thumb": "photos/c2ffe28bd68e8318be9dea35-thumb.webp",
           "dhash": "170b125273f373335d34376036385f35385b333772424272423c6c3f3c6f414299584b9155488b52478b514bae644ca860499f5b489c5848",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-maleta-del-invierno-d60b679cfcb5",
-          "title": "La maleta del invierno",
-          "image": "photos/9a01195c542b04360a934977.webp",
-          "thumb": "photos/9a01195c542b04360a934977-thumb.webp",
-          "dhash": "0000080c0c080c0a0a12180d161d101d251726300f192018262f1e2f3a20333f1521292536402a3e492a3f4d141d22272f332e383d253641",
           "width": 1440,
           "height": 3120
         },
@@ -2784,16 +1677,6 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
-        },
-        {
-          "id": "la-piedra-de-las-pisadas-1512e6498be1",
-          "title": "La piedra de las pisadas",
-          "image": "photos/6bad0fbe8bd888eeff5be0a7.webp",
-          "thumb": "photos/6bad0fbe8bd888eeff5be0a7-thumb.webp",
-          "dhash": "0f1f0f0c40c603233c2d3d493a4b4033452c24332e24334031384a373f3f2e3b3e2c304a353163443d67433f38252348312f563a354b332e",
-          "width": 1440,
-          "height": 3120,
-          "added": "2026-11-27"
         }
       ]
     },
@@ -2801,24 +1684,6 @@
       "id": "retratos-del-mar",
       "title": "Retratos del mar",
       "items": [
-        {
-          "id": "bajo-la-marea-1ede7294d827",
-          "title": "Bajo la marea",
-          "image": "photos/05b55c0447ee8a0ab710ca59.webp",
-          "thumb": "photos/05b55c0447ee8a0ab710ca59-thumb.webp",
-          "dhash": "03031e0f16530d02022e3902313c02333e01313d11383c1d3f3e184142073e45042d350930351b3b3b0d3b41001d27001f2901212b04222c",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "farol-de-regreso-6543ddec7250",
-          "title": "Farol de regreso",
-          "image": "photos/bbdde7f93471329fa6faec14.webp",
-          "thumb": "photos/bbdde7f93471329fa6faec14-thumb.webp",
-          "dhash": "009068e4a3c5cdcf1a404c1a414d1a414e1a424f30484e2a3e4342575b475c603031302d251d5d5249615b56363432433327604f44494b4a",
-          "width": 1440,
-          "height": 3120
-        },
         {
           "id": "vigia-de-la-tormenta-b6a5546d0ff5",
           "title": "Vigía de la tormenta",
@@ -2829,38 +1694,11 @@
           "height": 3120
         },
         {
-          "id": "el-hielo-que-respira-eb4183ef0325",
-          "title": "El hielo que respira",
-          "image": "photos/41453490d5b912afabd85466.webp",
-          "thumb": "photos/41453490d5b912afabd85466-thumb.webp",
-          "dhash": "939fabc9ddcc9bd90d2c320c2d320a2c32072a312b37332438361e363719343761462b52432e373c3126363229281e26281f1424220b2122",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-red-de-vidrio-e7788c8d60fb",
-          "title": "La red de vidrio",
-          "image": "photos/5f45a377c014f684cafd92d4.webp",
-          "thumb": "photos/5f45a377c014f684cafd92d4-thumb.webp",
-          "dhash": "000303171315111b132c31172f332535352a3736383d36454136574632514434403526523d27624023573e272c21123b2a15372a193a301f",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "cielo-3-e927135bdb23",
           "title": "Cielo 3",
           "image": "photos/3836963c47cc2e8ebc02a110.webp",
           "thumb": "photos/3836963c47cc2e8ebc02a110-thumb.webp",
           "dhash": "040d0d5f3b3939272a1f3c3c2c533f3c682a445f684a6b6e657f4d60762e526161576665565e3b3d4936414e3d36463838431e2b371f2e3a",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "retrato-5-cac9e19ae803",
-          "title": "Retrato 5",
-          "image": "photos/3ba61827b779616eeb46741f.webp",
-          "thumb": "photos/3ba61827b779616eeb46741f-thumb.webp",
-          "dhash": "371f17616172908344646b4a6c74375c67284e58536f7551696d576d7059747a4b6062434a47555650777e791e383c3042444b55524f5854",
           "width": 1440,
           "height": 3120
         },
@@ -2883,38 +1721,11 @@
           "height": 3120
         },
         {
-          "id": "el-caballito-de-la-marea-b388d47b306d",
-          "title": "El caballito de la marea",
-          "image": "photos/8eb41e471f890777477b32cd.webp",
-          "thumb": "photos/8eb41e471f890777477b32cd-thumb.webp",
-          "dhash": "80a60d4d600470c2192d241430281934292837260d2924182f261a3126112e261d3529243427263426283727453a233f3722413b254a4226",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "la-casa-del-ermitano-b1825c1ae82d",
-          "title": "La casa del ermitaño",
-          "image": "photos/7aa5c193712878f9c1430ddd.webp",
-          "thumb": "photos/7aa5c193712878f9c1430ddd-thumb.webp",
-          "dhash": "070743190e866e0d162829182a2c192b2c17292b1b292927312d1f2d2c19292a3b382856462c423c2b232a242c2a1c3b33213b3829303328",
-          "width": 1440,
-          "height": 3120
-        },
-        {
           "id": "el-pulso-de-la-medusa-6f001edcf7a7",
           "title": "El pulso de la medusa",
           "image": "photos/d93e3d3b283804de4dd84c17.webp",
           "thumb": "photos/d93e3d3b283804de4dd84c17-thumb.webp",
           "dhash": "41734f4d498b130d071b2c041c2c091c2e0e1a2e0418270f22320f20310517260f1c3016253814293c1022371e2a3f27324529334828293f",
-          "width": 1440,
-          "height": 3120
-        },
-        {
-          "id": "el-vigia-de-la-espuma-567fc0dd138d",
-          "title": "El vigía de la espuma",
-          "image": "photos/f72ea82a177cf88585df7cb7.webp",
-          "thumb": "photos/f72ea82a177cf88585df7cb7-thumb.webp",
-          "dhash": "03000510302663631d35352942403f534c46574f2a3f3c2d403c3548423d4f482f413b29322a3f43354b51422b3932242a203d3e2e454c3e",
           "width": 1440,
           "height": 3120
         }
