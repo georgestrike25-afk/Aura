@@ -89,6 +89,7 @@ data class ClockDesign(
     val showWeather: Boolean = true,
     val informationMode: ClockInformationMode? = null,
     val informationStyles: Map<ClockInformationField, ClockInformationStyle> = emptyMap(),
+    val informationArrangement: ClockInformationArrangement? = null,
     val hourFormat: HourFormat = HourFormat.SYSTEM,
     /** Con máscara de profundidad: el sujeto de la foto queda delante del reloj. */
     val behindSubject: Boolean = true,

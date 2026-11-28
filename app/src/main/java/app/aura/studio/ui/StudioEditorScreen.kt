@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -62,6 +64,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -69,6 +73,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.aura.R
 import app.aura.core.studio.ClockInformationMode
 import app.aura.core.studio.ClockInformationStyle
+import app.aura.core.studio.ClockInformationSet
+import app.aura.core.studio.editInformation
+import app.aura.core.studio.selectedInformationMode
 import app.aura.core.studio.fields
 import app.aura.core.studio.informationStyle
 import app.aura.core.studio.ClockMaterial
@@ -86,7 +93,7 @@ import app.aura.ui.theme.Aura
 import kotlin.math.roundToInt
 
 private enum class EditorTab(val label: String) {
-    FRAME("Encuadre"), CLOCK("Reloj"), DIGITS("Dígitos"), ADJUST("Ajuste"), WARP("Deformar"), EFFECTS("Efectos"), ATMOSPHERE("Ambiente"), DEPTH("Capas"), EXPORT("Exportar")
+    FRAME("Encuadre"), CLOCK("Reloj"), INFORMATION("Fecha y clima"), DIGITS("Dígitos"), ADJUST("Ajuste"), WARP("Deformar"), EFFECTS("Efectos"), ATMOSPHERE("Ambiente"), DEPTH("Capas"), EXPORT("Exportar")
 }
 
 @Composable
@@ -241,7 +248,7 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, autoDesign
                                 }
                             },
                             onEnd = { if (tab == EditorTab.DIGITS) viewModel.endDigitGesture() else viewModel.commit() },
-                            enabled = tab != EditorTab.WARP,
+                            enabled = tab != EditorTab.WARP && tab != EditorTab.INFORMATION,
                             onTap = if (tab == EditorTab.DIGITS) { off -> if (area.width > 0) viewModel.selectAt(off.x / area.width, off.y / area.height) } else null,
                         ),
                 ) {
@@ -263,6 +270,7 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, autoDesign
                             when (tab) {
                                 EditorTab.FRAME -> "Arrastrá y pellizcá para encuadrar la foto"
                                 EditorTab.ADJUST -> "Dos dedos: mover, escalar y girar el reloj"
+                                EditorTab.INFORMATION -> "Elegí un modo y un conjunto"
                                 EditorTab.WARP -> "Arrastrá las esquinas doradas para deformar los números"
                                 EditorTab.DIGITS -> "Tocá un número para elegirlo; arrastrá, pellizcá o girá con dos dedos"
                                 else -> "Arrastrá y pellizcá para mover y escalar el reloj"
@@ -303,6 +311,7 @@ fun StudioEditorScreen(viewModel: StudioViewModel, projectId: String, autoDesign
                     when (tab) {
                         EditorTab.FRAME -> FramePanel(viewModel, project)
                         EditorTab.CLOCK -> ClockPanel(viewModel, project)
+                        EditorTab.INFORMATION -> InformationPanel(viewModel, project, busy == null)
                         EditorTab.DIGITS -> DigitsPanel(viewModel, project)
                         EditorTab.ADJUST -> AdjustPanel(viewModel, project)
                         EditorTab.WARP -> WarpPanel(viewModel, project)
@@ -400,16 +409,62 @@ private fun ColumnScope.ClockPanel(vm: StudioViewModel, p: StudioProject) {
         OutlinedButton(onClick = { vm.design { it.copy(centerX = 0.5f, centerY = 0.28f) } }) { Text("Arriba") }
         OutlinedButton(onClick = { vm.design { it.copy(centerX = 0.5f, centerY = 0.5f) } }) { Text("Medio") }
     }
-    Text("Fecha y clima", style = MaterialTheme.typography.titleMedium)
-    Chips(listOf(null to "Original") + ClockInformationMode.entries.map { it to it.label }, d.informationMode) { mode ->
-        vm.design { it.copy(informationMode = mode) }
+    Segmented(listOf(HourFormat.SYSTEM to "Como la app", HourFormat.H12 to "12 h", HourFormat.H24 to "24 h"), d.hourFormat, { f -> vm.design { it.copy(hourFormat = f) } })
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ColumnScope.InformationPanel(vm: StudioViewModel, project: StudioProject, ready: Boolean) {
+    val d = project.design
+    val mode = d.selectedInformationMode
+    val arrangement = d.informationArrangement
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        ClockInformationMode.entries.forEach { choice ->
+            FilterChip(
+                selected = mode == choice,
+                enabled = ready,
+                onClick = {
+                    vm.design { it.copy(informationMode = choice.takeUnless { it == ClockInformationMode.ORIGINAL }) }
+                    // Ubicar solo al elegir un modo con datos (abrir la pestaña no cambia el diseño).
+                    if (choice != ClockInformationMode.PURE && choice != ClockInformationMode.ORIGINAL) vm.suggestInformationLayout(project.id)
+                },
+                label = { Text(choice.label) },
+                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Aura.tokens.accent.copy(alpha = 0.25f)),
+            )
+        }
     }
-    d.informationMode?.fields()?.forEach { field ->
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            arrangement?.set?.description ?: "Conjuntos",
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        TextButton(enabled = ready, onClick = { vm.applyInformationSet() }) {
+            Text(if (arrangement?.automatic == true) "Recalcular" else "Automático")
+        }
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        ClockInformationSet.entries.forEachIndexed { index, set ->
+            FilterChip(
+                selected = arrangement?.set == set,
+                enabled = ready,
+                onClick = { vm.applyInformationSet(set) },
+                label = { Text((index + 1).toString()) },
+                modifier = Modifier.semantics { contentDescription = set.label },
+                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = Aura.tokens.accent.copy(alpha = 0.25f)),
+            )
+        }
+    }
+    if (mode == ClockInformationMode.PURE) {
+        Text("Solo el reloj", style = MaterialTheme.typography.bodySmall, color = Aura.tokens.mutedText)
+    }
+    val fields = mode.fields().filter { mode != ClockInformationMode.ORIGINAL || arrangement != null }
+    fields.forEach { field ->
         val style = d.informationStyle(field)
         var expanded by rememberSaveable(field) { mutableStateOf(false) }
         fun change(live: Boolean = false, transform: (ClockInformationStyle) -> ClockInformationStyle) {
             val update: (app.aura.core.studio.ClockDesign) -> app.aura.core.studio.ClockDesign = {
-                it.copy(informationStyles = it.informationStyles + (field to transform(it.informationStyle(field))))
+                it.editInformation(field, transform(it.informationStyle(field)))
             }
             if (live) vm.designLive(update) else vm.design(update)
         }
@@ -425,7 +480,7 @@ private fun ColumnScope.ClockPanel(vm: StudioViewModel, p: StudioProject) {
             StudioSlider("Opacidad", style.opacity.toFloat(), 0f..100f, "${style.opacity} %", { v -> change(true) { it.copy(opacity = v.roundToInt()) } }, vm::commit)
         }
     }
-    if (d.informationMode == null) {
+    if (mode == ClockInformationMode.ORIGINAL) {
         LabeledRow("Fecha") { Switch(d.showDate, { v -> vm.design { it.copy(showDate = v) } }) }
         if (d.showDate) {
             Segmented(
@@ -435,7 +490,6 @@ private fun ColumnScope.ClockPanel(vm: StudioViewModel, p: StudioProject) {
         }
         LabeledRow("Clima de Aura", supporting = "Temperatura y ciudad de la última actualización") { Switch(d.showWeather, { v -> vm.design { it.copy(showWeather = v) } }) }
     }
-    Segmented(listOf(HourFormat.SYSTEM to "Como la app", HourFormat.H12 to "12 h", HourFormat.H24 to "24 h"), d.hourFormat, { f -> vm.design { it.copy(hourFormat = f) } })
 }
 
 @Composable

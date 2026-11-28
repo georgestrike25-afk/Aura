@@ -18,6 +18,10 @@ import app.aura.aura
 import app.aura.core.studio.AutoDesign
 import app.aura.core.studio.ArtisticClock
 import app.aura.core.studio.ClockDesign
+import app.aura.core.studio.ClockInformationLayouts
+import app.aura.core.studio.ClockInformationMode
+import app.aura.core.studio.ClockInformationSet
+import app.aura.core.studio.selectedInformationMode
 import app.aura.core.studio.Fusion
 import app.aura.core.studio.EdgeSelection
 import app.aura.core.studio.SubjectPick
@@ -414,6 +418,49 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
     private val recentFonts = ArrayDeque<String>()
     private var recentStyles = emptySet<AutoDesign.Style>()
 
+    fun suggestInformationLayout(projectId: String) {
+        val p = current ?: return
+        val arrangement = p.design.informationArrangement
+        val auto = arrangement?.automatic ?: p.design.informationStyles.isEmpty()
+        if (p.id == projectId && auto) applyInformationSet()
+    }
+
+    fun applyInformationSet(set: ClockInformationSet? = null) {
+        val project = current ?: return
+        if (_busy.value != null) return
+        _busy.value = "Ubicando fecha y clima…"
+        viewModelScope.launch {
+            try {
+                val arrangement = withContext(Dispatchers.Default) {
+                    val snapshot = app.weather.cached()
+                    val settings = app.settings.current()
+                    val now = _now.value
+                    val design = project.design
+                    val (w, h) = previewSize
+                    val painter = ClockPainter(StudioFonts.resolver(getApplication()))
+                    val extras = ClockExtrasBuilder.build(getApplication(), design, settings, snapshot, now)
+                    val obstacles = painter.informationObstacles(w, h, design, extras)
+                    val texts = listOf(ClockInformationMode.FULL, ClockInformationMode.AMBIENT).flatMap { mode ->
+                        ClockExtrasBuilder.build(getApplication(), design.copy(informationMode = mode), settings, snapshot, now).information
+                    }.toMap().mapValues { it.value.length }
+                    val analysisWidth = 96
+                    val analysisHeight = (analysisWidth * h / w.toFloat()).roundToInt().coerceAtLeast(1)
+                    val tint = AtmospherePainter.tintFor(project.atmosphere, now, snapshot)
+                    val (pixels, subject) = renderLock.withLock { samplePhoto(project, analysisWidth, analysisHeight, tint) }
+                    ClockInformationLayouts(analysisWidth, analysisHeight, pixels, subject, obstacles, texts)
+                        .arrange(design.selectedInformationMode, set)
+                }
+                if (current == project) design { it.copy(informationArrangement = arrangement) }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                if (current?.id == project.id) _message.value = "No se pudo ubicar la fecha y el clima. Podés volver a intentar."
+            } finally {
+                _busy.value = null
+            }
+        }
+    }
+
     fun generateProposals() {
         val project = current ?: return
         if (_busy.value != null) return
@@ -430,30 +477,11 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
                 val analysisHeight = (analysisWidth * h / w.toFloat()).roundToInt()
                 val designs = withContext(Dispatchers.Default) {
                     renderLock.withLock {
-                        val src = checkNotNull(previewPhoto)
-                        val sample = Bitmap.createBitmap(analysisWidth, analysisHeight, Bitmap.Config.ARGB_8888)
-                        try {
-                            compositor.drawPhoto(Canvas(sample), analysisWidth, analysisHeight, src, project)
-                            val pixels = IntArray(analysisWidth * analysisHeight)
-                            sample.getPixels(pixels, 0, analysisWidth, 0, 0, analysisWidth, analysisHeight)
-                            val subject = currentMask(project)?.let { m ->
-                                sample.eraseColor(Color.TRANSPARENT)
-                                val matrix = compositor.photoMatrix(analysisWidth, analysisHeight, src, project).apply {
-                                    preScale(src.width / m.width.toFloat(), src.height / m.height.toFloat())
-                                }
-                                Canvas(sample).drawBitmap(m, matrix, Paint(Paint.FILTER_BITMAP_FLAG))
-                                IntArray(pixels.size).also {
-                                    sample.getPixels(it, 0, analysisWidth, 0, 0, analysisWidth, analysisHeight)
-                                    if (project.mask.inverted) for (index in it.indices) it[index] = it[index].inv()
-                                }
-                            }
-                            AutoDesign.propose(
-                                pixels, analysisWidth, analysisHeight, subject, round, reference, themedFonts,
-                                salt = proposalSalt, avoidFonts = recentFonts.toSet(), recentStyles = recentStyles,
-                            )
-                        } finally {
-                            sample.recycle()
-                        }
+                        val (pixels, subject) = samplePhoto(project, analysisWidth, analysisHeight)
+                        AutoDesign.propose(
+                            pixels, analysisWidth, analysisHeight, subject, round, reference, themedFonts,
+                            salt = proposalSalt, avoidFonts = recentFonts.toSet(), recentStyles = recentStyles,
+                        )
                     }
                 }
                 val previews = designs.map { proposal ->
@@ -844,6 +872,32 @@ class StudioViewModel(application: Application) : AndroidViewModel(application) 
             compositor.render(out, src, m, p.copy(atmosphere = resolved), extras, subject, tint = tint, particlesAt = if (preview) null else 0f)
             if (!preview) subject?.recycle()
             out
+        }
+    }
+
+    /** Muestra de la foto y de su máscara en las mismas coordenadas que el fondo. Requiere renderLock. */
+    private fun samplePhoto(project: StudioProject, width: Int, height: Int, tint: Int = 0): Pair<IntArray, IntArray?> {
+        val src = checkNotNull(previewPhoto)
+        val sample = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        try {
+            val canvas = Canvas(sample)
+            compositor.drawPhoto(canvas, width, height, src, project)
+            AtmospherePainter.drawTint(canvas, tint)
+            fun read() = IntArray(width * height).also { sample.getPixels(it, 0, width, 0, 0, width, height) }
+            val pixels = read()
+            val subject = currentMask(project)?.let { mask ->
+                sample.eraseColor(Color.TRANSPARENT)
+                val matrix = compositor.photoMatrix(width, height, src, project).apply {
+                    preScale(src.width / mask.width.toFloat(), src.height / mask.height.toFloat())
+                }
+                canvas.drawBitmap(mask, matrix, Paint(Paint.FILTER_BITMAP_FLAG))
+                read().also { alpha ->
+                    if (project.mask.inverted) for (i in alpha.indices) alpha[i] = alpha[i].inv()
+                }
+            }
+            return pixels to subject
+        } finally {
+            sample.recycle()
         }
     }
 

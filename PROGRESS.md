@@ -221,7 +221,7 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
 - El pintor filtra el muestreo de texturas. Ventus, Aqua, Lux, Aether e Ignis repiten su desplazamiento
   por ciclos completos, con el mismo intervalo de actualización del fondo.
 - Se validaron localmente las teselas de todos los materiales, incluidas sus uniones horizontales y
-  verticales. Compilación de prueba y capturas del emulador en curso.
+  verticales, salvo el eje vertical de Ignis, que se adapta a la altura del glifo.
 - En la CI de `186d056` pasaron las pruebas de renderizado de Aura Elements y selección inteligente.
   La suite se interrumpió dos veces al comenzar la comprobación exhaustiva de AutoDesign, por cierre
   del proceso durante la instrumentación. Se corrigió la liberación de bitmaps al destruir Studio para
@@ -243,3 +243,31 @@ Copia del arnés: `tools/corecheck/` (ver README ahí).
   (`Signature.titleKey` en la app y `title_key` en el gestor). La app junta las que tengan el mismo nombre (también
   tus fotos con las publicadas); el gestor publica en la que ya existe y une las repetidas en cada cambio. Se unieron
   las tres «Árboles de la vida» (12 obras).
+
+- `d12ed09` superó las 102 pruebas unitarias, lint y 35 pruebas instrumentadas en el emulador
+  Android 14. [CI](https://github.com/georgestrike25-afk/Aura/actions/runs/45912824390).
+  El [APK actualizado](https://github.com/georgestrike25-afk/Aura/releases/download/aura-studio-materials-test/Aura.apk)
+  conserva la firma original. Capturas de los 13 acabados en `docs/capturas/` (`a40476e`).
+
+## Aura Studio · cinco conjuntos de fecha y clima
+
+- Rama de prueba aura-studio-fecha-clima, desde la versión verificada de materiales y selección.
+- La pestaña Fecha y clima del editor muestra Puro, Esencial, Ambiental, Completo y Original. Los
+  conjuntos 1–5 corresponden a las cinco composiciones vistas por el usuario. Todo se aplica al
+  reloj existente. La foto conserva su encuadre y los números conservan su posición.
+- En modo automático, al abrir la pestaña, Aura evalúa las zonas de la foto, el contraste, el
+  solapamiento con las cifras y la máscara si está disponible. La operación se realiza en el teléfono.
+  Los ajustes manuales se conservan y se puede recalcular a pedido. Se guarda la composición por modo,
+  con historial, vista previa, exportación y fondo animado.
+- Se conserva la línea legada de Original en los proyectos que aún no tienen un conjunto. Puro
+  mantiene solo el reloj. Los campos del clima usan la caché existente y dependen de los datos disponibles.
+- Pruebas de core añadidas para los cinco conjuntos, contraste, ubicación del reloj y persistencia.
+  La instrumentación comprueba apertura de la pestaña, selección automática y manual, historial y render.
+- Verificado en 3efd4d1 con 106 pruebas unitarias, lint y 36 pruebas en emulador Android 14.
+  La [CI](https://github.com/georgestrike25-afk/Aura/actions/runs/46083729363) guarda las capturas
+  del editor y de los cinco conjuntos en docs/capturas, commit 5f5f166. El
+  [APK de prueba](https://github.com/georgestrike25-afk/Aura/releases/download/aura-studio-fecha-clima-test/Aura.apk)
+  conserva app.aura y la firma original. Queda pendiente el Galaxy S24+ físico.
+- Revisión al pasar a main: abrir la pestaña ya no cambia el diseño (antes pedía «¿Guardar?» por solo mirar);
+  la ubicación automática corre al elegir Esencial, Ambiental o Completo. Los textos esquivan más al sujeto
+  (penalización 4 en lugar de 1,4: la fecha quedaba encima de la figura).
