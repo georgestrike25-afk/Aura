@@ -187,6 +187,26 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-28"
+        },
+        {
+          "id": "el-corazon-de-la-geoda-e403acef6d3d",
+          "title": "El corazón de la geoda",
+          "image": "photos/ac3ee5bd2be434954046cf0e.webp",
+          "thumb": "photos/ac3ee5bd2be434954046cf0e-thumb.webp",
+          "dhash": "0d150b0d0d0d0b0f22142024162221162121152021162034212b34222c24192320171e45282d462b2f261d251f181c3b25233e28262a2024",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-costura-del-parpado-673b736d6231",
+          "title": "La costura del párpado",
+          "image": "photos/296b5bd1f768d5c1db14e08c.webp",
+          "thumb": "photos/296b5bd1f768d5c1db14e08c-thumb.webp",
+          "dhash": "0101014d0c93270f271c262c232c302933302c36261b2539272939292a2d242e22181e442b20422c242b212522171739241b56362235231d",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
