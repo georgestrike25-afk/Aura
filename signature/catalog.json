@@ -1059,6 +1059,16 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "la-firma-de-la-marea-417a09dd2391",
+          "title": "La firma de la marea",
+          "image": "photos/e8c91d8d413117b6d3c1c682.webp",
+          "thumb": "photos/e8c91d8d413117b6d3c1c682-thumb.webp",
+          "dhash": "03070f0f0f0f0f19091c300b20350c21360a1e33172b3e2b3a4b303e4e1a2e42282c31494a4e4f4f522d30362a25233a33303933312e2828",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
