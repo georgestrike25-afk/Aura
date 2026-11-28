@@ -1139,6 +1139,26 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "la-hamaca-inmovil-430db0c4a5a6",
+          "title": "La hamaca inmóvil",
+          "image": "photos/23fe31f1045080a7ff675db2.webp",
+          "thumb": "photos/23fe31f1045080a7ff675db2-thumb.webp",
+          "dhash": "410531aa0c0636191414141414141414141414141d1c1c21211f222120201f1e55524d615d5766625b605c5654514c65605a67625c65605a",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-huella-de-vidrio-695890f3d2bc",
+          "title": "La huella de vidrio",
+          "image": "photos/4d38cd6636ba78aba2165286.webp",
+          "thumb": "photos/4d38cd6636ba78aba2165286-thumb.webp",
+          "dhash": "12284d8d4c130b041515161a191a1919191515161717183939363232301717184543415554505856534f4d4b49464364605b6c68636b6763",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
