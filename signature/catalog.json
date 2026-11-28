@@ -562,6 +562,36 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-28"
+        },
+        {
+          "id": "la-escalera-que-vuelve-c6553d192608",
+          "title": "La escalera que vuelve",
+          "image": "photos/70002bcef689ab1f1a6b06ce.webp",
+          "thumb": "photos/70002bcef689ab1f1a6b06ce-thumb.webp",
+          "dhash": "fffff3b369f33703808a9170829163798c566f84bda794968a7f81807e7c848a887a6b675947545047555d62242c2d232a28232c2a1d292c",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-torre-de-la-ultima-luz-b255ff346e76",
+          "title": "La torre de la última luz",
+          "image": "photos/ea346ea0addca6be4e27cc43.webp",
+          "thumb": "photos/ea346ea0addca6be4e27cc43-thumb.webp",
+          "dhash": "ffcff7f3d31f447d3b5477385276354f74314c705f6b835560784757734156766f60626b5a56494b553d4a5e3237423137432a3544253344",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-ventana-de-otra-estaci-6b979d50ca11",
+          "title": "La ventana de otra estación",
+          "image": "photos/81eb83677301e640b16416ca.webp",
+          "thumb": "photos/81eb83677301e640b16416ca-thumb.webp",
+          "dhash": "fffff3e9e9b9680395a5ba8396ae748aa66b84a2a2a6ae95867b807a7972869e96969c967b65816f6377839674747c747177717582757e90",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
