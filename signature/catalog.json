@@ -864,6 +864,46 @@
           "dhash": "03060f0e110f0b0d0f050617070919080a1306080f06061f0b0a200c0b130708140709230d10240f101b0b0e19090b250f112710131c0b0e",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-cantaro-del-rescoldo-64734ab64285",
+          "title": "El cántaro del rescoldo",
+          "image": "photos/38b02988de6e6533c808cc43.webp",
+          "thumb": "photos/38b02988de6e6533c808cc43-thumb.webp",
+          "dhash": "13031705a70f0f0d13333616393b17393b14353812302e1d3432223633112b2c1b2b243e2d1b4133231424232122195433164c341f282c27",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-fosforo-de-invierno-014b21eb5f0e",
+          "title": "El fósforo de invierno",
+          "image": "photos/33a8ad1a7091b57062cd10d2.webp",
+          "thumb": "photos/33a8ad1a7091b57062cd10d2-thumb.webp",
+          "dhash": "010101312d0b0345747c8f7b839480879881879883808a8d84889c8e8fa092946163717e6b6b91756f7b7179474b5859515868575958555f",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-brasa-del-herrero-5321dda7784d",
+          "title": "La brasa del herrero",
+          "image": "photos/1bbb5271c5c576e5b24daec2.webp",
+          "thumb": "photos/1bbb5271c5c576e5b24daec2-thumb.webp",
+          "dhash": "0b071b7765252727363d4d373f4f373f4e353c4b4249573c424e3c4250343a4646474c333237373539332c2b2b29293a3330674d3c4e3b31",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-ceniza-que-brota-47aa2aa01caf",
+          "title": "La ceniza que brota",
+          "image": "photos/7e3c58dfe80a080b41c26474.webp",
+          "thumb": "photos/7e3c58dfe80a080b41c26474-thumb.webp",
+          "dhash": "010109243737774d67778a6c7c8e707f917180936473846c7581747a84707e8f3d41453b3f443e444a3d444a312b272b28282a292b262729",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
