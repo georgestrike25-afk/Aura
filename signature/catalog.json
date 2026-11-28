@@ -580,6 +580,46 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-26"
+        },
+        {
+          "id": "el-banquito-de-la-siesta-32d40ace0890",
+          "title": "El banquito de la siesta",
+          "image": "photos/653be9de6d0c12fdfd5c4132.webp",
+          "thumb": "photos/653be9de6d0c12fdfd5c4132-thumb.webp",
+          "dhash": "000167c692010103a29878a79b79a89d7da99d80877c5f8e7754907a5a7f6e5a5a523d6d5b4577634b7b654c4b482f5a4f396a594773604f",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-carrete-de-la-abuela-5462ca1cda6a",
+          "title": "El carrete de la abuela",
+          "image": "photos/979e24c361abe63825ccc691.webp",
+          "thumb": "photos/979e24c361abe63825ccc691-thumb.webp",
+          "dhash": "070f1717114360c8b1a891b5ab95b5ac96b1a8948e866d9f927f9c917c93856f6c614876664f7f6f56837057685a4e5d573c6b634571644e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-cuchara-de-las-grosell-5070ef762ed3",
+          "title": "La cuchara de las grosellas",
+          "image": "photos/2a04c5ebe9b9c133c3c14280.webp",
+          "thumb": "photos/2a04c5ebe9b9c133c3c14280-thumb.webp",
+          "dhash": "070d33120662248e9c977b9e997ba19b7da19b7d807c5e867b598e83628f886a5451305e56326a6043655e45463e294d412d524330534433",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-llave-del-porton-0becef7e879a",
+          "title": "La llave del portón",
+          "image": "photos/286d85d0cafb85bab14cdf6e.webp",
+          "thumb": "photos/286d85d0cafb85bab14cdf6e-thumb.webp",
+          "dhash": "070f133321861f42afa282b8ab8cbaad8eb5a8888a7d629586689d8c6a9b8b6e584d386152346b572f69563c554a3764553d695940635541",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
