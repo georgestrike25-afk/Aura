@@ -1722,6 +1722,26 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "el-caballito-de-la-marea--6fb8d65217b5",
+          "title": "El caballito de la marea quieta",
+          "image": "photos/2ce25aee9ea6e257ca94579b.webp",
+          "thumb": "photos/2ce25aee9ea6e257ca94579b-thumb.webp",
+          "dhash": "07230f0f1e063739057181097b8a0a7f8e067889065c6d4963542567670361720e555f445d4b226160144d5b2a5453375c502f4c4f2a3e4d",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-tortuga-del-mosaico-2c8fbdea20f8",
+          "title": "La tortuga del mosaico",
+          "image": "photos/7dbd4115c453718e340b7e75.webp",
+          "thumb": "photos/7dbd4115c453718e340b7e75-thumb.webp",
+          "dhash": "0102010b0480260f02659c026aa1036fa60571a60a5f8a286b862f73881976971a60712f6a722576892b7a883c76754587824f85815a6b63",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
