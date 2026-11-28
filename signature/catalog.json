@@ -605,6 +605,46 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "donde-arde-la-lluvia-bd18c4671031",
+          "title": "Donde arde la lluvia",
+          "image": "photos/e709de90ef8598f7a4084124.webp",
+          "thumb": "photos/e709de90ef8598f7a4084124-thumb.webp",
+          "dhash": "070b11276f45cc4c354b5e374e61374e62354c603b52663d4e5e4256673b5164243037242b3032404c2f404d1518161e1e1d262a2e27333c",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "el-calor-de-las-manos-892061cf89b6",
+          "title": "El calor de las manos",
+          "image": "photos/2924045dbb3f5f7ad0044b37.webp",
+          "thumb": "photos/2924045dbb3f5f7ad0044b37-thumb.webp",
+          "dhash": "010d3166e76a63a7304d6d345171365374365374334e6d2c4059384c6637527032343c21222830323a29303a2a2627221f21443a3834343c",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-costura-del-hielo-3718393eb746",
+          "title": "La costura del hielo",
+          "image": "photos/dda4aa4f26a5a4f99c50d243.webp",
+          "thumb": "photos/dda4aa4f26a5a4f99c50d243-thumb.webp",
+          "dhash": "ffbfffffdf9a8e8f48586e45556c3f50683a4b63626d7e5965774c5c7043546a4e50545b585942484f303a461f1c1b403730342f2d1d1f21",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-mecha-de-la-marea-d33ad01b07c4",
+          "title": "La mecha de la marea",
+          "image": "photos/e364974637b2ae17d4e21768.webp",
+          "thumb": "photos/e364974637b2ae17d4e21768-thumb.webp",
+          "dhash": "6f97dff3f7f76f1b36425034414f32404f2e3d4e5d616752585f49525c44505d6e635e574d474846473d4349453d394334293d332d2f2c2c",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
