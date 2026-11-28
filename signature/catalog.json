@@ -1069,6 +1069,36 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "el-agrimensor-lunar-d3b3d8aa3d46",
+          "title": "El agrimensor lunar",
+          "image": "photos/65c797fd2a59306a5de6b849.webp",
+          "thumb": "photos/65c797fd2a59306a5de6b849-thumb.webp",
+          "dhash": "252d3327373137ce162a3f1c304525384d192d44364a5f434f5c4b5a6b384d633f516252606f4d5e70485b6e2c3c4c3848593a4b5d304152",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-fase-del-pozo-aaa70cd4f5ab",
+          "title": "La fase del pozo",
+          "image": "photos/82340633039ae76042c11e56.webp",
+          "thumb": "photos/82340633039ae76042c11e56-thumb.webp",
+          "dhash": "05090765a5c9c13413253c182c451f334e2237521c293421303f314051243340151d19191e1d2427282227240f151210140f1719131f2017",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-flor-del-eclipse-b6f7f308446d",
+          "title": "La flor del eclipse",
+          "image": "photos/d346583f185ed36208cea360.webp",
+          "thumb": "photos/d346583f185ed36208cea360-thumb.webp",
+          "dhash": "84c00607330527032632422733442834462b3343334052434f605055643c4759222e382c3842323d482b36451114131c1e1d2d25241d1a1b",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
