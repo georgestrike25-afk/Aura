@@ -355,6 +355,46 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-26"
+        },
+        {
+          "id": "el-crater-que-respira-f535d3f1a26f",
+          "title": "El cráter que respira",
+          "image": "photos/20155271910c6f3e1601bb66.webp",
+          "thumb": "photos/20155271910c6f3e1601bb66-thumb.webp",
+          "dhash": "f6fffff0fc3ec7a75c6a7e4b60763e577037516aa08a7e7f747061656d5662717b6556705f55615a555b57556a4f375e4e3e5a5147534b43",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "el-lomo-de-ceniza-ade76ccd9421",
+          "title": "El lomo de ceniza",
+          "image": "photos/2f26871631101df8d68cf0ed.webp",
+          "thumb": "photos/2f26871631101df8d68cf0ed-thumb.webp",
+          "dhash": "ddfcf3f06cc2d1126770815a687c4b5e74465b71a0857d7c6d6f61616b6169777b573b704f386e503b72553e503b2a533b29533f325d4436",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-garganta-del-basalto-35e7a92f69bc",
+          "title": "La garganta del basalto",
+          "image": "photos/dfdfcfeb9323fb489bfa1f69.webp",
+          "thumb": "photos/dfdfcfeb9323fb489bfa1f69-thumb.webp",
+          "dhash": "feffb7f9f8faf4797e90ac6b85a45f7d9c567798b3a4a4897e7c5d666f5d758e9d846f7257413b4241445864667066515f533c59523b5e5f",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-sal-en-flor-be81ac6ab472",
+          "title": "La sal en flor",
+          "image": "photos/60f3e11c4acbaa1ea380190e.webp",
+          "thumb": "photos/60f3e11c4acbaa1ea380190e-thumb.webp",
+          "dhash": "fcffefdfd8e8634367717c505f6e3d516331485dab9078887a6e646567505962a1846a9073597563566f6158765c4a775b457c604b785b44",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
