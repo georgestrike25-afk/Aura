@@ -1661,6 +1661,36 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-28"
+        },
+        {
+          "id": "el-guante-del-verano-perd-5f3916f270c0",
+          "title": "El guante del verano perdido",
+          "image": "photos/b8ff47a0476da03596adfc36.webp",
+          "thumb": "photos/b8ff47a0476da03596adfc36-thumb.webp",
+          "dhash": "ffffffb7a7a62124ddb4acd4adaacba8a9c6a5a9e4bfaacfada2c1a5a3bea3a5ad8a7d997e6b98826f9981777f67657d6864846f638e7469",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-pelota-de-la-bajamar-56f7c37109c1",
+          "title": "La pelota de la bajamar",
+          "image": "photos/4f188e21bbe184b0c9cf6019.webp",
+          "thumb": "photos/4f188e21bbe184b0c9cf6019-thumb.webp",
+          "dhash": "ffffafd3f1654f6ae8bab3deb7b4d4b3b4ccaeb2e7b2a1daa799cb9e95c69f9cc9947dbd876db2806bb68878b88166b27f67b07d64ae7a61",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-taza-de-la-travesia-8fabbf93c468",
+          "title": "La taza de la travesía",
+          "image": "photos/cc6d1fd612e2218ae4da2b94.webp",
+          "thumb": "photos/cc6d1fd612e2218ae4da2b94-thumb.webp",
+          "dhash": "037b7f793133b310c18f76be8d7dbf8c80bd897ebe8f7bb68874a87e6faa8075a4796096765f826554916f5f85624d835e4989634f876b63",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
