@@ -1876,6 +1876,16 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-28"
+        },
+        {
+          "id": "la-plancha-que-no-pesa-a0ca887e437b",
+          "title": "La plancha que no pesa",
+          "image": "photos/3b9d66421b375923a7d39b04.webp",
+          "thumb": "photos/3b9d66421b375923a7d39b04-thumb.webp",
+          "dhash": "dfdffdf9b9675f395b5147564d434f483f4a443b7063555f53474f453b50493f82715f68594a594d41554b407363526f5f4e5c4f4154493d",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
