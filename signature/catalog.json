@@ -1611,6 +1611,46 @@
           "dhash": "261f0f0f0f27071f3d303c4437434337423e303d382d384738424637423a2e39553f4a6e494b754f54573f4b6045517e555b7d5559563f4b",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-borde-del-vidrio-2b1f95325008",
+          "title": "El borde del vidrio",
+          "image": "photos/4943aca5397d09232ef1e0ff.webp",
+          "thumb": "photos/4943aca5397d09232ef1e0ff-thumb.webp",
+          "dhash": "fffff7b7f3b71a7692918f8b8b8a8383817b7b7a9d9c998587897f83868284839b99957c7f85797e867b7e7f696c6e696c6d63676a616466",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-curva-del-cobre-0bbe96f24c98",
+          "title": "La curva del cobre",
+          "image": "photos/c6d0d94f4331ce69a2d487b0.webp",
+          "thumb": "photos/c6d0d94f4331ce69a2d487b0-thumb.webp",
+          "dhash": "ffefdb53b3bf1fc79f9a949b9691948f8b8d89859e9893988a828a7d77888582a3989098837789756b817a7576706c786f69736a6466605c",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-hebra-de-grafito-a55bdc6c0d66",
+          "title": "La hebra de grafito",
+          "image": "photos/4bd0785ea145c702ed3ca046.webp",
+          "thumb": "photos/4bd0785ea145c702ed3ca046-thumb.webp",
+          "dhash": "fffff7f7b733f7d7a39c979792908a88877d7d7ebcb0a7978f8a8b88868988889c959176706b6e6d6e7375776a64615a534e4c4b4a494a4b",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "porcelana-invertida-7320edb5fd7b",
+          "title": "Porcelana invertida",
+          "image": "photos/95c6868ceed806d0791a4368.webp",
+          "thumb": "photos/95c6868ceed806d0791a4368-thumb.webp",
+          "dhash": "fffffffbdbfc7adbbab8b4b3b1adaaa8a4a1a09cbab7b3b1aea8a8a5a1a1a09da8a5a09996918b898589888587827d6d6a6559575352514f",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
