@@ -3,6 +3,22 @@
   "license": "",
   "collections": [
     {
+      "id": "la-ciudad-en-pausa",
+      "title": "La ciudad en pausa",
+      "items": [
+        {
+          "id": "el-tranvia-de-la-ultima-g-a6453d2bdbeb",
+          "title": "El tranvía de la última gota",
+          "image": "photos/d0bf37ccd8810df8a7642b79.webp",
+          "thumb": "photos/d0bf37ccd8810df8a7642b79-thumb.webp",
+          "dhash": "9003636b2303030c44383469717f8d919f9496a349423e50484270635c71737a3e39364b3e3570594b665f60312c294741415f5452504f54",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        }
+      ]
+    },
+    {
       "id": "arboles-de-la-vida",
       "title": "Árboles de la vida",
       "items": [
