@@ -926,6 +926,26 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "la-piedra-que-germina-84a4890925c4",
+          "title": "La piedra que germina",
+          "image": "photos/336e3ae264fecd3f31977eeb.webp",
+          "thumb": "photos/336e3ae264fecd3f31977eeb-thumb.webp",
+          "dhash": "dcecf0f72726e5a7a3adb59aa6b094a1ac94a0aaaeb5b9a2aaa79fa8a99fa6aa727361646963767d7d6b7373544d353f3e3453555352524c",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-ultima-escama-9808cbcf5d88",
+          "title": "La última escama",
+          "image": "photos/dcd283e3292a1042bca791a5.webp",
+          "thumb": "photos/dcd283e3292a1042bca791a5-thumb.webp",
+          "dhash": "700333ab0fbb086c869bb2879bb3889db58a9eb671879c72869a7084966c7e8b556672596976586671535a5d514d424e535653596151575f",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
