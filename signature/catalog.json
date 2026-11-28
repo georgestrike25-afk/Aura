@@ -1651,6 +1651,16 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "la-caja-de-la-primera-can-45ad64e9778d",
+          "title": "La caja de la primera canción",
+          "image": "photos/30ab3b73fb0689f3abfd02c0.webp",
+          "thumb": "photos/30ab3b73fb0689f3abfd02c0-thumb.webp",
+          "dhash": "8f9c99a0686d2083c6a487cbaa90c9ab94c7a994c9a484bb9278b38c76c2a38dc59d7fae876ba17a60ae8b72895f4b8d6950aa856aba9577",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
