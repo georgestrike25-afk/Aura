@@ -868,6 +868,26 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-26"
+        },
+        {
+          "id": "el-velo-de-la-luna-d03b3faac36e",
+          "title": "El velo de la luna",
+          "image": "photos/7ef314b6860b54d6af00abc3.webp",
+          "thumb": "photos/7ef314b6860b54d6af00abc3-thumb.webp",
+          "dhash": "371b67a76fdb4d6d496085476086465e85425b8159698a585e8055628a485d816e6a75625a6a595c774c5870685552604d5360525d544c54",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-aleta-de-espuma-10f01e0950e0",
+          "title": "La aleta de espuma",
+          "image": "photos/71b52b166e57bd66a19daf87.webp",
+          "thumb": "photos/71b52b166e57bd66a19daf87-thumb.webp",
+          "dhash": "3f1fe7cf9fbfdf734d54684a5368475165424d61666270656371585b6c4c5366906e678d6f696a595c554c547f5644714f445b443f4c3b3b",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
