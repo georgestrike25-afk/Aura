@@ -42,6 +42,8 @@ las fotos se procesan en el teléfono. Pensada para un Samsung Galaxy S24+.
   `tools/aura_signature_sync.py` (lógica probada). Publica en `main` por la API de GitHub con un token del usuario
   (fine-grained, solo Contents del repo Aura, guardado en el administrador de credenciales de Windows).
   El .exe se compila en `.github/workflows/signature-manager.yml` y queda en `dist/AuraSignature.exe`.
+- **Imágenes nuevas para Signature**: antes de generar, leer `docs/COLECCIONES.md` (identidad artística de cada
+  colección, reglas comunes y plantilla de pedido). Trabajar siempre sobre `main` actualizado (`git pull origin main`).
 
 ## Compilar y entregar
 - Se compila en GitHub Actions (`.github/workflows/android.yml`): pruebas de `core`, APK firmado, lint y
