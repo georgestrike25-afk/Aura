@@ -171,5 +171,14 @@ class FolderSyncTest(unittest.TestCase):
         self.assertEqual([(p, "Retratos")], fs.pending())
 
 
+class CleanEnvTest(unittest.TestCase):
+    def test_la_copia_nueva_no_hereda_la_carpeta_temporal(self):
+        import aura_signature_update as upd
+        env = upd.clean_env({"PATH": "x", "_PYI_APPLICATION_HOME_DIR": "C:/Temp/_MEI1", "_MEIPASS2": "C:/Temp/_MEI1",
+                             "TCL_LIBRARY": "C:/Temp/_MEI1/tcl", "TK_LIBRARY": "C:/Temp/_MEI1/tk"})
+        self.assertEqual(env, {"PATH": "x", "PYINSTALLER_RESET_ENVIRONMENT": "1"})
+
+
 if __name__ == "__main__":
     unittest.main()
+

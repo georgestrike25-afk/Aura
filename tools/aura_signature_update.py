@@ -52,8 +52,19 @@ def is_installed() -> bool:
         return False
 
 
+def clean_env(env: dict[str, str] | None = None) -> dict[str, str]:
+    """Entorno para abrir otra copia del .exe. Sin esto, la copia nueva hereda las rutas de la carpeta temporal
+    de esta (_MEIxxxx), que se borra al cerrarse, y falla con «Failed to load Python DLL … python312.dll»."""
+    env = dict(os.environ if env is None else env)
+    for key in list(env):
+        if key.startswith("_PYI_") or key in ("_MEIPASS2", "TCL_LIBRARY", "TK_LIBRARY", "TCLLIBPATH"):
+            del env[key]
+    env["PYINSTALLER_RESET_ENVIRONMENT"] = "1"  # PyInstaller ≥ 6.9: la copia nueva arranca de cero
+    return env
+
+
 def _launch(args: list[str]) -> None:
-    subprocess.Popen(args, close_fds=True, creationflags=DETACHED | NO_WINDOW if IS_WINDOWS else 0)
+    subprocess.Popen(args, close_fds=True, env=clean_env(), creationflags=DETACHED | NO_WINDOW if IS_WINDOWS else 0)
 
 
 def install_self() -> bool:
