@@ -906,6 +906,26 @@
           "dhash": "03170b4d0f171f3314263a15293e152b3f13283c2033473040502e3f501f34485260697377756a73734a5e675560645f6a695365653f575d",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-pliegue-del-agua-0c04be675254",
+          "title": "El pliegue del agua",
+          "image": "photos/a10b85e6ce0db3f742302a0c.webp",
+          "thumb": "photos/a10b85e6ce0db3f742302a0c-thumb.webp",
+          "dhash": "dbfff7d31b4f8e1ba1adbb9ba9b897a6b793a4b5a4adb99fa9b498a4b094a3b2717a7b828686808689747e814f4d445f5d596262635c5c5a",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-corteza-que-recuerda-118e136ef3fd",
+          "title": "La corteza que recuerda",
+          "image": "photos/ece4fdea51281481d2c40713.webp",
+          "thumb": "photos/ece4fdea51281481d2c40713-thumb.webp",
+          "dhash": "16000830252221207c8fa37f91a58293a68495a77c8d9d848f9a8d939a949eaa65695f60605b6f706c7578734d49394e453e5854525e6062",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
