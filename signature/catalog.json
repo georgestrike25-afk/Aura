@@ -1743,6 +1743,46 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "el-agua-de-la-piedra-d4378ccfe360",
+          "title": "El agua de la piedra",
+          "image": "photos/4c4bd025ccf2b6d91eeacfe4.webp",
+          "thumb": "photos/4c4bd025ccf2b6d91eeacfe4-thumb.webp",
+          "dhash": "ffffdff770234e22a9b6b89aacb18ea3ab869ca6bbb7b0a3a3a0a0a29fa1a3a1806b557f634f8d68508e6e56644f3b75533d8f5d41895c3f",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "el-camino-de-la-nieve-6a75edafbfb1",
+          "title": "El camino de la nieve",
+          "image": "photos/bb3931c7c3df673b4aec498a.webp",
+          "thumb": "photos/bb3931c7c3df673b4aec498a-thumb.webp",
+          "dhash": "bffeffe7e36806c6b8b7abaaafa69ba5a08f9f9dccbea7b0aa9aa0a59d96a19db5a48f9f8c749690829a988f9584729d8e7eab9c8ea69b91",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-cuerda-del-acantilado-78203666410c",
+          "title": "La cuerda del acantilado",
+          "image": "photos/be3567cc55014eda2c9247da.webp",
+          "thumb": "photos/be3567cc55014eda2c9247da-thumb.webp",
+          "dhash": "faf0fff3f4f9d851cdc2b3b5b3aba8aca8a6aba9cdc4b3b4afa1a5a497a7a99e8c87637f7b527171477473486a66386868316668346b6839",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-orilla-reparada-4a97dbd993eb",
+          "title": "La orilla reparada",
+          "image": "photos/6f3cf446f234d6a04f51c460.webp",
+          "thumb": "photos/6f3cf446f234d6a04f51c460-thumb.webp",
+          "dhash": "34c080306020084cb5babab5b9b9babcb9c7c3bdadaeaaabaaa3bab5abccc2b6918a7d887e6d9c917fada190827462867967887c698f826e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
