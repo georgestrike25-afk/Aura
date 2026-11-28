@@ -15,6 +15,36 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-28"
+        },
+        {
+          "id": "el-banco-de-la-paloma-71d7a1c285e9",
+          "title": "El banco de la paloma",
+          "image": "photos/aecd524c87df28614e59d281.webp",
+          "thumb": "photos/aecd524c87df28614e59d281-thumb.webp",
+          "dhash": "100373c1496c4943484a4f7075829493a19d9ba84a4f544f535a70747d747984505156454446514f515d5a5f3e4147403e405a5557635e62",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "el-barrendero-del-alba-b667c5d9419d",
+          "title": "El barrendero del alba",
+          "image": "photos/e2578eb747f6b79c24fe5cdd.webp",
+          "thumb": "photos/e2578eb747f6b79c24fe5cdd-thumb.webp",
+          "dhash": "437776676b636767695e555f60605f6d77454e546365655b5252606b734d5458786c62544b47656464585654645b564d4846565c61424240",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-persiana-del-agua-6c59853b1c6c",
+          "title": "La persiana del agua",
+          "image": "photos/73626332a9997e258b275498.webp",
+          "thumb": "photos/73626332a9997e258b275498-thumb.webp",
+          "dhash": "1f7f5479c9c949e972748361687a484d583331305b5152392629342223443a3a5c4d4a3522213321203833335c5252322b2d2f2627312e2e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
