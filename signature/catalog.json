@@ -1019,6 +1019,46 @@
           "dhash": "0a270b0d28360f83060e15061019061019060e1609121a0a141c09141c09121b323a3a374042303a3e2c373d2d32314349484c54523e4647",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-junco-de-plata-0d23f85bbed4",
+          "title": "El junco de plata",
+          "image": "photos/87706518bfe721234de838c3.webp",
+          "thumb": "photos/87706518bfe721234de838c3-thumb.webp",
+          "dhash": "ffffff9ffff71f1f4b5d713a4d622d415624384f586a7d4e5e6f3b4e6331455b5a64704e5d6c4051633546582d333d303c4b2736481e2e40",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "el-sereno-de-la-sal-3f82e0d1a0fa",
+          "title": "El sereno de la sal",
+          "image": "photos/17e4d284dc2a6940a743a851.webp",
+          "thumb": "photos/17e4d284dc2a6940a743a851-thumb.webp",
+          "dhash": "fffff7b3b3d2f2263d4c5c374556313f4e2d3a4853637448515e3f4955414f5e59636e56525548494f4c555f454f58484b5145494e42484e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-marea-de-la-greda-549894cb78f4",
+          "title": "La marea de la greda",
+          "image": "photos/0fd1c1310aef2d2990aa80d1.webp",
+          "thumb": "photos/0fd1c1310aef2d2990aa80d1-thumb.webp",
+          "dhash": "000011242424160737475b3c4c604050644253674b5b6e4b56655a637057677a3d485440454c595b6163707f262729322f2e424141404549",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-piedra-sin-peso-c70a7dc71d4e",
+          "title": "La piedra sin peso",
+          "image": "photos/f7d054b8c18c9ac36ea9dd9a.webp",
+          "thumb": "photos/f7d054b8c18c9ac36ea9dd9a-thumb.webp",
+          "dhash": "ffffefdad31b3c6639475a323f512a37492532434d5c714a57693b485935435656617158616d45505e434f5f46464a3f404530353c2f333a",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
