@@ -888,6 +888,26 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-28"
+        },
+        {
+          "id": "la-raiz-del-vendaval-518a164af810",
+          "title": "La raíz del vendaval",
+          "image": "photos/047e44affb38eb42279d5256.webp",
+          "thumb": "photos/047e44affb38eb42279d5256-thumb.webp",
+          "dhash": "ffffdbb4e5f63bc7425a713c566e38536c3450695b6c7e5864764e6075435d7581746e73625870686762666e6f5a4e6d5a4f6c5b53645652",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-veleta-de-la-sombra-a4b5e213e6c2",
+          "title": "La veleta de la sombra",
+          "image": "photos/d67be10ec7fe88f5f4dfa7f4.webp",
+          "thumb": "photos/d67be10ec7fe88f5f4dfa7f4-thumb.webp",
+          "dhash": "0000000010100800394e643d526841576d455b714a59724f5d735a667b6a71855c5764685e6776686d9d817a493f42594644654c43835d48",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
