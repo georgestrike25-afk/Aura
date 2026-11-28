@@ -552,6 +552,16 @@
           "dhash": "080113b330e92b1c1e587e2f618432668b417092637c8a80827c8b8b8386949b4859614c4d44655d4d747e7f344d574c514953574f4e6166",
           "width": 1440,
           "height": 3120
+        },
+        {
+          "id": "el-umbral-de-la-primera-l-4890c751019b",
+          "title": "El umbral de la primera lluvia",
+          "image": "photos/9ab5742d2bdb86365f5834c4.webp",
+          "thumb": "photos/9ab5742d2bdb86365f5834c4-thumb.webp",
+          "dhash": "00002020686003124b5f6f5366766071806d7c8b626c746467687d77739f97916e6c6d6c65607d6f6592847b6562616f6866756c68736c6a",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
