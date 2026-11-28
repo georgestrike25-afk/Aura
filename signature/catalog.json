@@ -1159,6 +1159,26 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "el-invernadero-de-una-hoj-1498531c8af3",
+          "title": "El invernadero de una hoja",
+          "image": "photos/36b1dbdfd485d2829922fe95.webp",
+          "thumb": "photos/36b1dbdfd485d2829922fe95-thumb.webp",
+          "dhash": "48b04c4d593c4cc30f10110f10120f10120f101213131527272423242114141656524c5f5b5255524b524e485a544e5c5751655f5867615a",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
+        },
+        {
+          "id": "la-antena-de-ceniza-a8910894487f",
+          "title": "La antena de ceniza",
+          "image": "photos/c1e183c03bc0cd224da87629.webp",
+          "thumb": "photos/c1e183c03bc0cd224da87629-thumb.webp",
+          "dhash": "02102c6c511ccd0e0f10100f10110f10100e0f101213131415151718171314144f4d47524f494d4b46514f4956534c5e5b536460585c5951",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-27"
         }
       ]
     },
