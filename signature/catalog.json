@@ -1633,6 +1633,36 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-28"
+        },
+        {
+          "id": "el-agave-de-la-cicatriz-fcc8f2d0b892",
+          "title": "El agave de la cicatriz",
+          "image": "photos/27575b5807b5ea319b414d4e.webp",
+          "thumb": "photos/27575b5807b5ea319b414d4e-thumb.webp",
+          "dhash": "071f17494e47612332382f3a4138384038333b34373e333e463b3e463c373f383a4130404b3449523e3940373b3b253636254f49384a483e",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "el-helecho-al-regreso-08fb5bc873a9",
+          "title": "El helecho al regreso",
+          "image": "photos/e6390c00be85c5b376812140.webp",
+          "thumb": "photos/e6390c00be85c5b376812140-thumb.webp",
+          "dhash": "cfffee4d8ddb92004b524a495047464d44414740494f474f53434a4d3f40463f494c3f53503d505140474c3e433d2b4d403556493f54483b",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-dedalera-del-rocio-dca01d39c1e1",
+          "title": "La dedalera del rocío",
+          "image": "photos/cac3d7e2a76c9f7da62634c7.webp",
+          "thumb": "photos/cac3d7e2a76c9f7da62634c7-thumb.webp",
+          "dhash": "0101010f0d2d4743424b414a544a525c54545e57414c414c564a555e53515c53424c3c4e53475a5b534c5548404730484f3a575a514a5143",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
