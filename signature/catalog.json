@@ -1846,6 +1846,36 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-26"
+        },
+        {
+          "id": "el-dedal-de-plomo-951d7c783138",
+          "title": "El dedal de plomo",
+          "image": "photos/c1c6bfbde63e0737bfaed2cd.webp",
+          "thumb": "photos/c1c6bfbde63e0737bfaed2cd-thumb.webp",
+          "dhash": "0000012466222404494239544b40665a4c776a5a50483e4e463b6e6050786b5b51463a453c305e4f3e6558483a30243e34284c3f3153473b",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "el-ladrillo-del-reves-0974cd89eb0f",
+          "title": "El ladrillo del revés",
+          "image": "photos/230a21c549866db0b65bbce1.webp",
+          "thumb": "photos/230a21c549866db0b65bbce1-thumb.webp",
+          "dhash": "ffffef5b1a13391f5f564a584e4352493e4d453b645a4e645345584b3f524a40605448674d3d554337574c426d5d4f725e4d6352435e4f43",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-escalera-que-cae-hacia-7a7ca9130f8a",
+          "title": "La escalera que cae hacia arriba",
+          "image": "photos/4ff58f259ebb110a55b94357.webp",
+          "thumb": "photos/4ff58f259ebb110a55b94357-thumb.webp",
+          "dhash": "bffff3f33f2b0f0f74685a6d6255665c4f61574c827362736454675a4c62584b685b4d6f5e4d6858485f53465b46366f533c6c523d594534",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
