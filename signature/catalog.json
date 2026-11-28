@@ -921,6 +921,36 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "el-zorro-de-las-brasas-cb4fff469601",
+          "title": "El zorro de las brasas",
+          "image": "photos/508202d783ca51811696b6df.webp",
+          "thumb": "photos/508202d783ca51811696b6df-thumb.webp",
+          "dhash": "09211b0d4f4709810616260617270616270616260c1d2e2c282b2428300b1e30373a44674433594a42313b4b1d252e2a2e36363b47394356",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-brujula-de-las-mareas-384bcb611898",
+          "title": "La brújula de las mareas",
+          "image": "photos/86dcf03a4058e497f6ef42f8.webp",
+          "thumb": "photos/86dcf03a4058e497f6ef42f8-thumb.webp",
+          "dhash": "05114da71f0ea62c0916280917290917290916280e1c2f1d243e2328450d1b302730383f3d5a3538571c2a3b222926312f45403c562f353f",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-llave-del-deshielo-50bf89a24b1d",
+          "title": "La llave del deshielo",
+          "image": "photos/7ea1c8e0d47e4c323acf2f97.webp",
+          "thumb": "photos/7ea1c8e0d47e4c323acf2f97-thumb.webp",
+          "dhash": "ffeb1f4f6b0f2fc30f2b490c2542071e390419310e28441630540e284e051b342e4e724054723649691a37582745673f4f684e5c74375273",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
