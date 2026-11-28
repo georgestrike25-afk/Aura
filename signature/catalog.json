@@ -167,6 +167,26 @@
           "width": 1440,
           "height": 3120,
           "added": "2026-11-27"
+        },
+        {
+          "id": "el-caracol-de-la-aurora-dd71ddf70e2c",
+          "title": "El caracol de la aurora",
+          "image": "photos/b4340bad998ba1c9ebe907ed.webp",
+          "thumb": "photos/b4340bad998ba1c9ebe907ed-thumb.webp",
+          "dhash": "0a172b4d1d0f4f0f211622241724241725221724281d293a283033242e271c293c2d3463423d5436373a292f412e345b3733673b38422a29",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
+        },
+        {
+          "id": "la-semilla-del-rescoldo-75b2c0aa059f",
+          "title": "La semilla del rescoldo",
+          "image": "photos/95e9b9026bb4a4e04a0270a1.webp",
+          "thumb": "photos/95e9b9026bb4a4e04a0270a1-thumb.webp",
+          "dhash": "1f176b170d2327231d121a1f141d1d131b1810171f151d2c1c20291b1f1b141b2d2427422b22412d2627212629201e3125213e312d2a2525",
+          "width": 1440,
+          "height": 3120,
+          "added": "2026-11-28"
         }
       ]
     },
